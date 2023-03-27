@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('class_rooms', function (Blueprint $table) {
+        Schema::create('classrooms', function (Blueprint $table) {
             $table->id();
             $table->integer('size');
             $table->timestamps();
@@ -27,6 +27,7 @@ return new class extends Migration
      */
     public function down()
     {
+        
         Schema::dropIfExists('class_rooms');
     }
 };
