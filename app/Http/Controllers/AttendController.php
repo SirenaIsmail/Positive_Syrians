@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Attend;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class AttendController extends Controller
 {
+    use apiResponse;
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +16,20 @@ class AttendController extends Controller
      */
     public function index()
     {
-        //
+        $dataAttend = Attend::get();
+
+        if($dataAttend)
+        {
+            return $this->traitResponse($dataAttend,'SUCCESS', 200);
+
+        }
+
+
+        return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
+
+
+
+
     }
 
     /**
@@ -35,7 +50,28 @@ class AttendController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validation = Validator::make($request->all(), [
+            'lesson_number'=> 'required',
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataAttend = Attend::create($request -> all());
+
+        if($dataAttend)
+        {
+
+            return  $this ->traitResponse( $dataAttend ,'Saved Successfully' , 200 );
+        }
+
+        return  $this->traitResponse(null,'Saved Failed ' , 400);
+
+
     }
 
     /**
@@ -44,9 +80,25 @@ class AttendController extends Controller
      * @param  \App\Models\Attend  $attend
      * @return \Illuminate\Http\Response
      */
-    public function show(Attend $attend)
+    public function show($id)
     {
-        //
+
+        $dataAttend = Attend::find($id);
+
+        if($dataAttend)
+        {
+            return $this->traitResponse($dataAttend , 'SUCCESS' , 200);
+
+
+        }
+
+        return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
+
+
+
+
+
+
     }
 
     /**
@@ -67,9 +119,38 @@ class AttendController extends Controller
      * @param  \App\Models\Attend  $attend
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Attend $attend)
+    public function update(Request $request, $id)
     {
-        //
+
+        $dataAttend = Attend::find($id);
+
+        if(!$dataAttend)
+        {
+            return $this->traitResponse(null,' Sorry Not Found',404);
+
+        }
+
+        $validation = Validator::make($request->all(), [
+            'state'=> 'required',
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataAttend->update($request->all());
+        if($dataAttend)
+        {
+            return $this->traitResponse($dataAttend , 'Updated Successfully',200);
+
+        }
+        return $this->traitResponse(null,'Failed Updated',400);
+
+
+
     }
 
     /**
@@ -78,8 +159,31 @@ class AttendController extends Controller
      * @param  \App\Models\Attend  $attend
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Attend $attend)
+    public function destroy($id)
     {
-        //
+        $dataAttend = Attend::find($id);
+
+        if(!$dataAttend)
+        {
+            return $this->traitResponse(null,'Not Found ' , 404);
+        }
+
+        $dataAttend->delete($id);
+
+        if($dataAttend)
+        {
+            return  $this->traitResponse(null , 'Deleted Successfully ' , 200);
+
+        }
+        return  $this->traitResponse(null , 'Deleted Failed ' , 404);
+
+
+
+
+
+
+
+
+
     }
 }

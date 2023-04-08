@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Referance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ReferanceController extends Controller
 {
+    use apiResponse;
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +16,20 @@ class ReferanceController extends Controller
      */
     public function index()
     {
-        //
+        $dataReferance = Referance::get();
+
+        if($dataReferance)
+        {
+            return $this->traitResponse($dataReferance,'SUCCESS', 200);
+
+        }
+
+
+        return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
+
+
+
+
     }
 
     /**
@@ -35,7 +50,32 @@ class ReferanceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validation = Validator::make($request->all(), [
+            'lesson_number'=> 'required',
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataReferance = Referance::create($request -> all());
+
+        if($dataReferance)
+        {
+
+            return  $this ->traitResponse( $dataReferance ,'Saved Successfully' , 200 );
+        }
+
+        return  $this->traitResponse(null,'Saved Failed ' , 400);
+
+
+
+
+
+
     }
 
     /**
@@ -44,9 +84,23 @@ class ReferanceController extends Controller
      * @param  \App\Models\Referance  $referance
      * @return \Illuminate\Http\Response
      */
-    public function show(Referance $referance)
+    public function show($id)
     {
-        //
+
+        $dataReferance = Referance::find($id);
+
+        if($dataReferance)
+        {
+            return $this->traitResponse($dataReferance , 'SUCCESS' , 200);
+
+
+        }
+
+        return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
+
+
+
+
     }
 
     /**
@@ -67,9 +121,37 @@ class ReferanceController extends Controller
      * @param  \App\Models\Referance  $referance
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Referance $referance)
+    public function update(Request $request,$id)
     {
-        //
+
+        $dataReferance = Referance::find($id);
+
+        if(!$dataReferance)
+        {
+            return $this->traitResponse(null,' Sorry Not Found',404);
+
+        }
+
+        $validation = Validator::make($request->all(), [
+            'lesson_number'=> 'required ',
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataReferance->update($request->all());
+        if($dataReferance)
+        {
+            return $this->traitResponse($dataReferance , 'Updated Successfully',200);
+
+        }
+        return $this->traitResponse(null,'Failed Updated',400);
+
+
     }
 
     /**
@@ -78,8 +160,28 @@ class ReferanceController extends Controller
      * @param  \App\Models\Referance  $referance
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Referance $referance)
+    public function destroy($id)
     {
-        //
+
+        $dataReferance = Referance::find($id);
+
+        if(!$dataReferance)
+        {
+            return $this->traitResponse(null,'Not Found ' , 404);
+        }
+
+        $dataReferance->delete($id);
+
+        if($dataReferance)
+        {
+            return  $this->traitResponse(null , 'Deleted Successfully ' , 200);
+
+        }
+        return  $this->traitResponse(null , 'Deleted Failed ' , 404);
+
+
+
+
+
     }
 }

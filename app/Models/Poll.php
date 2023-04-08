@@ -10,6 +10,8 @@ class Poll extends Model
     use HasFactory;
     protected $fillable = [
         'full_name',
+        'mother_name',
+        'address',
         'first_subj',
         'secound_subj',
         'third_subj',

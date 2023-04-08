@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Suject;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class SujectController extends Controller
 {
+
+    use apiResponse;
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +17,21 @@ class SujectController extends Controller
      */
     public function index()
     {
-        //
+        $dataSubject = Suject::get();
+
+        if($dataSubject)
+        {
+            return $this->traitResponse($dataSubject,'SUCCESS', 200);
+
+        }
+
+
+        return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
+
+
+
+
+
     }
 
     /**
@@ -35,7 +52,35 @@ class SujectController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validation = Validator::make($request->all(), [
+            'name'=>'required',
+            'content'=>'required',
+            'houers'=>'required',
+            'number_of_lessons'=>'required',
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataSubject = Suject::create($request -> all());
+
+        if($dataSubject)
+        {
+
+            return  $this ->traitResponse( $dataSubject ,'Saved Successfully' , 200 );
+        }
+
+        return  $this->traitResponse(null,'Saved Failed ' , 400);
+
+
+
+
+
+
     }
 
     /**
@@ -44,9 +89,27 @@ class SujectController extends Controller
      * @param  \App\Models\Suject  $suject
      * @return \Illuminate\Http\Response
      */
-    public function show(Suject $suject)
+    public function show($id)
     {
-        //
+        $dataSubject = Suject::find($id);
+
+        if($dataSubject)
+        {
+            return $this->traitResponse($dataSubject , 'SUCCESS' , 200);
+
+
+        }
+
+        return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
+
+
+
+
+
+
+
+
+
     }
 
     /**
@@ -67,9 +130,40 @@ class SujectController extends Controller
      * @param  \App\Models\Suject  $suject
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Suject $suject)
+    public function update(Request $request, $id)
     {
-        //
+        $dataSubject = Suject::find($id);
+
+        if(!$dataSubject)
+        {
+            return $this->traitResponse(null,' Sorry Not Found',404);
+
+        }
+
+        $validation = Validator::make($request->all(), [
+
+            'number_of_lessons'=>'required',
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataSubject->update($request->all());
+        if($dataSubject)
+        {
+            return $this->traitResponse($dataSubject , 'Updated Successfully',200);
+
+        }
+        return $this->traitResponse(null,'Failed Updated',400);
+
+
+
+
+
     }
 
     /**
@@ -78,8 +172,26 @@ class SujectController extends Controller
      * @param  \App\Models\Suject  $suject
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Suject $suject)
+    public function destroy($id)
     {
-        //
+        $dataSubject = Suject::find($id);
+
+        if(!$dataSubject)
+        {
+            return $this->traitResponse(null,'Not Found ' , 404);
+        }
+
+        $dataSubject->delete($id);
+
+        if($dataSubject)
+        {
+            return  $this->traitResponse(null , 'Deleted Successfully ' , 200);
+
+        }
+        return  $this->traitResponse(null , 'Deleted Failed ' , 404);
+
+
+
+
     }
 }

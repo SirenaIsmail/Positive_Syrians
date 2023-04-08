@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\History;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class HistoryController extends Controller
 {
+    use apiResponse;
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +17,22 @@ class HistoryController extends Controller
      */
     public function index()
     {
-        //
+
+        $dataHistory = History::get();
+
+        if($dataHistory)
+        {
+            return $this->traitResponse($dataHistory,'SUCCESS', 200);
+
+        }
+
+
+        return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
+
+
+
+
+
     }
 
     /**
@@ -35,7 +53,31 @@ class HistoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $validation = Validator::make($request->all(), [
+            'student_id'=> 'required',
+            'course_id'=>'required',
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataHistory = History::create($request -> all());
+
+        if($dataHistory)
+        {
+
+            return  $this ->traitResponse( $dataHistory ,'Saved Successfully' , 200 );
+        }
+
+        return  $this->traitResponse(null,'Saved Failed ' , 400);
+
+
+
     }
 
     /**
@@ -44,9 +86,22 @@ class HistoryController extends Controller
      * @param  \App\Models\History  $history
      * @return \Illuminate\Http\Response
      */
-    public function show(History $history)
+    public function show( $id)
     {
-        //
+
+        $dataHistory = History::find($id);
+
+        if($dataHistory)
+        {
+            return $this->traitResponse($dataHistory , 'SUCCESS' , 200);
+
+
+        }
+
+        return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
+
+
+
     }
 
     /**
@@ -67,9 +122,41 @@ class HistoryController extends Controller
      * @param  \App\Models\History  $history
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, History $history)
+    public function update(Request $request, $id)
     {
-        //
+
+
+
+        $dataHistory = History::find($id);
+
+        if(!$dataHistory)
+        {
+            return $this->traitResponse(null,' Sorry Not Found',404);
+
+        }
+
+        $validation = Validator::make($request->all(), [
+            'student_id'=> 'required',
+            'course_id'=>'required',
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataHistory->update($request->all());
+        if($dataHistory)
+        {
+            return $this->traitResponse($dataHistory , 'Updated Successfully',200);
+
+        }
+        return $this->traitResponse(null,'Failed Updated',400);
+
+
+
     }
 
     /**
@@ -78,8 +165,26 @@ class HistoryController extends Controller
      * @param  \App\Models\History  $history
      * @return \Illuminate\Http\Response
      */
-    public function destroy(History $history)
+    public function destroy($id)
     {
-        //
+
+
+        $dataHistory = History::find($id);
+
+        if(!$dataHistory)
+        {
+            return $this->traitResponse(null,'Not Found ' , 404);
+        }
+
+        $dataHistory->delete($id);
+
+        if($dataHistory)
+        {
+            return  $this->traitResponse(null , 'Deleted Successfully ' , 200);
+
+        }
+        return  $this->traitResponse(null , 'Deleted Failed ' , 404);
+
+
     }
 }

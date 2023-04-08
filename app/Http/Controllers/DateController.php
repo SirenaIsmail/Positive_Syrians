@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Date;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class DateController extends Controller
 {
+    use apiResponse;
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +16,20 @@ class DateController extends Controller
      */
     public function index()
     {
-        //
+
+        $dataDate=Date::get();
+
+        if($dataDate)
+        {
+            return $this->traitResponse($dataDate,'SUCCESS',200);
+
+        }
+
+        return $this->traitResponse(null,'Sorry  Not Found',404);
+
+
+
+
     }
 
     /**
@@ -35,7 +50,37 @@ class DateController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $validation= Validator::make($request->all(),[
+
+            'day'=>'required',
+            'mounth'=>'required',
+            'year'=>'required',
+
+
+        ]);
+
+        if($validation->fails())
+        {
+
+            return $this->traitResponse( null ,$validation->errors(),400);
+
+        }
+
+        $dataDate = Date::create($request->all());
+
+        if($dataDate)
+        {
+            return $this->traitResponse( $dataDate ,'Saved Successfully',200);
+
+        }
+
+
+        return $this->traitResponse(null,'Saved Failed ',400);
+
+
+
+
     }
 
     /**
@@ -44,9 +89,21 @@ class DateController extends Controller
      * @param  \App\Models\Date  $date
      * @return \Illuminate\Http\Response
      */
-    public function show(Date $date)
+    public function show($id)
     {
-        //
+
+        $dataDate = Date::find($id);
+
+        if($dataDate)
+        {
+            return $this->traitResponse($dataDate , 'SUCCESS' , 200);
+
+
+        }
+
+        return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
+
+
     }
 
     /**
@@ -67,9 +124,38 @@ class DateController extends Controller
      * @param  \App\Models\Date  $date
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Date $date)
+    public function update(Request $request, $id )
     {
-        //
+
+        $dataDate = Date::find($id);
+
+        if(!$dataDate)
+        {
+            return $this->traitResponse(null,' Sorry Not Found',404);
+
+        }
+
+        $validation = Validator::make($request->all(), [
+            'day'=> 'required',
+            'mounth'=> 'required',
+            'year'=> 'required',
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataDate->update($request->all());
+        if($dataDate)
+        {
+            return $this->traitResponse($dataDate , 'Updated Successfully',200);
+
+        }
+        return $this->traitResponse(null,'Failed Updated',400);
+
+
     }
 
     /**
@@ -78,8 +164,26 @@ class DateController extends Controller
      * @param  \App\Models\Date  $date
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Date $date)
+    public function destroy($id)
     {
-        //
+
+        $dataDate = Date::find($id);
+
+        if(!$dataDate)
+        {
+            return $this->traitResponse(null,'Not Found ' , 404);
+        }
+
+        $dataDate->delete($id);
+
+        if($dataDate)
+        {
+            return  $this->traitResponse(null , 'Deleted Successfully ' , 200);
+
+        }
+        return  $this->traitResponse(null , 'Deleted Failed ' , 404);
+
+
+
     }
 }

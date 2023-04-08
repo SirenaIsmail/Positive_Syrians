@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Poll;
 use App\Models\Proceed;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ProceedController extends Controller
 {
+    use apiResponse;
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +17,17 @@ class ProceedController extends Controller
      */
     public function index()
     {
-        //
+        $dataProceed = Proceed::get();
+
+        if($dataProceed)
+        {
+            return $this->traitResponse($dataProceed,'SUCCESS', 200);
+
+        }
+
+
+        return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
+
     }
 
     /**
@@ -35,7 +48,29 @@ class ProceedController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validation = Validator::make($request->all(), [
+            'date_id'=>'required',
+            'branch_id'=>'required',
+            'payment_id'=>'required',
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataProceed = Proceed::create($request -> all());
+
+        if($dataProceed)
+        {
+
+            return  $this ->traitResponse( $dataProceed ,'Saved Successfully' , 200 );
+        }
+
+        return  $this->traitResponse(null,'Saved Failed ' , 400);
+
     }
 
     /**
@@ -44,9 +79,24 @@ class ProceedController extends Controller
      * @param  \App\Models\Proceed  $proceed
      * @return \Illuminate\Http\Response
      */
-    public function show(Proceed $proceed)
+    public function show($id)
     {
-        //
+
+        $dataProceed = Proceed::find($id);
+
+        if($dataProceed)
+        {
+            return $this->traitResponse($dataProceed , 'SUCCESS' , 200);
+
+
+        }
+
+        return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
+
+
+
+
+
     }
 
     /**
@@ -67,9 +117,41 @@ class ProceedController extends Controller
      * @param  \App\Models\Proceed  $proceed
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Proceed $proceed)
+    public function update(Request $request, $id)
     {
-        //
+        $dataProceed = Proceed::find($id);
+
+        if(!$dataProceed)
+        {
+            return $this->traitResponse(null,' Sorry Not Found',404);
+
+        }
+
+        $validation = Validator::make($request->all(), [
+            'date_id'=>'required',
+            'branch_id'=>'required',
+            'payment_id'=>'required',
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataProceed->update($request->all());
+        if($dataProceed)
+        {
+            return $this->traitResponse($dataProceed , 'Updated Successfully',200);
+
+        }
+        return $this->traitResponse(null,'Failed Updated',400);
+
+
+
+
+
     }
 
     /**
@@ -78,8 +160,26 @@ class ProceedController extends Controller
      * @param  \App\Models\Proceed  $proceed
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Proceed $proceed)
+    public function destroy($id)
     {
-        //
+        $dataProceed = Proceed::find($id);
+
+        if(!$dataProceed)
+        {
+            return $this->traitResponse(null,'Not Found ' , 404);
+        }
+
+        $dataProceed->delete($id);
+
+        if($dataProceed)
+        {
+            return  $this->traitResponse(null , 'Deleted Successfully ' , 200);
+
+        }
+        return  $this->traitResponse(null , 'Deleted Failed ' , 404);
+
+
+
+
     }
 }
