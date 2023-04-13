@@ -31,6 +31,7 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
+
         return response()->json([
             'status' => 'success',
             'user' => $user,
@@ -95,5 +96,13 @@ class AuthController extends Controller
             ]
         ]);
     }
+
+
+//    public function generalAdmin(){
+//        return response()->json([
+//            'status' => 'success',
+//            'message' => 'Successfully admin accessed',
+//        ]);
+//    }
 
 }

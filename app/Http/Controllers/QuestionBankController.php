@@ -4,12 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\QuestionBank;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class QuestionBankController extends Controller
 {
-    use apiResponse;
 
+    use apiResponse;
     /**
      * Display a listing of the resource.
      *
@@ -17,7 +16,6 @@ class QuestionBankController extends Controller
      */
     public function index()
     {
-
         $dataQb = QuestionBank::get();
 
         if($dataQb)
@@ -28,11 +26,6 @@ class QuestionBankController extends Controller
 
 
         return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
-
-
-
-
-
     }
 
     /**
@@ -53,7 +46,6 @@ class QuestionBankController extends Controller
      */
     public function store(Request $request)
     {
-
         $validation = Validator::make($request->all(), [
             'model'=> 'required',
 
@@ -75,8 +67,6 @@ class QuestionBankController extends Controller
         }
 
         return  $this->traitResponse(null,'Saved Failed ' , 400);
-
-
 
 
     }
@@ -119,10 +109,8 @@ class QuestionBankController extends Controller
      * @param  \App\Models\QuestionBank  $questionBank
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
-
-
         $dataQb = QuestionBank::find($id);
 
         if(!$dataQb)
@@ -151,7 +139,6 @@ class QuestionBankController extends Controller
         return $this->traitResponse(null,'Failed Updated',400);
 
 
-
     }
 
     /**
@@ -162,7 +149,6 @@ class QuestionBankController extends Controller
      */
     public function destroy($id)
     {
-
         $dataQb = QuestionBank::find($id);
 
         if(!$dataQb)
@@ -178,9 +164,5 @@ class QuestionBankController extends Controller
 
         }
         return  $this->traitResponse(null , 'Deleted Failed ' , 404);
-
-
-
-
     }
 }

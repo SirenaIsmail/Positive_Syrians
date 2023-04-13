@@ -2,12 +2,8 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\Branch;
 use Illuminate\Http\Request;
-use App\Http\Controllers\ApiResponse;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 
 class BranchController extends Controller
 {
@@ -17,12 +13,9 @@ class BranchController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-
     use ApiResponse;
-
     public function index()
     {
-
         $databranch = Branch::get();
 
         if($databranch)
@@ -32,7 +25,7 @@ class BranchController extends Controller
         }
 
 
-            return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
+        return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
 
     }
 
@@ -74,7 +67,6 @@ class BranchController extends Controller
         }
 
         return  $this->traitResponse(null,'Saved Failed ' , 400);
-
     }
 
     /**
@@ -85,7 +77,6 @@ class BranchController extends Controller
      */
     public function show($id)
     {
-
         $databranch = Branch::find($id);
 
         if($databranch)
@@ -129,7 +120,7 @@ class BranchController extends Controller
         $validation = Validator::make($request->all(), [
             'name'=> 'required|unique:branches|max:50',
 
-      ]);
+        ]);
         if($validation->fails())
 
         {
@@ -144,7 +135,6 @@ class BranchController extends Controller
 
         }
         return $this->traitResponse(null,'Failed Updated',400);
-
     }
 
     /**
@@ -170,7 +160,5 @@ class BranchController extends Controller
 
         }
         return  $this->traitResponse(null , 'Deleted Failed ' , 404);
-
-
     }
 }

@@ -15,7 +15,13 @@ return new class extends Migration
     {
         Schema::create('classrooms', function (Blueprint $table) {
             $table->id();
+            $table->integer('No');
+            $table->string('name');
             $table->integer('size');
+            $table->foreignId('branch_id')
+                ->constrained('branches')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }

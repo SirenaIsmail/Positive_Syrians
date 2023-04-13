@@ -1,8 +1,24 @@
 <?php
 
+use App\Http\Controllers\BranchController;
+use App\Http\Controllers\CardController;
+use App\Http\Controllers\ClassRoomController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\DateController;
+use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PollController;
+use App\Http\Controllers\ProceedController;
+use App\Http\Controllers\QuestionBankController;
+use App\Http\Controllers\ReferanceController;
+use App\Http\Controllers\StudentProfileController;
+use App\Http\Controllers\SubjectTrainerController;
+use App\Http\Controllers\SubscribeController;
+use App\Http\Controllers\SujectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\AuthController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,6 +30,252 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//    return $request->user();
+//});
+
+Route::controller(AuthController::class)->group(function () {
+    Route::post('login', 'login');
+    Route::post('register', 'register');
+    Route::post('logout', 'logout');
+    Route::post('refresh', 'refresh');
+
 });
+
+
+//General Admin Role Start
+Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth','general_admin']],function () {
+    //BRANCH ROUTES  START
+    Route::controller(BranchController::class)->group(function () {
+        Route::Post('/branch/store','store');
+        Route::get('/branch/index','index');
+        Route::get('/branch/show/{id}','show');
+        Route::Post('/branch/update/{id}','update');
+        Route::Post('/branch/destroy/{id}','destroy');
+    });
+    // BRANCH END
+
+    //PROCEED ROUTES
+    Route::controller(ProceedController::class)->group(function () {
+        Route::Post('/proceed/store','store');
+        Route::get('/proceed/index', 'index');
+        Route::get('/proceed/show/{id}', 'show');
+        Route::Post('/proceed/update/{id}',  'update');
+        Route::Post('/proceed/destroy/{id}', 'destroy');
+    });
+    //PROCEED END
+
+});
+//End General Admin Role
+
+
+
+
+
+//Scientific Affairs Role Start
+Route::group(['prefix' => '/scientific_affairs' , 'middleware' => ['auth','scientific_affairs']],function () {
+    //QUESTIONBANK ROUTES
+    Route::controller(QuestionBankController::class)->group(function () {
+        Route::Post('/qbank/store', 'store');
+        Route::get('/qbank/index', 'index');
+        Route::get('/qbank/show/{id}', 'show');
+        Route::Post('/qbank/update/{id}', 'update');
+        Route::Post('/qbank/destroy/{id}', 'destroy');
+    });
+    //QUESTIONBANK END
+});
+//End Scientific Affairs Role
+
+
+
+
+
+//Branch Admin Role Start
+Route::group(['prefix' => '/branch_admin/' , 'middleware' => ['auth','branch_admin']],function () {
+    //CLASSROOM ROUTES
+    Route::controller(ClassRoomController::class)->group(function () {
+        Route::Post('/class/store','store');
+        Route::get('/class/index','index');
+        Route::get('/class/show/{id}','show');
+        Route::Post('/class/update/{id}','update');
+        Route::Post('/class/destroy/{id}','destroy');
+    });
+    //CLASSROOM END
+
+    //SUBJECT ROUTES
+    Route::controller(SujectController::class)->group(function () {
+        Route::Post('/subject/store','store');
+        Route::get('/subject/index','index');
+        Route::get('/subject/show/{id}','show');
+        Route::Post('/subject/update/{id}','update');
+        Route::Post('/subject/destroy/{id}','destroy');
+    });
+
+    //SUBJECT END
+
+
+});
+//End Branch Admin Role
+
+
+
+
+
+//Receptionist Role Start
+Route::group(['prefix' => '/receptionist/' , 'middleware' => ['auth','receptionist']],function () {
+    //CARD ROUTES
+    Route::controller(CardController::class)->group(function () {
+        Route::Post('/card/store','store');
+        Route::get('/card/index','index');
+        Route::get('/card/show/{id}','show');
+        Route::Post('/card/update/{id}','update');
+        Route::Post('/card/destroy/{id}','destroy');
+    });
+    //CARD END
+
+    //COURSE ROUTES
+    Route::controller(CourseController::class)->group(function () {
+        Route::Post('/course/store',  'store');
+        Route::get('/course/index',  'index');
+        Route::get('/course/show/{id}',  'show');
+        Route::Post('/course/update/{id}', 'update');
+        Route::Post('/course/destroy/{id}', 'destroy');
+    });
+    //COURSE END
+
+    //PAYMENT ROUTES
+    Route::controller(PaymentController::class)->group(function () {
+        Route::Post('/payment/store', 'store');
+        Route::get('/payment/index','index');
+        Route::get('/payment/show/{id}', 'show');
+        Route::Post('/payment/update/{id}', 'update');
+        Route::Post('/payment/destroy/{id}','destroy');
+    });
+    //PAYMENT END
+
+
+});
+//End Receptionist Role
+
+
+
+
+
+
+//Trainer Role Start
+Route::group(['prefix' => 'trainer/' , 'middleware' => ['auth','trainer']],function () {
+    //REFERANCE ROUTES
+    Route::controller(ReferanceController::class)->group(function () {
+        Route::Post('/referance/store','store');
+        Route::get('/referance/index',  'index');
+        Route::get('/referance/show/{id}', 'show');
+        Route::Post('/referance/update/{id}',  'update');
+        Route::Post('/referance/destroy/{id}',  'destroy');
+    });
+    //REFERANCE END
+
+});
+//End Trainer Role
+
+
+
+
+
+
+//Student Role Start
+    Route::group(['prefix' => 'student/' , 'middleware' => ['auth','Student']],function () {
+        //SUBSCRIBE ROUTES
+        Route::controller(SubscribeController::class)->group(function () {
+            Route::Post('/subscribe/store','store');
+            Route::get('/subscribe/index','index');
+            Route::get('/subscribe/show/{id}','show');
+            Route::Post('/subscribe/update/{id}','update');
+            Route::Post('/subscribe/destroy/{id}','destroy');
+        });
+        //SUBSCRIBE END
+    });
+//End Student Role
+
+
+
+
+//COMMENT ROUTES
+Route::controller(CommentController::class)->group(function () {
+    Route::Post('/comment/store', 'store');
+    Route::get('/comment/index','index');
+    Route::get('/comment/show/{id}', 'show');
+    Route::Post('/comment/update/{id}', 'update');
+    Route::Post('/comment/destroy/{id}','destroy');
+});
+//COMMENT END
+
+
+
+
+
+//DATE ROUTES
+Route::controller(DateController::class)->group(function () {
+    Route::Post('/date/store', 'store');
+    Route::get('/date/index',  'index');
+    Route::get('/date/show/{id}','show');
+    Route::Post('/date/update/{id}', 'update');
+    Route::Post('/date/destroy/{id}',  'destroy');
+});
+//DATE END
+
+
+
+
+//HISTORY ROUTES
+Route::controller(HistoryController::class)->group(function () {
+    Route::Post('/history/store',  'store');
+    Route::get('/history/index', 'index');
+    Route::get('/history/show/{id}', 'show');
+    Route::Post('/history/update/{id}',  'update');
+    Route::Post('/history/destroy/{id}','destroy');
+});
+//HISTORY END
+
+
+
+
+//POLL ROUTES
+Route::controller(PollController::class)->group(function () {
+    Route::Post('/poll/store', 'store');
+    Route::get('/poll/index',  'index');
+    Route::get('/poll/show/{id}',  'show');
+    Route::Post('/poll/update/{id}', 'update');
+    Route::Post('/poll/destroy/{id}',  'destroy');
+});
+//POLL END
+
+
+
+
+//SUBJECT_TRAINER ROUTES
+Route::controller(SubjectTrainerController::class)->group(function () {
+    Route::Post('/strainer/store','store');
+    Route::get('/strainer/index','index');
+    Route::get('/strainer/show/{id}','show');
+    Route::Post('/strainer/update/{id}','update');
+    Route::Post('/strainer/destroy/{id}','destroy');
+});
+
+//SUBJECT_TRAINER END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
