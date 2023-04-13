@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Subscribe;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class SubscribeController extends Controller
 {
+    use apiResponse;
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +17,22 @@ class SubscribeController extends Controller
      */
     public function index()
     {
-        //
+
+
+        $dataSubscribe = Subscribe::get();
+
+        if($dataSubscribe)
+        {
+            return $this->traitResponse($dataSubscribe,'SUCCESS', 200);
+
+        }
+
+
+        return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
+
+
+
+
     }
 
     /**
@@ -35,7 +53,33 @@ class SubscribeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $validation = Validator::make($request->all(), [
+            'state'=> 'required',
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataSubscribe = Subscribe::create($request -> all());
+
+        if($dataSubscribe)
+        {
+
+            return  $this ->traitResponse( $dataSubscribe ,'Saved Successfully' , 200 );
+        }
+
+        return  $this->traitResponse(null,'Saved Failed ' , 400);
+
+
+
+
+
+
     }
 
     /**
@@ -44,9 +88,23 @@ class SubscribeController extends Controller
      * @param  \App\Models\Subscribe  $subscribe
      * @return \Illuminate\Http\Response
      */
-    public function show(Subscribe $subscribe)
+    public function show($id)
     {
-        //
+        $dataSubscribe = Subscribe::find($id);
+
+        if($dataSubscribe)
+        {
+            return $this->traitResponse($dataSubscribe , 'SUCCESS' , 200);
+
+
+        }
+
+        return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
+
+
+
+
+
     }
 
     /**
@@ -67,9 +125,39 @@ class SubscribeController extends Controller
      * @param  \App\Models\Subscribe  $subscribe
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Subscribe $subscribe)
+    public function update(Request $request,$id)
     {
-        //
+        $dataSubscribe = Subscribe::find($id);
+
+        if(!$dataSubscribe)
+        {
+            return $this->traitResponse(null,' Sorry Not Found',404);
+
+        }
+
+        $validation = Validator::make($request->all(), [
+            'state'=> 'required',
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataSubscribe->update($request->all());
+        if($dataSubscribe)
+        {
+            return $this->traitResponse($dataSubscribe , 'Updated Successfully',200);
+
+        }
+        return $this->traitResponse(null,'Failed Updated',400);
+
+
+
+
+
     }
 
     /**
@@ -78,8 +166,29 @@ class SubscribeController extends Controller
      * @param  \App\Models\Subscribe  $subscribe
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Subscribe $subscribe)
+    public function destroy($id)
     {
-        //
+        $dataSubscribe = Subscribe::find($id);
+
+        if(!$dataSubscribe)
+        {
+            return $this->traitResponse(null,'Not Found ' , 404);
+        }
+
+        $dataSubscribe->delete($id);
+
+        if($dataSubscribe)
+        {
+            return  $this->traitResponse(null , 'Deleted Successfully ' , 200);
+
+        }
+        return  $this->traitResponse(null , 'Deleted Failed ' , 404);
+
+
+
+
+
+
+
     }
 }

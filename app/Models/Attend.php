@@ -13,6 +13,7 @@ class Attend extends Model
         'date_id',
         'classroom_id',
         'lesson_number',
+        'state',
     ];
 
     public function histories()

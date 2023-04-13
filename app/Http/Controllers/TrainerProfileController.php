@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\TrainerProfile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class TrainerProfileController extends Controller
 {
+    use apiResponse;
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +17,17 @@ class TrainerProfileController extends Controller
      */
     public function index()
     {
-        //
+        $dataTrainerProfile = TrainerProfile::get();
+
+        if($dataTrainerProfile)
+        {
+            return $this->traitResponse($dataTrainerProfile,'SUCCESS', 200);
+
+        }
+
+
+        return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
+
     }
 
     /**
@@ -35,7 +48,36 @@ class TrainerProfileController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validation = Validator::make($request->all(), [
+            'rating'=> 'required',
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataTrainerProfile = TrainerProfile::create($request -> all());
+
+        if($dataTrainerProfile)
+        {
+
+            return  $this ->traitResponse( $dataTrainerProfile ,'Saved Successfully' , 200 );
+        }
+
+        return  $this->traitResponse(null,'Saved Failed ' , 400);
+
+
+
+
+
+
+
+
+
+
     }
 
     /**
@@ -44,9 +86,25 @@ class TrainerProfileController extends Controller
      * @param  \App\Models\TrainerProfile  $trainerProfile
      * @return \Illuminate\Http\Response
      */
-    public function show(TrainerProfile $trainerProfile)
+    public function show($id)
     {
-        //
+        $dataTrainerProfile = TrainerProfile::find($id);
+
+        if($dataTrainerProfile)
+        {
+            return $this->traitResponse($dataTrainerProfile , 'SUCCESS' , 200);
+
+
+        }
+
+        return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
+
+
+
+
+
+
+
     }
 
     /**
@@ -67,9 +125,39 @@ class TrainerProfileController extends Controller
      * @param  \App\Models\TrainerProfile  $trainerProfile
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, TrainerProfile $trainerProfile)
+    public function update(Request $request,$id)
     {
-        //
+        $dataTrainerProfile = TrainerProfile::find($id);
+
+        if(!$dataTrainerProfile)
+        {
+            return $this->traitResponse(null,' Sorry Not Found',404);
+
+        }
+
+        $validation = Validator::make($request->all(), [
+            'rating'=> 'required',
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataTrainerProfile->update($request->all());
+        if($dataTrainerProfile)
+        {
+            return $this->traitResponse($dataTrainerProfile , 'Updated Successfully',200);
+
+        }
+        return $this->traitResponse(null,'Failed Updated',400);
+
+
+
+
+
     }
 
     /**
@@ -78,8 +166,31 @@ class TrainerProfileController extends Controller
      * @param  \App\Models\TrainerProfile  $trainerProfile
      * @return \Illuminate\Http\Response
      */
-    public function destroy(TrainerProfile $trainerProfile)
+    public function destroy($id)
     {
-        //
+        $dataTrainerProfile = TrainerProfile::find($id);
+
+        if(!$dataTrainerProfile)
+        {
+            return $this->traitResponse(null,'Not Found ' , 404);
+        }
+
+        $dataTrainerProfile->delete($id);
+
+        if($dataTrainerProfile)
+        {
+            return  $this->traitResponse(null , 'Deleted Successfully ' , 200);
+
+        }
+        return  $this->traitResponse(null , 'Deleted Failed ' , 404);
+
+
+
+
+
+
+
+
+
     }
 }

@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CourseController extends Controller
 {
+    use apiResponse;
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +16,16 @@ class CourseController extends Controller
      */
     public function index()
     {
-        //
+        $dataCourse = Course::get();
+
+        if($dataCourse)
+        {
+            return $this->traitResponse($dataCourse,'SUCCESS', 200);
+
+        }
+
+
+        return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
     }
 
     /**
@@ -35,7 +46,26 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validation = Validator::make($request->all(), [
+            'branch_id'=> 'required',
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataCourse = Course::create($request -> all());
+
+        if($dataCourse)
+        {
+
+            return  $this ->traitResponse( $dataCourse ,'Saved Successfully' , 200 );
+        }
+
+        return  $this->traitResponse(null,'The Branch Not Saved ' , 400);
     }
 
     /**
@@ -44,9 +74,23 @@ class CourseController extends Controller
      * @param  \App\Models\Course  $course
      * @return \Illuminate\Http\Response
      */
-    public function show(Course $course)
+    public function show($id)
     {
-        //
+
+
+        $dataCourse = Course::find($id);
+
+        if($dataCourse)
+        {
+            return $this->traitResponse($dataCourse , 'SUCCESS' , 200);
+
+
+        }
+
+        return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
+
+
+
     }
 
     /**
@@ -67,9 +111,42 @@ class CourseController extends Controller
      * @param  \App\Models\Course  $course
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Course $course)
+    public function update(Request $request, $id)
     {
-        //
+
+        $dataCourse = Course::find($id);
+
+        if(!$dataCourse)
+        {
+            return $this->traitResponse(null,' Sorry Not Found',404);
+
+        }
+
+        $validation = Validator::make($request->all(), [
+            'branch_id'=> 'required',
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataCourse->update($request->all());
+        if($dataCourse)
+        {
+            return $this->traitResponse($dataCourse , 'Updated Successfully',200);
+
+        }
+        return $this->traitResponse(null,'Failed Updated',400);
+
+
+
+
+
+
+
     }
 
     /**
@@ -78,8 +155,26 @@ class CourseController extends Controller
      * @param  \App\Models\Course  $course
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Course $course)
+    public function destroy($id)
     {
-        //
+        $dataCourse = Course::find($id);
+
+        if(!$dataCourse)
+        {
+            return $this->traitResponse(null,'Not Found ' , 404);
+        }
+
+        $dataCourse->delete($id);
+
+        if($dataCourse)
+        {
+            return  $this->traitResponse(null , 'Deleted Successfully ' , 200);
+
+        }
+        return  $this->traitResponse(null , 'Deleted Failed ' , 404);
+
+
+
+
     }
 }

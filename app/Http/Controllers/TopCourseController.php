@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\TopCourse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class TopCourseController extends Controller
 {
+    use apiResponse;
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +17,21 @@ class TopCourseController extends Controller
      */
     public function index()
     {
-        //
+
+
+        $dataTopCourse = TopCourse::get();
+
+        if($dataTopCourse)
+        {
+            return $this->traitResponse($dataTopCourse,'SUCCESS', 200);
+
+        }
+
+
+        return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
+
+
+
     }
 
     /**
@@ -35,7 +52,31 @@ class TopCourseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validation = Validator::make($request->all(), [
+            'branch_id'=> 'required',
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataTopCourse = TopCourse::create($request -> all());
+
+        if($dataTopCourse)
+        {
+
+            return  $this ->traitResponse( $dataTopCourse ,'Saved Successfully' , 200 );
+        }
+
+        return  $this->traitResponse(null,'Saved Failed ' , 400);
+
+
+
+
+
     }
 
     /**
@@ -44,9 +85,28 @@ class TopCourseController extends Controller
      * @param  \App\Models\TopCourse  $topCourse
      * @return \Illuminate\Http\Response
      */
-    public function show(TopCourse $topCourse)
+    public function show($id)
     {
-        //
+        $dataTopCourse = TopCourse::find($id);
+
+        if($dataTopCourse)
+        {
+            return $this->traitResponse($dataTopCourse , 'SUCCESS' , 200);
+
+
+        }
+
+        return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
+
+
+
+
+
+
+
+
+
+
     }
 
     /**
@@ -67,9 +127,43 @@ class TopCourseController extends Controller
      * @param  \App\Models\TopCourse  $topCourse
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, TopCourse $topCourse)
+    public function update(Request $request, $id)
     {
-        //
+        $dataTopCourse = TopCourse::find($id);
+
+        if(!$dataTopCourse)
+        {
+            return $this->traitResponse(null,' Sorry Not Found',404);
+
+        }
+
+        $validation = Validator::make($request->all(), [
+            'branch_id'=> 'required',
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataTopCourse->update($request->all());
+        if($dataTopCourse)
+        {
+            return $this->traitResponse($dataTopCourse , 'Updated Successfully',200);
+
+        }
+        return $this->traitResponse(null,'Failed Updated',400);
+
+
+
+
+
+
+
+
+
     }
 
     /**
@@ -78,8 +172,33 @@ class TopCourseController extends Controller
      * @param  \App\Models\TopCourse  $topCourse
      * @return \Illuminate\Http\Response
      */
-    public function destroy(TopCourse $topCourse)
+    public function destroy($id)
     {
-        //
+        $dataTopCourse = TopCourse::find($id);
+
+        if(!$dataTopCourse)
+        {
+            return $this->traitResponse(null,'Not Found ' , 404);
+        }
+
+        $dataTopCourse->delete($id);
+
+        if($dataTopCourse)
+        {
+            return  $this->traitResponse(null , 'Deleted Successfully ' , 200);
+
+        }
+        return  $this->traitResponse(null , 'Deleted Failed ' , 404);
+
+
+
+
+
+
+
+
+
+
+
     }
 }

@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\ClassRoom;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ClassRoomController extends Controller
 {
+    use apiResponse;
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +16,18 @@ class ClassRoomController extends Controller
      */
     public function index()
     {
-        //
+        $dataclass = ClassRoom::get();
+
+        if($dataclass)
+        {
+            return $this->traitResponse($dataclass,'SUCCESS',200);
+
+
+        }
+        return $this->traitResponse(null,'Sorry Failed Not Fond' ,404);
+
+
+
     }
 
     /**
@@ -35,7 +48,31 @@ class ClassRoomController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $validation = validator::make($request->all(),[
+
+            'size'=>'required',
+
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+
+        $dataClass = ClassRoom::create($request->all());
+
+        if($dataClass)
+        {
+            return $this->traitResponse($dataClass,'Saved Successfully',200);
+
+        }
+        return $this->traitResponse(null,'Saved Failed',400);
+
+
     }
 
     /**
@@ -44,9 +81,19 @@ class ClassRoomController extends Controller
      * @param  \App\Models\ClassRoom  $classRoom
      * @return \Illuminate\Http\Response
      */
-    public function show(ClassRoom $classRoom)
+    public function show($id)
     {
-        //
+        $dataClass = ClassRoom::find($id);
+
+        if($dataClass)
+        {
+            return $this->traitResponse($dataClass,'SUCCESS',200);
+
+
+        }
+
+        return $this->traitResponse(null,'Sorry Not Found',404);
+
     }
 
     /**
@@ -67,9 +114,41 @@ class ClassRoomController extends Controller
      * @param  \App\Models\ClassRoom  $classRoom
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, ClassRoom $classRoom)
+    public function update(Request $request, $id)
     {
-        //
+
+        $dataClass = ClassRoom::find($id);
+
+        if(!$dataClass)
+        {
+            return $this->traitResponse(null,' Sorry Not Found',404);
+
+        }
+
+        $validation = Validator::make($request->all(), [
+            'size'=> 'required|max:100',
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataClass->update($request->all());
+        if($dataClass)
+        {
+            return $this->traitResponse($dataClass , 'Updated Successfully',200);
+
+        }
+        return $this->traitResponse(null,'Failed Updated',400);
+
+
+
+
+
+
     }
 
     /**
@@ -78,8 +157,27 @@ class ClassRoomController extends Controller
      * @param  \App\Models\ClassRoom  $classRoom
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ClassRoom $classRoom)
+    public function destroy($id)
     {
-        //
+
+        $dataClass = ClassRoom::find($id);
+
+        if(!$dataClass)
+        {
+            return $this->traitResponse(null,'Not Found ' , 404);
+        }
+
+        $dataClass->delete($id);
+
+        if($dataClass)
+        {
+            return  $this->traitResponse(null , 'Deleted Successfully ' , 200);
+
+        }
+        return  $this->traitResponse(null , 'Deleted Failed ' , 404);
+
+
+
+
     }
 }

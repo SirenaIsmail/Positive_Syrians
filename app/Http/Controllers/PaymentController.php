@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class PaymentController extends Controller
 {
+    use apiResponse;
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +16,23 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        //
+
+        $dataPayment = Payment::get();
+
+        if($dataPayment)
+        {
+            return $this->traitResponse($dataPayment,'SUCCESS', 200);
+
+        }
+
+
+        return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
+
+
+
+
+
+
     }
 
     /**
@@ -35,7 +53,36 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $validation = Validator::make($request->all(), [
+            'branch_id'=> 'required',
+            'subscribe_id'=> 'required',
+            'ammount'=> 'required',
+            'subammount'=> 'required',
+
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataPayment = Payment::create($request -> all());
+
+        if($dataPayment)
+        {
+
+            return  $this ->traitResponse( $dataPayment ,'Saved Successfully' , 200 );
+        }
+
+        return  $this->traitResponse(null,'Saved Failed ' , 400);
+
+
+
+
+
     }
 
     /**
@@ -44,9 +91,23 @@ class PaymentController extends Controller
      * @param  \App\Models\Payment  $payment
      * @return \Illuminate\Http\Response
      */
-    public function show(Payment $payment)
+    public function show($id)
     {
-        //
+
+        $dataPayment = Payment::find($id);
+
+        if($dataPayment)
+        {
+            return $this->traitResponse($dataPayment , 'SUCCESS' , 200);
+
+
+        }
+
+        return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
+
+
+
+
     }
 
     /**
@@ -67,9 +128,43 @@ class PaymentController extends Controller
      * @param  \App\Models\Payment  $payment
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Payment $payment)
+    public function update(Request $request,$id)
     {
-        //
+
+
+        $dataPayment = Payment::find($id);
+
+        if(!$dataPayment)
+        {
+            return $this->traitResponse(null,' Sorry Not Found',404);
+
+        }
+
+        $validation = Validator::make($request->all(), [
+            'branch_id'=> 'required',
+            'subscribe_id'=> 'required',
+            'ammount'=> 'required',
+            'subammount'=> 'required',
+
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataPayment->update($request->all());
+        if($dataPayment)
+        {
+            return $this->traitResponse($dataPayment , 'Updated Successfully',200);
+
+        }
+        return $this->traitResponse(null,'Failed Updated',400);
+
+
+
+
     }
 
     /**
@@ -78,8 +173,27 @@ class PaymentController extends Controller
      * @param  \App\Models\Payment  $payment
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Payment $payment)
+    public function destroy($id)
     {
-        //
+
+
+        $dataPayment = Payment::find($id);
+
+        if(!$dataPayment)
+        {
+            return $this->traitResponse(null,'Not Found ' , 404);
+        }
+
+        $dataPayment->delete($id);
+
+        if($dataPayment)
+        {
+            return  $this->traitResponse(null , 'Deleted Successfully ' , 200);
+
+        }
+        return  $this->traitResponse(null , 'Deleted Failed ' , 404);
+
+
+
     }
 }

@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Card;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CardController extends Controller
 {
+    use ApiResponse;
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +16,16 @@ class CardController extends Controller
      */
     public function index()
     {
-        //
+
+       $dataCard = Card::get();
+       if($dataCard)
+       {
+           return $this->traitResponse($dataCard,'SUCCESS',200);
+
+       }
+
+       return $this->traitResponse(null, 'Sorry Not Found',404);
+
     }
 
     /**
@@ -35,7 +46,26 @@ class CardController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validation=validator::make($request->all(),[
+
+            'user_id'=>'required',
+           'branch_id'=>'required',
+
+
+        ]);
+
+        if($validation->fails())
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+        }
+
+        $dataCard = Card::create($request->all());
+        if($dataCard)
+        {
+            return $this->traitResponse($dataCard,'Saved Successfully',200);
+        }
+        return $this->traitResponse(null,'The Card Not Saved',400);
+
     }
 
     /**
@@ -44,9 +74,18 @@ class CardController extends Controller
      * @param  \App\Models\Card  $card
      * @return \Illuminate\Http\Response
      */
-    public function show(Card $card)
+    public function show($id)
     {
-        //
+        $dataCard = Card::find($id);
+
+        if($dataCard)
+        {
+            return $this->traitResponse($dataCard,'SUCCESS',200);
+
+        }
+        return $this->traitResponse(null,'Sorry Not Found ',404);
+
+
     }
 
     /**
@@ -67,9 +106,41 @@ class CardController extends Controller
      * @param  \App\Models\Card  $card
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Card $card)
+    public function update(Request $request, $id)
     {
-        //
+
+        $dataCard = Card::find($id);
+
+        if(!$dataCard)
+        {
+            return $this->traitResponse(null,'Sorry Not Found ' ,404);
+
+        }
+
+        $validation=validator::make($request->all(),[
+
+           'user_id'=>'required',
+           'branch_id'=>'required',
+
+        ]);
+
+        if($validation->fails())
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+
+        }
+
+        $dataCard->update($request->all());
+
+        if($dataCard)
+        {
+            return $this->traitResponse($dataCard,'Updated Successfully ',200);
+
+        }
+
+
+        return $this->traitResponse(null,' Updated Failed',400);
+
     }
 
     /**
@@ -78,8 +149,25 @@ class CardController extends Controller
      * @param  \App\Models\Card  $card
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Card $card)
+    public function destroy($id)
     {
-        //
+        $dataCard = Card::find($id);
+
+        if(!$dataCard)
+        {
+            return $this->traitResponse(null,'Not Found ' , 404);
+        }
+
+        $dataCard->delete($id);
+
+        if($dataCard)
+        {
+            return  $this->traitResponse(null , 'Deleted Successfully ' , 200);
+
+        }
+        return  $this->traitResponse(null , 'Deleted Failed ' , 404);
+
+
+
     }
 }

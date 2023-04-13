@@ -12,7 +12,7 @@ class Comment extends Model
         'content',
         'user_id',
         'referance_id',
-        'comment_id'
+
     ];
 
     public function referances()
@@ -25,10 +25,10 @@ class Comment extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function comment()
-    {
-        return $this->hasOne(Comment::class, 'comment_id','id');
-    }
+//    public function comment()
+//    {
+//        return $this->hasOne(Comment::class, 'comment_id','id');
+//    }
 
     public function comments()
     {

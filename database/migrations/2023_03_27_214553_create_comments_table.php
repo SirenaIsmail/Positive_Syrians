@@ -24,10 +24,6 @@ return new class extends Migration
                 ->constrained('referances')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->foreignId('comment_id')
-                ->constrained('comments')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
             $table->timestamps();
         });
     }
