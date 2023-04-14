@@ -9,8 +9,13 @@ class Branch extends Model
 {
     use HasFactory;
     protected $fillable = [
+        'No',
         'name',
     ];
+
+    public function classrooms(){
+        return $this->hasOne(ClassRoom::class,'classroom_id' , 'id');
+    }
 
     public function cards(){
         return $this->hasMany(Card::class,'card_id' , 'id');
