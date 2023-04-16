@@ -64,6 +64,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
         $barcode = mt_rand(000000000,999999999);
         if ($this->barcodeExist($barcode)){
             $barcode = mt_rand(000000000,999999999);

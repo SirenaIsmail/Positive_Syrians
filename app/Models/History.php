@@ -9,7 +9,7 @@ class History extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'student_id',
+        'card_id',
         'course_id'
     ];
 

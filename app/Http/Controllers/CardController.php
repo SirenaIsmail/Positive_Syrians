@@ -74,6 +74,7 @@ class CardController extends Controller
      * @param  \App\Models\Card  $card
      * @return \Illuminate\Http\Response
      */
+
     public function show($id)
     {
         $dataCard = Card::find($id);
