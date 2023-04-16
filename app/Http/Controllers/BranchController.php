@@ -47,16 +47,17 @@ class BranchController extends Controller
      */
     public function store(Request $request)
     {
-        $validation = Validator::make($request->all(), [
-            'name'=> 'required|unique:branches|max:50',
-
-        ]);
-        if($validation->fails())
-
-        {
-            return $this->traitResponse(null,$validation->errors(),400);
-
-        }
+//        $validation = Validator::make($request->all(), [
+//            'No' => 'required',
+//            'name'=> 'required|unique:branches|max:50',
+//
+//        ]);
+//        if($validation->fails())
+//
+//        {
+//            return $this->traitResponse(null,$validation->errors(),400);
+//
+//        }
 
         $databranch = Branch::create($request -> all());
 
@@ -118,6 +119,7 @@ class BranchController extends Controller
         }
 
         $validation = Validator::make($request->all(), [
+            'No' => 'required',
             'name'=> 'required|unique:branches|max:50',
 
         ]);

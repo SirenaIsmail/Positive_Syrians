@@ -44,7 +44,7 @@ Route::controller(AuthController::class)->group(function () {
 
 
 //General Admin Role Start
-Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth','general_admin']],function () {
+Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth']],function () {
     //BRANCH ROUTES  START
     Route::controller(BranchController::class)->group(function () {
         Route::Post('/branch/store','store');
@@ -73,7 +73,7 @@ Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth','general_ad
 
 
 //Scientific Affairs Role Start
-Route::group(['prefix' => '/scientific_affairs' , 'middleware' => ['auth','scientific_affairs']],function () {
+Route::group(['prefix' => '/scientific_affairs' , 'middleware' => ['auth']],function () {
     //QUESTIONBANK ROUTES
     Route::controller(QuestionBankController::class)->group(function () {
         Route::Post('/qbank/store', 'store');
@@ -91,7 +91,7 @@ Route::group(['prefix' => '/scientific_affairs' , 'middleware' => ['auth','scien
 
 
 //Branch Admin Role Start
-Route::group(['prefix' => '/branch_admin/' , 'middleware' => ['auth','branch_admin']],function () {
+Route::group(['prefix' => '/branch_admin/' , 'middleware' => ['auth']],function () {
     //CLASSROOM ROUTES
     Route::controller(ClassRoomController::class)->group(function () {
         Route::Post('/class/store','store');
@@ -122,7 +122,7 @@ Route::group(['prefix' => '/branch_admin/' , 'middleware' => ['auth','branch_adm
 
 
 //Receptionist Role Start
-Route::group(['prefix' => '/receptionist/' , 'middleware' => ['auth','receptionist']],function () {
+Route::group(['prefix' => '/receptionist/' , 'middleware' => ['auth']],function () {
     //CARD ROUTES
     Route::controller(CardController::class)->group(function () {
         Route::Post('/card/store','store');
@@ -163,7 +163,7 @@ Route::group(['prefix' => '/receptionist/' , 'middleware' => ['auth','receptioni
 
 
 //Trainer Role Start
-Route::group(['prefix' => 'trainer/' , 'middleware' => ['auth','trainer']],function () {
+Route::group(['prefix' => 'trainer/' , 'middleware' => ['auth']],function () {
     //REFERANCE ROUTES
     Route::controller(ReferanceController::class)->group(function () {
         Route::Post('/referance/store','store');
@@ -183,7 +183,7 @@ Route::group(['prefix' => 'trainer/' , 'middleware' => ['auth','trainer']],funct
 
 
 //Student Role Start
-    Route::group(['prefix' => 'student/' , 'middleware' => ['auth','Student']],function () {
+    Route::group(['prefix' => 'student/' , 'middleware' => ['auth']],function () {
         //SUBSCRIBE ROUTES
         Route::controller(SubscribeController::class)->group(function () {
             Route::Post('/subscribe/store','store');

@@ -12,10 +12,7 @@ class StudentProfile extends Model
         'card_id'
     ];
 
-    public function histories()
-    {
-        return $this->hasMany(History::class, 'history_id','id');
-    }
+
 
     public function taskAnswer()
     {

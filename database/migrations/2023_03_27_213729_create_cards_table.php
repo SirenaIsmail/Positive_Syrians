@@ -19,6 +19,7 @@ return new class extends Migration
                 ->constrained('users')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+            $table->string('barcode');
             $table->foreignId('branch_id')
                 ->constrained('branches')
                 ->onUpdate('cascade')

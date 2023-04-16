@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('histories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_id')
-                ->constrained('student_profiles')
+            $table->foreignId('card_id')
+                ->constrained('cards')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->foreignId('course_id')

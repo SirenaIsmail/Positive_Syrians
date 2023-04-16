@@ -10,12 +10,18 @@ class Card extends Model
     use HasFactory;
     protected $fillable = [
         'user_id',
+        'barcode',
         'branch_id',
     ];
 
     public function users()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function histories()
+    {
+        return $this->hasMany(History::class, 'history_id','id');
     }
 
     public function branches()

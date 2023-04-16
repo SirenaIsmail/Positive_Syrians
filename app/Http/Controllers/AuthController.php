@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Card;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -63,17 +64,32 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+        $barcode = mt_rand(000000000,999999999);
+        if ($this->barcodeExist($barcode)){
+            $barcode = mt_rand(000000000,999999999);
+        }
+        $cardReq= new Request(
+            ['user_id' => $user->id,
+            'barcode' => $barcode,
+            'branch_id' => 1
+        ]);
+        $card = ( new CardController)->store($cardReq);
 
         $token = Auth::login($user);
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',
             'user' => $user,
+            'card' => $card,
             'authorisation' => [
                 'token' => $token,
                 'type' => 'bearer',
             ]
         ]);
+    }
+
+    public function barcodeExist($barcode){
+        return Card::whereBarcode($barcode)->exists();
     }
 
     public function logout()
@@ -98,11 +114,6 @@ class AuthController extends Controller
     }
 
 
-//    public function generalAdmin(){
-//        return response()->json([
-//            'status' => 'success',
-//            'message' => 'Successfully admin accessed',
-//        ]);
-//    }
+
 
 }

@@ -13,9 +13,9 @@ class History extends Model
         'course_id'
     ];
 
-    public function studentProfs()
+    public function cards()
     {
-        return $this->belongsTo(StudentProfile::class, 'student_id');
+        return $this->belongsTo(Card::class, 'card_id');
     }
 
     public function courses()
