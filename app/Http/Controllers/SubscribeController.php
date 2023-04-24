@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Card;
+use App\Models\History;
 use App\Models\Subscribe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -55,7 +57,11 @@ class SubscribeController extends Controller
     {
 
         $validation = Validator::make($request->all(), [
-            'state'=> 'required',
+            'subject_id'=>'required',
+            'card_id'=>'required',
+            'branch_id'=>'required',
+            'state'=> 'required|integer',
+            'date_id'=> 'required',
 
         ]);
         if($validation->fails())
@@ -65,7 +71,13 @@ class SubscribeController extends Controller
 
         }
 
-        $dataSubscribe = Subscribe::create($request -> all());
+        $dataSubscribe = Subscribe::create([
+            'subject_id'=>  $request -> subject_id,
+            'card_id'=>  $request -> card_id,
+            'branch_id'=>  $request -> branch_id,
+            'state'=>  $request -> state,
+            'date_id'=>  $request -> date_id,
+        ]);
 
         if($dataSubscribe)
         {
@@ -75,12 +87,72 @@ class SubscribeController extends Controller
 
         return  $this->traitResponse(null,'Saved Failed ' , 400);
 
+    }
 
 
 
 
+    public function approve($id){
+        $Subscribe = Subscribe::find($id);
+        if($Subscribe)
+        {
+            $Subscribe->state = 1;
+            $Subscribe->save();
+
+            $card_id = $Subscribe->card_id;  /// عند إضافة المعتمدين إلى سجل الحضور
+            $course_id = $Subscribe->course_id;
+            $historydata= new Request(
+                ['card_id' =>$card_id,
+                    'course_id' => $course_id,
+                ]);
+            $history = ( new HistoryController)->store($historydata);
+
+            return response()->json([
+                'Subscribe'=>$Subscribe,
+                'history' => $history,
+            ]);
+
+        }
+
+        return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
 
     }
+
+
+
+
+    public function notApprove($id){
+        $Subscribe = Subscribe::find($id);
+        if($Subscribe)
+        {
+            $Subscribe->state = 0;
+            $Subscribe->save();
+
+            $card_id = $Subscribe->card_id;  /// عند إضافة المعتمدين إلى سجل الحضور
+            $course_id = $Subscribe->course_id;
+            $historydata= History::with(['card', 'course'])
+                ->whereHas('card', function ($query) use ($card_id) {
+                $query->where('id', $card_id);
+            })->whereHas('course', function ($query) use ($course_id) {
+                $query->where('id', $course_id);
+            })->first();
+            $history = ( new HistoryController);
+            $history->destroy($historydata);
+
+            return response()->json([
+                'Subscribe' => $Subscribe,
+            ]);
+
+        }
+
+        return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
+
+    }
+
+
+
+
+
 
     /**
      * Display the specified resource.

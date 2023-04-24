@@ -15,7 +15,8 @@ use App\Http\Controllers\ReferanceController;
 use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\SubjectTrainerController;
 use App\Http\Controllers\SubscribeController;
-use App\Http\Controllers\SujectController;
+use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -65,6 +66,13 @@ Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth']],function 
     });
     //PROCEED END
 
+
+    //Add admin user
+    Route::controller(UserController::class)->group(function () {
+        Route::post('/add_admin', 'addAdmin');
+    });
+    //End add admin user
+
 });
 //End General Admin Role
 
@@ -103,7 +111,7 @@ Route::group(['prefix' => '/branch_admin/' , 'middleware' => ['auth']],function 
     //CLASSROOM END
 
     //SUBJECT ROUTES
-    Route::controller(SujectController::class)->group(function () {
+    Route::controller(SubjectController::class)->group(function () {
         Route::Post('/subject/store','store');
         Route::get('/subject/index','index');
         Route::get('/subject/show/{id}','show');
@@ -114,8 +122,18 @@ Route::group(['prefix' => '/branch_admin/' , 'middleware' => ['auth']],function 
     //SUBJECT END
 
 
+    //Add Receptionist or Trainer user
+    Route::controller(UserController::class)->group(function () {
+        Route::post('/add_employee', 'addEmployee');
+    });
+    //End add Receptionist or Trainer user
+
+
+
+
 });
 //End Branch Admin Role
+
 
 
 
@@ -153,8 +171,21 @@ Route::group(['prefix' => '/receptionist/' , 'middleware' => ['auth']],function 
     });
     //PAYMENT END
 
+    //Student State
+    Route::controller(SubscribeController::class)->group(function () {
+        //الاعتماد أو سيحضر
+        Route::Post('/approve/{id}', 'approve');
 
-});
+        //لن يحضر
+        Route::Post('/notApprove/{id}', 'notApprove');
+
+        //معلق الحضور
+        Route::Post('/notApprove/{id}', 'notApprove');
+
+    });
+    //End Student State
+
+    });
 //End Receptionist Role
 
 
@@ -186,11 +217,12 @@ Route::group(['prefix' => 'trainer/' , 'middleware' => ['auth']],function () {
     Route::group(['prefix' => 'student/' , 'middleware' => ['auth']],function () {
         //SUBSCRIBE ROUTES
         Route::controller(SubscribeController::class)->group(function () {
-            Route::Post('/subscribe/store','store');
+            Route::Post('/subscribe/store','store');// إضافة دورة قبل الاعتماد
             Route::get('/subscribe/index','index');
             Route::get('/subscribe/show/{id}','show');
             Route::Post('/subscribe/update/{id}','update');
             Route::Post('/subscribe/destroy/{id}','destroy');
+
         });
         //SUBSCRIBE END
     });

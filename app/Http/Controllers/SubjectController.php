@@ -6,7 +6,7 @@ use App\Models\Suject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class SujectController extends Controller
+class SubjectController extends Controller
 {
 
     use apiResponse;
