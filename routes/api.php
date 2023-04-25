@@ -180,7 +180,7 @@ Route::group(['prefix' => '/receptionist/' , 'middleware' => ['auth']],function 
         Route::Post('/notApprove/{id}', 'notApprove');
 
         //معلق الحضور
-        Route::Post('/notApprove/{id}', 'notApprove');
+        Route::Post('/pending/{id}', 'pending');
 
     });
     //End Student State

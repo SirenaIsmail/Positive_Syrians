@@ -153,6 +153,29 @@ class SubscribeController extends Controller
 
 
 
+    public function pending($id){
+        $Subscribe = Subscribe::find($id);
+        if($Subscribe)
+        {
+            $Subscribe->state = 2;
+            $Subscribe->save();
+
+            //something in history
+
+            return response()->json([
+                'Subscribe' => $Subscribe,
+            ]);
+
+        }
+
+        return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
+
+    }
+
+
+
+
+
 
     /**
      * Display the specified resource.
