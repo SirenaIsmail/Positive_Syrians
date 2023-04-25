@@ -16,6 +16,8 @@ use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\SubjectTrainerController;
 use App\Http\Controllers\SubscribeController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\TaskAnswerController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -175,10 +177,8 @@ Route::group(['prefix' => '/receptionist/' , 'middleware' => ['auth']],function 
     Route::controller(SubscribeController::class)->group(function () {
         //الاعتماد أو سيحضر
         Route::Post('/approve/{id}', 'approve');
-
         //لن يحضر
         Route::Post('/notApprove/{id}', 'notApprove');
-
         //معلق الحضور
         Route::Post('/pending/{id}', 'pending');
 
@@ -205,6 +205,18 @@ Route::group(['prefix' => 'trainer/' , 'middleware' => ['auth']],function () {
     });
     //REFERANCE END
 
+    //TASK ROUTES
+    Route::controller(TaskController::class)->group(function () {
+        Route::Post('/task/store','store');
+        Route::get('/task/index',  'index');
+        Route::get('/task/show/{id}', 'show');
+        Route::Post('/task/update/{id}',  'update');
+        Route::Post('/task/destroy/{id}',  'destroy');
+    });
+    //TASK END
+
+
+
 });
 //End Trainer Role
 
@@ -225,6 +237,19 @@ Route::group(['prefix' => 'trainer/' , 'middleware' => ['auth']],function () {
 
         });
         //SUBSCRIBE END
+
+
+        //TASK ANSWER ROUTES
+        Route::controller(TaskAnswerController::class)->group(function () {
+            Route::Post('/task_answer/store','store');
+            Route::get('/task_answer/index',  'index');
+            Route::get('/task_answer/show/{id}', 'show');
+            Route::Post('/task_answer/update/{id}',  'update');
+            Route::Post('/task_answer/destroy/{id}',  'destroy');
+        });
+        //TASK ANSWER END
+
+
     });
 //End Student Role
 
