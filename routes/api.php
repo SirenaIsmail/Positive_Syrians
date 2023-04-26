@@ -46,6 +46,14 @@ Route::controller(AuthController::class)->group(function () {
 });
 
 
+Route::controller(SubjectController::class)->group(function () {
+    Route::Post('/subject/store','store');
+    Route::get('/subject/index','index');
+    Route::get('/subject/show/{id}','show');
+    Route::Post('/subject/update/{id}','update');
+    Route::Post('/subject/destroy/{id}','destroy');
+});
+
 //General Admin Role Start
 Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth']],function () {
     //BRANCH ROUTES  START
@@ -113,13 +121,7 @@ Route::group(['prefix' => '/branch_admin/' , 'middleware' => ['auth']],function 
     //CLASSROOM END
 
     //SUBJECT ROUTES
-    Route::controller(SubjectController::class)->group(function () {
-        Route::Post('/subject/store','store');
-        Route::get('/subject/index','index');
-        Route::get('/subject/show/{id}','show');
-        Route::Post('/subject/update/{id}','update');
-        Route::Post('/subject/destroy/{id}','destroy');
-    });
+
 
     //SUBJECT END
 

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('content');
-            $table->string('price');
+            $table->double('price');
             $table->integer('houers');
             $table->integer('number_of_lessons');
             $table->timestamps();
