@@ -51,7 +51,9 @@ class CommentController extends Controller
     {
 
         $validation = Validator::make($request->all(), [
-            'content'=> 'required|',
+            'content'=> 'required',
+            'user_id'=> 'required|integer',
+            'referance_id'=> 'required|integer',
 
         ]);
         if($validation->fails())
@@ -61,7 +63,7 @@ class CommentController extends Controller
 
         }
 
-        $dataComment = Comment::create($request -> all());
+        $dataComment = Comment::create($request->all());
 
         if($dataComment)
         {

@@ -27,7 +27,7 @@ return new class extends Migration
                 ->constrained('branches')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->integer('state');
+            $table->integer('state'); // 1approve  0don't approve 2pending
             $table->foreignId('date_id')
                 ->constrained('dates')
                 ->onUpdate('cascade')
