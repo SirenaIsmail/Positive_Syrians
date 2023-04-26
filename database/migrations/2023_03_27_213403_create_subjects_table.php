@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('houers');
             $table->integer('number_of_lessons');
             $table->timestamps();
+
         });
     }
 

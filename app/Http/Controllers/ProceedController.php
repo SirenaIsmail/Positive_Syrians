@@ -17,7 +17,7 @@ class ProceedController extends Controller
      */
     public function index()
     {
-        $dataProceed = Proceed::get();
+        $dataProceed = Proceed::paginate(PAGINATION_COUNT);
 
         if($dataProceed)
         {

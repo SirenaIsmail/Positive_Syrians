@@ -16,7 +16,7 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $dataCourse = Course::get();
+        $dataCourse = Course::paginate(PAGINATION_COUNT);
 
         if($dataCourse)
         {

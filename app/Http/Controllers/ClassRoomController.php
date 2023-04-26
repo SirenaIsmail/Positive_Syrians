@@ -16,7 +16,7 @@ class ClassRoomController extends Controller
      */
     public function index()
     {
-        $dataclass = ClassRoom::get();
+        $dataclass = ClassRoom::paginate(PAGINATION_COUNT);
 
         if($dataclass)
         {

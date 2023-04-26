@@ -17,7 +17,7 @@ class TrainerProfileController extends Controller
      */
     public function index()
     {
-        $dataTrainerProfile = TrainerProfile::get();
+        $dataTrainerProfile = TrainerProfile::paginate(PAGINATION_COUNT);
 
         if($dataTrainerProfile)
         {
@@ -70,14 +70,6 @@ class TrainerProfileController extends Controller
         return  $this->traitResponse(null,'Saved Failed ' , 400);
 
 
-
-
-
-
-
-
-
-
     }
 
     /**
@@ -98,12 +90,6 @@ class TrainerProfileController extends Controller
         }
 
         return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
-
-
-
-
-
-
 
     }
 
@@ -183,13 +169,6 @@ class TrainerProfileController extends Controller
 
         }
         return  $this->traitResponse(null , 'Deleted Failed ' , 404);
-
-
-
-
-
-
-
 
 
     }

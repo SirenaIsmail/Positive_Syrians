@@ -16,7 +16,7 @@ class CommentController extends Controller
      */
     public function index()
     {
-        $dataComment = Comment::get();
+        $dataComment = Comment::paginate(PAGINATION_COUNT);
 
         if($dataComment)
         {

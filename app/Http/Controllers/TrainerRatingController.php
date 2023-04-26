@@ -17,7 +17,7 @@ class TrainerRatingController extends Controller
     public function index()
     {
 
-        $dataTrainerRating = TrainerRating::get();
+        $dataTrainerRating = TrainerRating::paginate(PAGINATION_COUNT);
 
         if($dataTrainerRating)
         {

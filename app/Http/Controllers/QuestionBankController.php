@@ -16,7 +16,7 @@ class QuestionBankController extends Controller
      */
     public function index()
     {
-        $dataQb = QuestionBank::get();
+        $dataQb = QuestionBank::paginate(PAGINATION_COUNT);
 
         if($dataQb)
         {

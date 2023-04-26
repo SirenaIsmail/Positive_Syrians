@@ -16,7 +16,7 @@ class StudentProfileController extends Controller
      */
     public function index()
     {
-        $dataStudent = StudentProfile::get();
+        $dataStudent = StudentProfile::paginate(PAGINATION_COUNT);
 
         if($dataStudent)
         {

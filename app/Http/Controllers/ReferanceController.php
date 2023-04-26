@@ -16,7 +16,7 @@ class ReferanceController extends Controller
      */
     public function index()
     {
-        $dataReferance = Referance::get();
+        $dataReferance = Referance::paginate(PAGINATION_COUNT);
 
         if($dataReferance)
         {

@@ -18,7 +18,7 @@ class HistoryController extends Controller
     public function index()
     {
 
-        $dataHistory = History::get();
+        $dataHistory = History::paginate(PAGINATION_COUNT);
 
         if($dataHistory)
         {

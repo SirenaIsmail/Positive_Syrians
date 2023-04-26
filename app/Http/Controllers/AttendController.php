@@ -16,7 +16,7 @@ class AttendController extends Controller
      */
     public function index()
     {
-        $dataAttend = Attend::get();
+        $dataAttend = Attend::paginate(PAGINATION_COUNT);
 
         if($dataAttend)
         {

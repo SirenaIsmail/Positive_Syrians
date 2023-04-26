@@ -16,7 +16,7 @@ class BranchController extends Controller
     use ApiResponse;
     public function index()
     {
-        $databranch = Branch::get();
+        $databranch = Branch::paginate(PAGINATION_COUNT);
 
         if($databranch)
         {

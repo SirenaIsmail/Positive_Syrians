@@ -17,7 +17,7 @@ class DateController extends Controller
     public function index()
     {
 
-        $dataDate=Date::get();
+        $dataDate=Date::paginate(PAGINATION_COUNT);
 
         if($dataDate)
         {

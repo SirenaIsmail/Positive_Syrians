@@ -17,7 +17,7 @@ class CardController extends Controller
     public function index()
     {
 
-       $dataCard = Card::get();
+       $dataCard = Card::paginate(PAGINATION_COUNT);
        if($dataCard)
        {
            return $this->traitResponse($dataCard,'SUCCESS',200);

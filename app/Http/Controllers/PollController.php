@@ -17,7 +17,7 @@ class PollController extends Controller
     public function index()
     {
 
-        $dataPoll = Poll::get();
+        $dataPoll = Poll::paginate(PAGINATION_COUNT);
 
         if($dataPoll)
         {

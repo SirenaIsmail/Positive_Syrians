@@ -34,6 +34,8 @@ use App\Http\Controllers\AuthController;
 //    return $request->user();
 //});
 
+define('PAGINATION_COUNT',10);
+
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
     Route::post('register', 'register');
@@ -44,7 +46,7 @@ Route::controller(AuthController::class)->group(function () {
 
 
 //General Admin Role Start
-Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth']],function () {
+//Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth']],function () {
     //BRANCH ROUTES  START
     Route::controller(BranchController::class)->group(function () {
         Route::Post('/branch/store','store');
@@ -65,7 +67,7 @@ Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth']],function 
     });
     //PROCEED END
 
-});
+//});
 //End General Admin Role
 
 

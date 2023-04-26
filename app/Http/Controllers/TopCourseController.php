@@ -19,7 +19,7 @@ class TopCourseController extends Controller
     {
 
 
-        $dataTopCourse = TopCourse::get();
+        $dataTopCourse = TopCourse::paginate(PAGINATION_COUNT);
 
         if($dataTopCourse)
         {
@@ -97,14 +97,6 @@ class TopCourseController extends Controller
         }
 
         return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
-
-
-
-
-
-
-
-
 
 
     }

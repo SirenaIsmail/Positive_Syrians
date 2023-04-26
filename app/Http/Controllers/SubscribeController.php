@@ -19,7 +19,7 @@ class SubscribeController extends Controller
     {
 
 
-        $dataSubscribe = Subscribe::get();
+        $dataSubscribe = Subscribe::paginate(PAGINATION_COUNT);
 
         if($dataSubscribe)
         {

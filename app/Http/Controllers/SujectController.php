@@ -17,7 +17,7 @@ class SujectController extends Controller
      */
     public function index()
     {
-        $dataSubject = Suject::get();
+        $dataSubject = Suject::paginate(PAGINATION_COUNT);
 
         if($dataSubject)
         {

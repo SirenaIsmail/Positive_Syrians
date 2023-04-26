@@ -17,7 +17,7 @@ class PaymentController extends Controller
     public function index()
     {
 
-        $dataPayment = Payment::get();
+        $dataPayment = Payment::paginate(PAGINATION_COUNT);
 
         if($dataPayment)
         {
@@ -196,4 +196,14 @@ class PaymentController extends Controller
 
 
     }
+
+
+    public  function  createPayment(Request $request)
+
+    {
+
+
+    }
+
+
 }

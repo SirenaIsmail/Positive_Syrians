@@ -18,7 +18,7 @@ class SubjectTrainerController extends Controller
     public function index()
     {
 
-        $dataSubjectTrainer = SubjectTrainer::get();
+        $dataSubjectTrainer = SubjectTrainer::paginate(PAGINATION_COUNT);
 
         if($dataSubjectTrainer)
         {
