@@ -23,7 +23,7 @@ return new class extends Migration
             $table->foreignId('branch_id')
                 ->constrained('branches')
                 ->onUpdate('cascade')
-                ->onDelete('cascade');
+                ->onDelete('cailscade');
             $table->timestamps();
         });
     }

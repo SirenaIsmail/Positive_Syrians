@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Subject;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 //use PHPOpenSourceSaver\JWTAuth\Claims\Subject;
 
@@ -49,39 +50,46 @@ class SubjectController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
     public function store(Request $request)
     {
         $validation = Validator::make($request->all(), [
             'name'=>'required',
             'content'=>'required',
+            'price'=>'required',
             'houers'=>'required',
             'number_of_lessons'=>'required',
-
         ]);
-        if($validation->fails())
 
+        if($validation->fails())
         {
             return $this->traitResponse(null,$validation->errors(),400);
-
         }
 
-        $dataSubject = Subject::create($request -> all());
+        $content = $request->file('content');
+        if (!$content) {
+            return response()->json(['error' => 'No file uploaded.'], 400);
+        }
+        if (!$content->isValid()) {
+            return response()->json(['error' => 'File upload failed.'], 400);
+        }
+
+        $path = Storage::disk('public')->put('uploads', $content);
+        $dataSubject = Subject::create([
+            'name'=> $request->name,
+            'content'=> $path,
+            'price'=> $request->price,
+            'houers'=> $request->houers,
+            'number_of_lessons'=> $request->number_of_lessons,
+        ]);
 
         if($dataSubject)
         {
-
             return  $this ->traitResponse( $dataSubject ,'Saved Successfully' , 200 );
         }
 
         return  $this->traitResponse(null,'Saved Failed ' , 400);
-
-
-
-
-
-
     }
 
     /**
@@ -129,7 +137,7 @@ class SubjectController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Suject  $suject
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
@@ -142,29 +150,38 @@ class SubjectController extends Controller
         }
 
         $validation = Validator::make($request->all(), [
-
-            'number_of_lessons'=>'required',
-
+            'name'=>'required',
+            'content'=>'required',
+            'price'=>'required',
+            'houers'=>'required',
+            'number_of_lessons'=>'required'
         ]);
-        if($validation->fails())
 
+        if($validation->fails())
         {
             return $this->traitResponse(null,$validation->errors(),400);
-
+        }
+        $content = $request->file('content');
+        if (!$content) {
+            return response()->json(['error' => 'No file uploaded.'], 400);
+        }
+        if (!$content->isValid()) {
+            return response()->json(['error' => 'File upload failed.'], 400);
         }
 
-        $dataSubject->update($request->all());
+        $path = Storage::disk('public')->put('uploads', $content);
+        $dataSubject->update([
+            'name'=> $request->name,
+            'content'=> $path,
+            'price'=> $request->price,
+            'houers'=> $request->houers,
+            'number_of_lessons'=> $request->number_of_lessons,
+        ]);
         if($dataSubject)
         {
             return $this->traitResponse($dataSubject , 'Updated Successfully',200);
-
         }
         return $this->traitResponse(null,'Failed Updated',400);
-
-
-
-
-
     }
 
     /**
@@ -191,8 +208,25 @@ class SubjectController extends Controller
         }
         return  $this->traitResponse(null , 'Deleted Failed ' , 404);
 
-
-
-
     }
+
+
+
+    public function upload(Request $request)
+    {
+        $content = $request->file('content');
+
+        if (!$content) {
+            return response()->json(['error' => 'No file uploaded.'], 400);
+        }
+
+        if (!$content->isValid()) {
+            return response()->json(['error' => 'File upload failed.'], 400);
+        }
+
+        $path = Storage::disk('public')->put('uploads', $content);
+
+        return response()->json(['path' => $path], 200);
+    }
+
 }

@@ -120,9 +120,8 @@ Route::group(['prefix' => '/branch_admin/' , 'middleware' => ['auth']],function 
     });
     //CLASSROOM END
 
+
     //SUBJECT ROUTES
-
-
     //SUBJECT END
 
 
@@ -208,13 +207,7 @@ Route::group(['prefix' => 'trainer/' , 'middleware' => ['auth']],function () {
     //REFERANCE END
 
     //TASK ROUTES
-    Route::controller(TaskController::class)->group(function () {
-        Route::Post('/task/store','store');
-        Route::get('/task/index',  'index');
-        Route::get('/task/show/{id}', 'show');
-        Route::Post('/task/update/{id}',  'update');
-        Route::Post('/task/destroy/{id}',  'destroy');
-    });
+
     //TASK END
 
 
@@ -325,7 +318,13 @@ Route::controller(SubjectTrainerController::class)->group(function () {
 
 
 
-
+Route::controller(TaskController::class)->group(function () {
+    Route::Post('/task/store','store');
+    Route::get('/task/index',  'index');
+    Route::get('/task/show/{id}', 'show');
+    Route::Post('/task/update/{id}',  'update');
+    Route::Post('/task/destroy/{id}',  'destroy');
+});
 
 
 
