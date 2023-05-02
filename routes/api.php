@@ -89,6 +89,21 @@ Route::controller(TrainerProfileController::class)->group(function () {
     Route::Post('/trainer/destroy/{id}','destroy');
 });
 
+Route::controller(QuestionBankController::class)->group(function () {
+    Route::Post('/qbank/store', 'store');
+    Route::get('/qbank/index', 'index');
+    Route::get('/qbank/show/{id}', 'show');
+    Route::Post('/qbank/update/{id}', 'update');
+    Route::Post('/qbank/destroy/{id}', 'destroy');
+});
+
+Route::controller(UserController::class)->group(function () {
+    Route::post('/add_employee', 'addEmployee');
+    Route::post('/add_trainer', 'addTrainer');
+});
+
+
+
 //General Admin Role Start
 Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth']],function () {
     //BRANCH ROUTES  START
@@ -122,13 +137,7 @@ Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth']],function 
 //Scientific Affairs Role Start
 Route::group(['prefix' => '/scientific_affairs' , 'middleware' => ['auth']],function () {
     //QUESTIONBANK ROUTES
-    Route::controller(QuestionBankController::class)->group(function () {
-        Route::Post('/qbank/store', 'store');
-        Route::get('/qbank/index', 'index');
-        Route::get('/qbank/show/{id}', 'show');
-        Route::Post('/qbank/update/{id}', 'update');
-        Route::Post('/qbank/destroy/{id}', 'destroy');
-    });
+
     //QUESTIONBANK END
 });
 //End Scientific Affairs Role
@@ -156,9 +165,7 @@ Route::group(['prefix' => '/branch_admin/' , 'middleware' => ['auth']],function 
 
 
     //Add Receptionist or Trainer user
-    Route::controller(UserController::class)->group(function () {
-        Route::post('/add_employee', 'addEmployee');
-    });
+
     //End add Receptionist or Trainer user
 
 
