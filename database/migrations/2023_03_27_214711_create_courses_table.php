@@ -27,6 +27,7 @@ return new class extends Migration
                 ->constrained('trainer_profiles')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+            $table->boolean('approved')->default(false);   // approved or not
             $table->date('start');
             $table->date('end');
             $table->timestamps();

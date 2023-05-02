@@ -49,7 +49,8 @@ class TrainerProfileController extends Controller
     public function store(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'rating'=> 'required',
+            'user_id'=> 'required|integer',
+            'rating'=> 'required|max:10',
 
         ]);
         if($validation->fails())
@@ -59,7 +60,10 @@ class TrainerProfileController extends Controller
 
         }
 
-        $dataTrainerProfile = TrainerProfile::create($request -> all());
+        $dataTrainerProfile = TrainerProfile::create([
+            'user_id'=> $request->user_id,
+            'rating'=> $request->rating,
+        ]);
 
         if($dataTrainerProfile)
         {
@@ -136,7 +140,9 @@ class TrainerProfileController extends Controller
         }
 
         $validation = Validator::make($request->all(), [
+            'user_id'=> 'required|integer',
             'rating'=> 'required',
+
 
         ]);
         if($validation->fails())
@@ -146,7 +152,10 @@ class TrainerProfileController extends Controller
 
         }
 
-        $dataTrainerProfile->update($request->all());
+        $dataTrainerProfile->update([
+            'user_id'=> $request->user_id,
+            'rating'=> $request->rating,
+        ]);
         if($dataTrainerProfile)
         {
             return $this->traitResponse($dataTrainerProfile , 'Updated Successfully',200);

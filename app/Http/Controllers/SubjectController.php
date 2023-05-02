@@ -229,4 +229,18 @@ class SubjectController extends Controller
         return response()->json(['path' => $path], 200);
     }
 
+    public function download($filename){
+        $path = Storage::disk('public')->path($filename);
+
+        if (!file_exists($path)) {
+            return response()->json(['error' => 'File not found.'], 404);
+        }
+
+        $file = file_get_contents($path);
+
+        return response()->download($path);
+    }
+
+
+
 }

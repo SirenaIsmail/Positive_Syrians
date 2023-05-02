@@ -18,6 +18,7 @@ use App\Http\Controllers\SubscribeController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TaskAnswerController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TrainerProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -45,6 +46,23 @@ Route::controller(AuthController::class)->group(function () {
 
 });
 
+Route::controller(CourseController::class)->group(function () {
+    Route::Post('/course/store',  'store');
+    Route::get('/course/index',  'index');
+    Route::get('/course/show/{id}',  'show');
+    Route::Post('/course/update/{id}', 'update');
+    Route::Post('/course/destroy/{id}', 'destroy');
+    Route::Post('/course/approve/{id}', 'approve');
+});
+
+Route::controller(SubscribeController::class)->group(function () {
+    Route::Post('/subscribe/store','store');
+    Route::get('/subscribe/index','index');
+    Route::get('/subscribe/show/{id}','show');
+    Route::Post('/subscribe/update/{id}','update');
+    Route::Post('/subscribe/destroy/{id}','destroy');
+
+});
 
 Route::controller(SubjectController::class)->group(function () {
     Route::Post('/subject/store','store');
@@ -52,18 +70,29 @@ Route::controller(SubjectController::class)->group(function () {
     Route::get('/subject/show/{id}','show');
     Route::Post('/subject/update/{id}','update');
     Route::Post('/subject/destroy/{id}','destroy');
+//    Route::get('/subject/download/{filename}','download');
+});
+
+Route::controller(BranchController::class)->group(function () {
+    Route::Post('/branch/store','store');
+    Route::get('/branch/index','index');
+    Route::get('/branch/show/{id}','show');
+    Route::Post('/branch/update/{id}','update');
+    Route::Post('/branch/destroy/{id}','destroy');
+});
+
+Route::controller(TrainerProfileController::class)->group(function () {
+    Route::Post('/trainer/store','store');
+    Route::get('/trainer/index','index');
+    Route::get('/trainer/show/{id}','show');
+    Route::Post('/trainer/update/{id}','update');
+    Route::Post('/trainer/destroy/{id}','destroy');
 });
 
 //General Admin Role Start
 Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth']],function () {
     //BRANCH ROUTES  START
-    Route::controller(BranchController::class)->group(function () {
-        Route::Post('/branch/store','store');
-        Route::get('/branch/index','index');
-        Route::get('/branch/show/{id}','show');
-        Route::Post('/branch/update/{id}','update');
-        Route::Post('/branch/destroy/{id}','destroy');
-    });
+
     // BRANCH END
 
     //PROCEED ROUTES
@@ -122,6 +151,7 @@ Route::group(['prefix' => '/branch_admin/' , 'middleware' => ['auth']],function 
 
 
     //SUBJECT ROUTES
+
     //SUBJECT END
 
 
@@ -155,13 +185,7 @@ Route::group(['prefix' => '/receptionist/' , 'middleware' => ['auth']],function 
     //CARD END
 
     //COURSE ROUTES
-    Route::controller(CourseController::class)->group(function () {
-        Route::Post('/course/store',  'store');
-        Route::get('/course/index',  'index');
-        Route::get('/course/show/{id}',  'show');
-        Route::Post('/course/update/{id}', 'update');
-        Route::Post('/course/destroy/{id}', 'destroy');
-    });
+
     //COURSE END
 
     //PAYMENT ROUTES
@@ -177,9 +201,9 @@ Route::group(['prefix' => '/receptionist/' , 'middleware' => ['auth']],function 
     //Student State
     Route::controller(SubscribeController::class)->group(function () {
         //الاعتماد أو سيحضر
-        Route::Post('/approve/{id}', 'approve');
+        Route::Post('/attend/{id}', 'attend');
         //لن يحضر
-        Route::Post('/notApprove/{id}', 'notApprove');
+        Route::Post('/notAttend/{id}', 'notAttend');
         //معلق الحضور
         Route::Post('/pending/{id}', 'pending');
 
@@ -223,14 +247,7 @@ Route::group(['prefix' => 'trainer/' , 'middleware' => ['auth']],function () {
 //Student Role Start
     Route::group(['prefix' => 'student/' , 'middleware' => ['auth']],function () {
         //SUBSCRIBE ROUTES
-        Route::controller(SubscribeController::class)->group(function () {
-            Route::Post('/subscribe/store','store');// إضافة دورة قبل الاعتماد
-            Route::get('/subscribe/index','index');
-            Route::get('/subscribe/show/{id}','show');
-            Route::Post('/subscribe/update/{id}','update');
-            Route::Post('/subscribe/destroy/{id}','destroy');
 
-        });
         //SUBSCRIBE END
 
 
@@ -285,6 +302,7 @@ Route::controller(HistoryController::class)->group(function () {
     Route::get('/history/show/{id}', 'show');
     Route::Post('/history/update/{id}',  'update');
     Route::Post('/history/destroy/{id}','destroy');
+    Route::Post('/history/addStudentsToCourse/{id}','addStudentsToCourse');
 });
 //HISTORY END
 

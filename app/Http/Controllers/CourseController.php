@@ -47,7 +47,12 @@ class CourseController extends Controller
     public function store(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'branch_id'=> 'required',
+            'branch_id'=> 'required|integer',
+            'subject_id'=> 'required|integer',
+            'trainer_id'=> 'required|integer',
+//            'approved'=> 'required',
+            'start'=> 'required',
+            'end'=> 'required',
 
         ]);
         if($validation->fails())
@@ -56,8 +61,16 @@ class CourseController extends Controller
             return $this->traitResponse(null,$validation->errors(),400);
 
         }
+        $approve = false;
 
-        $dataCourse = Course::create($request -> all());
+        $dataCourse = Course::create([
+            'branch_id'=> $request->branch_id,
+            'subject_id'=> $request->subject_id,
+            'trainer_id'=> $request->trainer_id,
+            'approved'=> $approve,
+            'start'=> $request->start,
+            'end'=> $request->end,
+        ]);
 
         if($dataCourse)
         {
@@ -123,17 +136,29 @@ class CourseController extends Controller
         }
 
         $validation = Validator::make($request->all(), [
-            'branch_id'=> 'required',
+            'branch_id'=> 'required|integer',
+            'subject_id'=> 'required|integer',
+            'trainer_id'=> 'required|integer',
+//            'approved'=> 'required',
+            'start'=> 'required',
+            'end'=> 'required',
 
         ]);
+
         if($validation->fails())
 
         {
             return $this->traitResponse(null,$validation->errors(),400);
 
         }
-
-        $dataCourse->update($request->all());
+        $dataCourse->update([
+            'branch_id'=> $request->branch_id,
+            'subject_id'=> $request->subject_id,
+            'trainer_id'=> $request->trainer_id,
+            'start'=> $request->start,
+            'end'=> $request->end,
+        ]);
+//        $dataCourse->save();
         if($dataCourse)
         {
             return $this->traitResponse($dataCourse , 'Updated Successfully',200);
@@ -173,8 +198,23 @@ class CourseController extends Controller
         }
         return  $this->traitResponse(null , 'Deleted Failed ' , 404);
 
+    }
 
+    public function approve($id){
+        $course = Course::find($id);
+        if(!$course)
+        {
+            return $this->traitResponse(null,'Not Found ' , 404);
+        }
+        $approved = true;
+        $course->update([
+           'approved'  => $approved,
+        ]);
 
+        return response()->json([
+           'course' => $course,
+        ]);
 
     }
+
 }

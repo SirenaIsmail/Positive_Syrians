@@ -57,10 +57,10 @@ class SubscribeController extends Controller
     {
 
         $validation = Validator::make($request->all(), [
-            'subject_id'=>'required',
+            'course_id'=>'required',
             'card_id'=>'required',
             'branch_id'=>'required',
-            'state'=> 'required|integer',
+//            'state'=> 'required|integer',
             'date_id'=> 'required',
 
         ]);
@@ -71,11 +71,12 @@ class SubscribeController extends Controller
 
         }
 
+        $state = 1;
         $dataSubscribe = Subscribe::create([
-            'subject_id'=>  $request -> subject_id,
+            'course_id'=>  $request -> course_id,
             'card_id'=>  $request -> card_id,
             'branch_id'=>  $request -> branch_id,
-            'state'=>  $request -> state,
+            'state'=>  $state,
             'date_id'=>  $request -> date_id,
         ]);
 
@@ -92,7 +93,7 @@ class SubscribeController extends Controller
 
 
 
-    public function approve($id){
+    public function attend($id){
         $Subscribe = Subscribe::find($id);
         if($Subscribe)
         {
@@ -121,7 +122,7 @@ class SubscribeController extends Controller
 
 
 
-    public function notApprove($id){
+    public function notAttend($id){
         $Subscribe = Subscribe::find($id);
         if($Subscribe)
         {
