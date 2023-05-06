@@ -51,7 +51,8 @@ class TrainerProfileController extends Controller
     public function store(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'rating'=> 'required',
+            'user_id'=> 'required|integer',
+            'rating'=> 'required|max:10',
 
         ]);
         if($validation->fails())
@@ -61,7 +62,10 @@ class TrainerProfileController extends Controller
 
         }
 
-        $dataTrainerProfile = TrainerProfile::create($request -> all());
+        $dataTrainerProfile = TrainerProfile::create([
+            'user_id'=> $request->user_id,
+            'rating'=> $request->rating,
+        ]);
 
         if($dataTrainerProfile)
         {
@@ -124,7 +128,9 @@ class TrainerProfileController extends Controller
         }
 
         $validation = Validator::make($request->all(), [
+            'user_id'=> 'required|integer',
             'rating'=> 'required',
+
 
         ]);
         if($validation->fails())
@@ -134,7 +140,10 @@ class TrainerProfileController extends Controller
 
         }
 
-        $dataTrainerProfile->update($request->all());
+        $dataTrainerProfile->update([
+            'user_id'=> $request->user_id,
+            'rating'=> $request->rating,
+        ]);
         if($dataTrainerProfile)
         {
             return $this->traitResponse($dataTrainerProfile , 'Updated Successfully',200);
@@ -173,25 +182,26 @@ class TrainerProfileController extends Controller
         return  $this->traitResponse(null , 'Deleted Failed ' , 404);
 
 
-    } public function search( $filter )
-{
-     $branchId = Auth::user()->branch_id;
-
-    $filterResult = DB::table('trainer_profiles')
-        ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
-        ->join('branches','users.branch_id','=','branches.id')
-        ->select('users.roll_number','users.first_name','users.first_name','trainer_profiles.rating','users.birth_day'
-        ,'users.phone_number','users.email','users.first_name','users.password','branches.No','branches.name',[$branchId])
-         ->where("rating", "like", "%" . $filter . "%")
-         ->paginate(PAGINATION_COUNT);
-
-    if ($filterResult) {
-
-        return $this->traitResponse($filterResult, 'Search Successfully', 200);
-
+    } public function search($filter)
+    {
+        if (auth()->check()) {
+            $branchId = Auth::user()->branch_id;
+            $filterResult = DB::table('trainer_profiles')
+                ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
+                ->join('branches', 'users.branch_id', '=', 'branches.id')
+                ->select('users.roll_number', 'users.first_name', 'users.last_name', 'trainer_profiles.rating', 'users.birth_day', 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name')
+                ->where('branches.id', '=', $branchId) // تحديد فقط المدربين في فرع المستخدم
+                ->where('users.first_name', 'like', "%$filter%") // تحديد النتائج المطابقة للتقييم المدخل
+                ->paginate(PAGINATION_COUNT);
+    
+            if ($filterResult->count() > 0) {
+                return $this->traitResponse($filterResult, 'Search Successfully', 200);
+            } else {
+                return $this->traitResponse(null, 'No matching results found', 200);
+            }
+        } else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
+        }
     }
-
-
-  }
 
  }

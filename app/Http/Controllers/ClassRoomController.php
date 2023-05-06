@@ -168,27 +168,31 @@ class ClassRoomController extends Controller
         return $this->traitResponse(null, 'Deleted Failed ', 404);
 
     }
-
-
     public function search($filter)
     {
+        if (auth()->check()) {
+            $branchId = Auth::user()->branch_id;
     
-         
-        $branchId = Auth::user()->branch_id;
-        
-        $filterResult = DB::table('branches')
-            ->join('class_rooms','class_rooms.branch_id','=','branches.id')
-            ->select('class_rooms.className','class_rooms.Number','class_rooms.size','branches.No','branches.name',[$branchId])
-            ->where("class_rooms.className", "like","%".$filter."%")
-            ->orWhere("class_rooms.Number", "like","%".$filter."%")
-            ->paginate(PAGINATION_COUNT);
-
-        if ($filterResult) {
-
-            return $this->traitResponse(  $filterResult, 'Search Successfully', 200);
-
-        
-
+            $filterResult = DB::table('branches')
+                ->join('class_rooms', 'class_rooms.branch_id', '=', 'branches.id')
+                ->select('class_rooms.className', 'class_rooms.Number', 'class_rooms.size', 'branches.No', 'branches.name')
+                ->where('branches.id', '=', $branchId) // تحديد فقط الفصول في فرع المستخدم
+                ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
+                    $query->where('class_rooms.className', 'like', "%$filter%")
+                        ->orWhere('class_rooms.Number', 'like', "%$filter%");
+                })
+                ->paginate(PAGINATION_COUNT);
+    
+            if ($filterResult->count() > 0) {
+                return $this->traitResponse($filterResult, 'Search Successfully', 200);
+            }
+            else {
+                return $this->traitResponse(null, 'No matching results found', 200);
+            }
+        }
+        else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
         }
     }
 }
+

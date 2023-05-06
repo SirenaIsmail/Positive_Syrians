@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
 
 class Task extends Model
 {
@@ -12,10 +14,14 @@ class Task extends Model
         'trainer_id',
         'course_id',
         'lesson_number',
+        'options',
         'answer',
     ];
 
     protected $casts = ['options' => 'array'];
+
+
+
 
     public function taskAnswer()
     {

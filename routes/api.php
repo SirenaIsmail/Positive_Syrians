@@ -18,11 +18,12 @@ use App\Http\Controllers\SubscribeController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TaskAnswerController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TrainerProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\TrainerProfileController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -48,19 +49,72 @@ Route::controller(AuthController::class)->group(function () {
 
 });
 
+Route::controller(CourseController::class)->group(function () {
+    Route::Post('/course/store',  'store');
+    Route::get('/course/index',  'index');
+    Route::get('/course/show/{id}',  'show');
+    Route::Post('/course/update/{id}', 'update');
+    Route::Post('/course/destroy/{id}', 'destroy');
+    Route::Post('/course/approve/{id}', 'approve');
+});
 
-Route::controller(SubjectController::class)->group(function () {
+Route::controller(SubscribeController::class)->group(function () {
+    Route::Post('/subscribe/store','store');
+    Route::get('/subscribe/index','index');
+    Route::get('/subscribe/show/{id}','show');
+    Route::Post('/subscribe/update/{id}','update');
+    Route::Post('/subscribe/destroy/{id}','destroy');
+
+});
+
+Route::controller(SubjectController::class)->group(function (){
     Route::Post('/subject/store','store');
     Route::get('/subject/index','index');
     Route::get('/subject/show/{id}','show');
     Route::Post('/subject/update/{id}','update');
     Route::Post('/subject/destroy/{id}','destroy');
     Route::get('/subject/search/{filter}','search');
+
+ Route::get('/subject/download/{filename}','download');
 });
+
+Route::controller(BranchController::class)->group(function () {
+    Route::Post('/branch/store','store');
+    Route::get('/branch/index','index');
+    Route::get('/branch/show/{id}','show');
+    Route::Post('/branch/update/{id}','update');
+    Route::Post('/branch/destroy/{id}','destroy');
+});
+
+Route::controller(TrainerProfileController::class)->group(function () {
+    Route::Post('/trainer/store','store');
+    Route::get('/trainer/index','index');
+    Route::get('/trainer/show/{id}','show');
+    Route::Post('/trainer/update/{id}','update');
+    Route::Post('/trainer/destroy/{id}','destroy');
+
+});
+
+Route::controller(QuestionBankController::class)->group(function () {
+    Route::Post('/qbank/store', 'store');
+    Route::get('/qbank/index', 'index');
+    Route::get('/qbank/show/{id}', 'show');
+    Route::Post('/qbank/update/{id}', 'update');
+    Route::Post('/qbank/destroy/{id}', 'destroy');
+});
+
+Route::controller(UserController::class)->group(function () {
+    Route::post('/add_employee', 'addEmployee');
+    Route::post('/add_trainer', 'addTrainer');
+    Route::get('/user/search/{filter}','search');
+});
+
+
 
 //General Admin Role Start
 //Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth']],function () {
     //BRANCH ROUTES  START
+
     Route::controller(BranchController::class)->group(function () {
         Route::Post('/branch/store','store');
         Route::get('/branch/index','index');
@@ -69,6 +123,9 @@ Route::controller(SubjectController::class)->group(function () {
         Route::Post('/branch/destroy/{id}','destroy');
         Route::get('/branch/search/{filter}','search');
     });
+
+
+
     // BRANCH END
 
     //PROCEED ROUTES
@@ -88,7 +145,7 @@ Route::controller(SubjectController::class)->group(function () {
     //Add admin user
     Route::controller(UserController::class)->group(function () {
         Route::post('/add_admin', 'addAdmin');
-        Route::get('/admin/search/{filter}','search');
+        
 
     });
     //End add admin user
@@ -104,13 +161,7 @@ Route::controller(SubjectController::class)->group(function () {
 //Scientific Affairs Role Start
 //Route::group(['prefix' => '/scientific_affairs' , 'middleware' => ['auth']],function () {
     //QUESTIONBANK ROUTES
-    Route::controller(QuestionBankController::class)->group(function () {
-        Route::Post('/qbank/store', 'store');
-        Route::get('/qbank/index', 'index');
-        Route::get('/qbank/show/{id}', 'show');
-        Route::Post('/qbank/update/{id}', 'update');
-        Route::Post('/qbank/destroy/{id}', 'destroy');
-    });
+
     //QUESTIONBANK END
 //});
 //End Scientific Affairs Role
@@ -132,17 +183,20 @@ Route::controller(SubjectController::class)->group(function () {
     });
     //CLASSROOM END
 
-    //SUBJECT ROUTES
 
+    //SUBJECT ROUTES
 
     //SUBJECT END
 
 
     //Add Receptionist or Trainer user
+
     Route::controller(UserController::class)->group(function () {
         Route::post('/add_employee', 'addEmployee');
-        Route::get('/employee/search/{filter}','search');
+     
     });
+
+
     //End add Receptionist or Trainer user
 
 
@@ -169,6 +223,7 @@ Route::controller(SubjectController::class)->group(function () {
     //CARD END
 
     //COURSE ROUTES
+
     Route::controller(CourseController::class)->group(function () {
         Route::Post('/course/store',  'store');
         Route::get('/course/index',  'index');
@@ -177,6 +232,9 @@ Route::controller(SubjectController::class)->group(function () {
         Route::Post('/course/destroy/{id}', 'destroy');
         Route::get('/course/search/{filter}',  'search');
     });
+
+
+
     //COURSE END
 
     //PAYMENT ROUTES
@@ -193,9 +251,9 @@ Route::controller(SubjectController::class)->group(function () {
     //Student State
     Route::controller(SubscribeController::class)->group(function () {
         //الاعتماد أو سيحضر
-        Route::Post('/approve/{id}', 'approve');
+        Route::Post('/attend/{id}', 'attend');
         //لن يحضر
-        Route::Post('/notApprove/{id}', 'notApprove');
+        Route::Post('/notAttend/{id}', 'notAttend');
         //معلق الحضور
         Route::Post('/pending/{id}', 'pending') ;
 
@@ -228,13 +286,7 @@ Route::group(['prefix' => 'trainer/' , 'middleware' => ['auth']],function () {
     //REFERANCE END
 
     //TASK ROUTES
-    Route::controller(TaskController::class)->group(function () {
-        Route::Post('/task/store','store');
-        Route::get('/task/index',  'index');
-        Route::get('/task/show/{id}', 'show');
-        Route::Post('/task/update/{id}',  'update');
-        Route::Post('/task/destroy/{id}',  'destroy');
-    });
+
     //TASK END
 
 
@@ -251,14 +303,7 @@ Route::group(['prefix' => 'trainer/' , 'middleware' => ['auth']],function () {
 
   //  Route::group(['prefix' => 'student/' , 'middleware' => ['auth']],function () {
         //SUBSCRIBE ROUTES
-        Route::controller(SubscribeController::class)->group(function () {
-            Route::Post('/subscribe/store','store');// إضافة دورة قبل الاعتماد
-            Route::get('/subscribe/index','index');
-            Route::get('/subscribe/show/{id}','show');
-            Route::Post('/subscribe/update/{id}','update');
-            Route::Post('/subscribe/destroy/{id}','destroy');
 
-        });
         //SUBSCRIBE END
 
 
@@ -313,6 +358,7 @@ Route::controller(HistoryController::class)->group(function () {
     Route::get('/history/show/{id}', 'show');
     Route::Post('/history/update/{id}',  'update');
     Route::Post('/history/destroy/{id}','destroy');
+    Route::Post('/history/addStudentsToCourse/{id}','addStudentsToCourse');
 });
 //HISTORY END
 
@@ -349,7 +395,13 @@ Route::controller(TrainerProfileController::class)->group(function () {
     Route::get('/trainerProfile/search/{filter}','search');
 });
 
-
+Route::controller(TaskController::class)->group(function () {
+    Route::Post('/task/store','store');
+    Route::get('/task/index',  'index');
+    Route::get('/task/show/{id}', 'show');
+    Route::Post('/task/update/{id}',  'update');
+    Route::Post('/task/destroy/{id}',  'destroy');
+});
 
 
 

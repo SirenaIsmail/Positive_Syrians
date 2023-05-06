@@ -50,7 +50,12 @@ class CourseController extends Controller
     public function store(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'branch_id'=> 'required',
+            'branch_id'=> 'required|integer',
+            'subject_id'=> 'required|integer',
+            'trainer_id'=> 'required|integer',
+//            'approved'=> 'required',
+            'start'=> 'required',
+            'end'=> 'required',
 
         ]);
         if($validation->fails())
@@ -59,8 +64,16 @@ class CourseController extends Controller
             return $this->traitResponse(null,$validation->errors(),400);
 
         }
+        $approve = false;
 
-        $dataCourse = Course::create($request -> all());
+        $dataCourse = Course::create([
+            'branch_id'=> $request->branch_id,
+            'subject_id'=> $request->subject_id,
+            'trainer_id'=> $request->trainer_id,
+            'approved'=> $approve,
+            'start'=> $request->start,
+            'end'=> $request->end,
+        ]);
 
         if($dataCourse)
         {
@@ -126,29 +139,35 @@ class CourseController extends Controller
         }
 
         $validation = Validator::make($request->all(), [
-            'branch_id'=> 'required',
+            'branch_id'=> 'required|integer',
+            'subject_id'=> 'required|integer',
+            'trainer_id'=> 'required|integer',
+//            'approved'=> 'required',
+            'start'=> 'required',
+            'end'=> 'required',
 
         ]);
+
         if($validation->fails())
 
         {
             return $this->traitResponse(null,$validation->errors(),400);
 
         }
-
-        $dataCourse->update($request->all());
+        $dataCourse->update([
+            'branch_id'=> $request->branch_id,
+            'subject_id'=> $request->subject_id,
+            'trainer_id'=> $request->trainer_id,
+            'start'=> $request->start,
+            'end'=> $request->end,
+        ]);
+//        $dataCourse->save();
         if($dataCourse)
         {
             return $this->traitResponse($dataCourse , 'Updated Successfully',200);
 
         }
         return $this->traitResponse(null,'Failed Updated',400);
-
-
-
-
-
-
 
     }
 
@@ -176,35 +195,54 @@ class CourseController extends Controller
         }
         return  $this->traitResponse(null , 'Deleted Failed ' , 404);
 
-
     }
 
-   public function search($filter)
-
-
-   {
-         
- $branchId = Auth::user()->branch_id;
-
-    $filterResult = DB::table('courses')
-    ->join('branches', 'courses.branch_id', '=', 'branches.id')
-    ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-    ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
-    ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
-    ->select('subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','courses.start','courses.end','branches.name','branches.No','users.first_name','users.last_name',[$branchId])
-    ->where("courses.start", "like","%".$filter."%")
-    ->where("courses.end", "like","%".$filter."%")
-    ->get();
-            
-    if ($filterResult) {
-
-        return $this->traitResponse(  $filterResult, 'Search Successfully', 200);
-
+    public function search($filter)
+    {
+        if (auth()->check()) {
+            $branchId = Auth::user()->branch_id;
     
-
+            $filterResult = DB::table('courses')
+                ->join('branches', 'courses.branch_id', '=', 'branches.id')
+                ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+                ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
+                ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
+                ->select('subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','courses.start','courses.end','branches.name','branches.No','users.first_name','users.last_name')
+                ->where('branches.id', '=', $branchId) // تحديد فقط الدورات في فرع المستخدم
+                ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
+                    $query->where('courses.start', 'like', "%$filter%")
+                        ->orWhere('courses.end', 'like', "%$filter%");
+                })
+                ->get();
+    
+            if ($filterResult->count() > 0) {
+                return $this->traitResponse($filterResult, 'Search Successfully', 200);
+            } else {
+                return $this->traitResponse(null, 'No matching results found', 200);
+            }
+        } else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
+        }
     }
 
-   }
 
+    public function approve($id){
+        $course = Course::find($id);
+        if(!$course)
+        {
+            return $this->traitResponse(null,'Not Found ' , 404);
+        }
+        $approved = true;
+        $course->update([
+           'approved'  => $approved,
+        ]);
 
+        return response()->json([
+           'course' => $course,
+        ]);
+
+    }
 }
+
+
+

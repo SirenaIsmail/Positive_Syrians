@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\History;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class HistoryController extends Controller
@@ -79,6 +80,21 @@ class HistoryController extends Controller
 
 
     }
+
+    public function addStudentsToCourse($id){
+        $students = DB::table('subscribes')->where('course_id',$id)->where('state',1)->get();
+        if ($students){
+            foreach ($students as $student){
+                $history = History::create([
+                    'card_id' => $student->card_id,
+                    'course_id' => $student->course_id,
+                ]);
+                return  $this ->traitResponse( $student ,'Saved Successfully' , 200 );
+            }
+        }
+        return  $this->traitResponse(null,'Saved Failed ' , 400);
+    }
+
 
     /**
      * Display the specified resource.
@@ -187,4 +203,7 @@ class HistoryController extends Controller
 
 
     }
+
+
+
 }

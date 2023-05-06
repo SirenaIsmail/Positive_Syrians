@@ -57,10 +57,10 @@ class SubscribeController extends Controller
     {
 
         $validation = Validator::make($request->all(), [
-            'subject_id'=>'required',
+            'course_id'=>'required',
             'card_id'=>'required',
             'branch_id'=>'required',
-            'state'=> 'required|integer',
+//            'state'=> 'required|integer',
             'date_id'=> 'required',
 
         ]);
@@ -71,11 +71,12 @@ class SubscribeController extends Controller
 
         }
 
+        $state = 1;
         $dataSubscribe = Subscribe::create([
-            'subject_id'=>  $request -> subject_id,
+            'course_id'=>  $request -> course_id,
             'card_id'=>  $request -> card_id,
             'branch_id'=>  $request -> branch_id,
-            'state'=>  $request -> state,
+            'state'=>  $state,
             'date_id'=>  $request -> date_id,
         ]);
 
@@ -92,7 +93,7 @@ class SubscribeController extends Controller
 
 
 
-    public function approve($id){
+    public function attend($id){
         $Subscribe = Subscribe::find($id);
         if($Subscribe)
         {
@@ -121,7 +122,7 @@ class SubscribeController extends Controller
 
 
 
-    public function notApprove($id){
+    public function notAttend($id){
         $Subscribe = Subscribe::find($id);
         if($Subscribe)
         {
@@ -284,27 +285,30 @@ class SubscribeController extends Controller
 
     public function search($filter)
     {
-  
-       $branchId = Auth::user()->branch_id;
-
-        $filterResult = DB::table('subscribes')
-            ->join('subjects', 'subscribes.subject_id', '=', 'subjects.id')
-            ->join('cards', 'subscribes.card_id', '=', 'cards.id')
-            ->join('branches as card_branch', 'cards.branch_id', '=', 'card_branch.id')
-            ->join('users', 'cards.user_id', '=', 'users.id')
-            ->join('branches as user_branch', 'users.branch_id', '=', 'user_branch.id')
-            ->join('dates', 'subscribes.date_id', '=', 'dates.id')
-            ->select('subscribes.state', 'subjects.subjectName', 'subjects.content',
-             'subjects.price' ,'cards.barcode', 'users.first_name', 'users.last_name', 
-             'users.phone_number','dates.date',[$branchId])
-             ->where("subscribes.state", "like","%".$filter."%")
-            ->paginate(PAGINATION_COUNT);
-
-            if ($filterResult) {
-
-                return $this->traitResponse(  $filterResult, 'Search Successfully', 200);
+        if (auth()->check()) {
+            $branchId = Auth::user()->branch_id;
     
+            $filterResult = DB::table('subscribes')
+                ->join('subjects', 'subscribes.subject_id', '=', 'subjects.id')
+                ->join('cards', 'subscribes.card_id', '=', 'cards.id')
+                ->join('branches as card_branch', 'cards.branch_id', '=', 'card_branch.id')
+                ->join('users', 'cards.user_id', '=', 'users.id')
+                ->join('branches as user_branch', 'users.branch_id', '=', 'user_branch.id')
+                ->join('dates', 'subscribes.date_id', '=', 'dates.id')
+                ->select('subscribes.state', 'subjects.subjectName', 'subjects.content', 'subjects.price' ,'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number','dates.date')
+                ->where('user_branch.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
+                ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
+                    $query->where('subscribes.state', 'like', "%$filter%");
+                })
+                ->paginate(PAGINATION_COUNT);
+    
+            if ($filterResult->count() > 0) {
+                return $this->traitResponse($filterResult, 'Search Successfully', 200);
+            } else {
+                return $this->traitResponse(null, 'No matching results found', 200);
             }
+        } else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
+        }
     }
-
 }

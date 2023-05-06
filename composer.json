@@ -15,7 +15,8 @@
         "laravel/ui": "^4.2",
         "milon/barcode": "^10.0",
         "php-open-source-saver/jwt-auth": "^2.1",
-        "santigarcor/laratrust": "^7.2"
+        "santigarcor/laratrust": "^7.2",
+      "ext-json": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

@@ -22,6 +22,9 @@ class TaskController extends Controller
     public function index()
     {
         $tasksdata = Task::paginate(PAGINATION_COUNT);
+
+        $tasksdata = Task::get();
+        $tasksdata->options = json_decode($tasksdata->options);
         if ($tasksdata){
             return $this->traitResponse($tasksdata,'SUCCESS',200);
 
@@ -56,18 +59,19 @@ class TaskController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-//            'trainer_id'=>'required|integer',
+            'trainer_id'=>'required|integer',
             'course_id'=>'required|integer',
             'lesson_number'=>'required|integer',
             'options'=>'required|json',
             'answer'=>'required|integer',
         ]);
         $trainer_id = Auth::id();
+
         $task = Task::create([
             'trainer_id'=>$trainer_id,
             'course_id'=>$request->course_id,
             'lesson_number'=>$request->lesson_number,
-            'options'=>$request->options,
+            'options'=>$options = json_encode($request->options),
             'answer'=>$request->answer,
         ]);
         return response()->json([
@@ -156,17 +160,6 @@ class TaskController extends Controller
 
 
     }
-
-
-
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
-     */
-
 
 
     public function destroy($id)

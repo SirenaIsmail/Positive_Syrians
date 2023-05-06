@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('subscribes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('subject_id')
-                ->constrained('subjects')
+            $table->foreignId('course_id')
+                ->constrained('courses')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->foreignId('card_id')
@@ -27,7 +27,7 @@ return new class extends Migration
                 ->constrained('branches')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->integer('state'); // 1approve  0don't approve 2pending
+            $table->integer('state')->default(1); // 1approve  0don't approve 2pending
             $table->foreignId('date_id')
                 ->constrained('dates')
                 ->onUpdate('cascade')
