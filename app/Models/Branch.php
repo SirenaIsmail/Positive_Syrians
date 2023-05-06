@@ -5,9 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
 class Branch extends Model
 {
+    
     use HasFactory;
+ 
+
+    protected $table = 'branches';
     protected $fillable = [
         'No',
         'name',
@@ -54,4 +59,10 @@ class Branch extends Model
     {
         return $this->hasMany(TrainerRating::class, 'rating_id','id');
     }
+
+ 
+   
+
+
+
 }

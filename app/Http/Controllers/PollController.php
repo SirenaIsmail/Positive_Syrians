@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Poll;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
 
 class PollController extends Controller
 {
@@ -189,4 +193,25 @@ class PollController extends Controller
         }
         return  $this->traitResponse(null , 'Deleted Failed ' , 404);
     }
+
+
+
+    public function search($filter)
+    {
+        $branchId = Auth::user()->branch_id;
+        $filterResult = DB::table('polls')
+            ->join('subjects AS subject1', 'polls.first_subj', '=', 'subject1.id')
+            ->join('subjects AS subject2', 'polls.secound_subj', '=', 'subject2.id')
+            ->join('subjects AS subject3', 'polls.third_subj', '=', 'subject3.id')
+            ->select('polls.full_name', 'polls.mother_name', 'polls.address', 'polls.poll_date', 'subject1.subjectName', 'polls.first_time', 'subject2.subjectName  As subjectName2', 'polls.secound_time', 'subject3.subjectName  As subjectName3', 'polls.third_time',[$branchId])
+            ->where("subject1.subjectName", "like","%".$filter."%")
+            ->orWhere("subject2.subjectName", "like","%".$filter."%")
+            ->orWhere("subject3.subjectName", "like","%".$filter."%")
+            ->paginate(PAGINATION_COUNT);
+    
+        if ($filterResult) {
+            return $this->traitResponse($filterResult, 'Search Successfully', 200);
+        }
+    }
+
 }

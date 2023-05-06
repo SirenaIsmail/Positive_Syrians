@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Suject;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+//use PHPOpenSourceSaver\JWTAuth\Claims\Subject;
 
 class SubjectController extends Controller
 {
@@ -17,7 +18,8 @@ class SubjectController extends Controller
      */
     public function index()
     {
-        $dataSubject = Suject::paginate(PAGINATION_COUNT);
+
+        $dataSubject = Subject::paginate(PAGINATION_COUNT);
 
         if($dataSubject)
         {
@@ -66,7 +68,7 @@ class SubjectController extends Controller
 
         }
 
-        $dataSubject = Suject::create($request -> all());
+        $dataSubject = Subject::create($request -> all());
 
         if($dataSubject)
         {
@@ -86,12 +88,12 @@ class SubjectController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Suject  $suject
+     * @param  \App\Models\Subject $suject
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $dataSubject = Suject::find($id);
+        $dataSubject = Subject::find($id);
 
         if($dataSubject)
         {
@@ -118,7 +120,7 @@ class SubjectController extends Controller
      * @param  \App\Models\Suject  $suject
      * @return \Illuminate\Http\Response
      */
-    public function edit(Suject $suject)
+    public function edit(Subject $suject)
     {
         //
     }
@@ -127,12 +129,12 @@ class SubjectController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Suject  $suject
+     * @param  \App\Models\Subject  $subject
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $dataSubject = Suject::find($id);
+        $dataSubject = Subject::find($id);
 
         if(!$dataSubject)
         {
@@ -169,12 +171,12 @@ class SubjectController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Suject  $suject
+     * @param  \App\Models\Subject  $suject
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $dataSubject = Suject::find($id);
+        $dataSubject = Subject::find($id);
 
         if(!$dataSubject)
         {
@@ -190,6 +192,25 @@ class SubjectController extends Controller
         }
         return  $this->traitResponse(null , 'Deleted Failed ' , 404);
 
+
+
+
+    }
+
+
+
+    public function search( $filter )
+    {
+
+        $filterResult = Subject::where("subjectName", "like","%".$filter."%")
+            ->orWhere("content", "like","%".$filter."%")->get();
+
+        if($filterResult)
+        {
+
+            return $this->traitResponse($filterResult, 'Search Successfully', 200);
+
+        }
 
 
 

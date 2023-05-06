@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Branch;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
 
 class BranchController extends Controller
 {
@@ -14,13 +16,14 @@ class BranchController extends Controller
      */
 
     use ApiResponse;
+
     public function index()
     {
+      
         $databranch = Branch::paginate(PAGINATION_COUNT);
 
-        if($databranch)
-        {
-            return $this->traitResponse($databranch,'SUCCESS', 200);
+        if ($databranch) {
+            return $this->traitResponse($databranch, 'SUCCESS', 200);
 
         }
 
@@ -42,7 +45,7 @@ class BranchController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -59,41 +62,39 @@ class BranchController extends Controller
 //
 //        }
 
-        $databranch = Branch::create($request -> all());
+        $databranch = Branch::create($request->all());
 
-        if($databranch)
-        {
+        if ($databranch) {
 
-            return  $this ->traitResponse( $databranch ,'Saved Successfully' , 200 );
+            return $this->traitResponse($databranch, 'Saved Successfully', 200);
         }
 
-        return  $this->traitResponse(null,'Saved Failed ' , 400);
+        return $this->traitResponse(null, 'Saved Failed ', 400);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Branch  $branch
+     * @param \App\Models\Branch $branch
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         $databranch = Branch::find($id);
 
-        if($databranch)
-        {
-            return $this->traitResponse($databranch , 'SUCCESS' , 200);
+        if ($databranch) {
+            return $this->traitResponse($databranch, 'SUCCESS', 200);
 
 
         }
 
-        return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
+        return $this->traitResponse(null, 'Sorry Not Found ', 404);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Branch  $branch
+     * @param \App\Models\Branch $branch
      * @return \Illuminate\Http\Response
      */
     public function edit(Branch $branch)
@@ -104,63 +105,74 @@ class BranchController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Branch  $branch
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Branch $branch
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
         $databranch = Branch::find($id);
 
-        if(!$databranch)
-        {
-            return $this->traitResponse(null,' Sorry Not Found',404);
+        if (!$databranch) {
+            return $this->traitResponse(null, ' Sorry Not Found', 404);
 
         }
 
         $validation = Validator::make($request->all(), [
             'No' => 'required',
-            'name'=> 'required|unique:branches|max:50',
+            'name' => 'required|unique:branches|max:50',
 
         ]);
-        if($validation->fails())
-
-        {
-            return $this->traitResponse(null,$validation->errors(),400);
+        if ($validation->fails()) {
+            return $this->traitResponse(null, $validation->errors(), 400);
 
         }
 
         $databranch->update($request->all());
-        if($databranch)
-        {
-            return $this->traitResponse($databranch , 'Updated Successfully',200);
+        if ($databranch) {
+            return $this->traitResponse($databranch, 'Updated Successfully', 200);
 
         }
-        return $this->traitResponse(null,'Failed Updated',400);
+        return $this->traitResponse(null, 'Failed Updated', 400);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Branch  $branch
+     * @param \App\Models\Branch $branch
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         $databranch = Branch::find($id);
 
-        if(!$databranch)
-        {
-            return $this->traitResponse(null,'Not Found ' , 404);
+        if (!$databranch) {
+            return $this->traitResponse(null, 'Not Found ', 404);
         }
 
         $databranch->delete($id);
 
-        if($databranch)
-        {
-            return  $this->traitResponse(null , 'Deleted Successfully ' , 200);
+        if ($databranch) {
+            return $this->traitResponse(null, 'Deleted Successfully ', 200);
 
         }
-        return  $this->traitResponse(null , 'Deleted Failed ' , 404);
+        return $this->traitResponse(null, 'Deleted Failed ', 404);
     }
+
+
+    public function search( $filter )
+    {
+
+        $filterResult = Branch::where("name", "like","%".$filter."%")
+            ->orWhere("No", "like","%".$filter."%")->get();
+
+        if($filterResult)
+        {
+
+            return $this->traitResponse($filterResult, 'Search Successfully', 200);
+
+        }
+
+    }
+
 }

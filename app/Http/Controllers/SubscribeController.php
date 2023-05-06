@@ -7,6 +7,9 @@ use App\Models\History;
 use App\Models\Subscribe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class SubscribeController extends Controller
 {
@@ -31,9 +34,6 @@ class SubscribeController extends Controller
 
 
         return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
-
-
-
 
     }
 
@@ -279,11 +279,32 @@ class SubscribeController extends Controller
         }
         return  $this->traitResponse(null , 'Deleted Failed ' , 404);
 
-
-
-
-
-
-
     }
+
+
+    public function search($filter)
+    {
+  
+       $branchId = Auth::user()->branch_id;
+
+        $filterResult = DB::table('subscribes')
+            ->join('subjects', 'subscribes.subject_id', '=', 'subjects.id')
+            ->join('cards', 'subscribes.card_id', '=', 'cards.id')
+            ->join('branches as card_branch', 'cards.branch_id', '=', 'card_branch.id')
+            ->join('users', 'cards.user_id', '=', 'users.id')
+            ->join('branches as user_branch', 'users.branch_id', '=', 'user_branch.id')
+            ->join('dates', 'subscribes.date_id', '=', 'dates.id')
+            ->select('subscribes.state', 'subjects.subjectName', 'subjects.content',
+             'subjects.price' ,'cards.barcode', 'users.first_name', 'users.last_name', 
+             'users.phone_number','dates.date',[$branchId])
+             ->where("subscribes.state", "like","%".$filter."%")
+            ->paginate(PAGINATION_COUNT);
+
+            if ($filterResult) {
+
+                return $this->traitResponse(  $filterResult, 'Search Successfully', 200);
+    
+            }
+    }
+
 }

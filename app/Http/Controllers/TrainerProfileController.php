@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\TrainerProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class TrainerProfileController extends Controller
 {
@@ -171,5 +173,25 @@ class TrainerProfileController extends Controller
         return  $this->traitResponse(null , 'Deleted Failed ' , 404);
 
 
+    } public function search( $filter )
+{
+     $branchId = Auth::user()->branch_id;
+
+    $filterResult = DB::table('trainer_profiles')
+        ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
+        ->join('branches','users.branch_id','=','branches.id')
+        ->select('users.roll_number','users.first_name','users.first_name','trainer_profiles.rating','users.birth_day'
+        ,'users.phone_number','users.email','users.first_name','users.password','branches.No','branches.name',[$branchId])
+         ->where("rating", "like", "%" . $filter . "%")
+         ->paginate(PAGINATION_COUNT);
+
+    if ($filterResult) {
+
+        return $this->traitResponse($filterResult, 'Search Successfully', 200);
+
     }
-}
+
+
+  }
+
+ }

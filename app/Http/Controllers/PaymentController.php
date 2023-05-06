@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Payment;
+use App\Models\Subscribe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -198,9 +199,15 @@ class PaymentController extends Controller
     }
 
 
-    public  function  createPayment(Request $request)
+    public  function  createPayment($id)
 
     {
+        $payment = Payment::findorfail($id);
+        $subscribe = Subscribe::where('subscribe_id',$payment->id)->get('');
+
+        return $this->traitResponse($subscribe , 'Updated Successfully',200);
+
+
 
 
     }

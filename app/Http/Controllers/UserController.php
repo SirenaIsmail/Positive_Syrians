@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+
+    use apiResponse;
 
     public function __construct()
     {
@@ -90,6 +93,24 @@ class UserController extends Controller
         ]);
     }
 
+    public function search( $filter )
+    {
+        $branchId = Auth::user()->branch_id;
+    
+        $filterResult =  DB::table('users')
+        ->join('branches','users.branch_id','=','branches.id')
+        ->select('users.roll_unmber','users.first_name','users.first_name','users.birth_day'
+        ,'users.phone_number','users.email','users.first_name','users.password','branches.No','branches.name',[$branchId])
+        ->where("roll_unmber", "like", "%" . $filter . "%")
+        ->orWhere("first_name", "like", "%" . $filter . "%")
+            ->orWhere("last_name", "like", "%" . $filter . "%")->get();
+        if ($filterResult) {
 
+            return $this->traitResponse($filterResult, 'Search Successfully', 200);
+
+        }
+
+
+    }
 
 }
