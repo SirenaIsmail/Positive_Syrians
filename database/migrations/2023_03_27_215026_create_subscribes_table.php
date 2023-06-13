@@ -28,10 +28,6 @@ return new class extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->integer('state')->default(1); // 1approve  0don't approve 2pending
-            $table->foreignId('date_id')
-                ->constrained('dates')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
             $table->timestamps();
         });
     }

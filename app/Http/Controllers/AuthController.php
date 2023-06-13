@@ -74,7 +74,7 @@ class AuthController extends Controller
         $cardReq= new Request(
             ['user_id' => $user->id,
             'barcode' => $barcode,
-            'branch_id' => $user->branch_id,
+            'branch_id' => $request->branch_id,
         ]);
         $card = ( new CardController)->store($cardReq);
 

@@ -42,8 +42,5 @@ class Subscribe extends Model
         return $this->belongsTo(Branch::class, 'branch_id');
     }
 
-    public function dates()
-    {
-        return $this->belongsTo(Date::class, 'date_id');
-    }
+
 }

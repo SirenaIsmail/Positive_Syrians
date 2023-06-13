@@ -19,11 +19,6 @@ class Date extends Model
         return $this->hasOne(Attend::class, 'attend_id','id');
     }
 
-    public function subscribes()
-    {
-        return $this->hasMany(Subscribe::class, 'subscribe_id','id');
-    }
-
     public function topCourses()
     {
         return $this->hasMany(TopCourse::class, 'top_id','id');
