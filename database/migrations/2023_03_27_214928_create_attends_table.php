@@ -15,8 +15,16 @@ return new class extends Migration
     {
         Schema::create('attends', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('history_id')
-                ->constrained('histories')
+//            $table->foreignId('history_id')
+//                ->constrained('histories')
+//                ->onUpdate('cascade')
+//                ->onDelete('cascade');
+            $table->foreignId('card_id')
+                ->constrained('cards')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+            $table->foreignId('course_id')
+                ->constrained('courses')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->foreignId('date_id')

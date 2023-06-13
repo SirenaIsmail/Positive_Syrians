@@ -61,7 +61,7 @@ class SubscribeController extends Controller
             'card_id'=>'required',
             'branch_id'=>'required',
 //            'state'=> 'required|integer',
-            'date_id'=> 'required',
+
 
         ]);
         if($validation->fails())
@@ -77,7 +77,6 @@ class SubscribeController extends Controller
             'card_id'=>  $request -> card_id,
             'branch_id'=>  $request -> branch_id,
             'state'=>  $state,
-            'date_id'=>  $request -> date_id,
         ]);
 
         if($dataSubscribe)
@@ -287,7 +286,7 @@ class SubscribeController extends Controller
     {
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
-    
+
             $filterResult = DB::table('subscribes')
                 ->join('subjects', 'subscribes.subject_id', '=', 'subjects.id')
                 ->join('cards', 'subscribes.card_id', '=', 'cards.id')
@@ -301,7 +300,7 @@ class SubscribeController extends Controller
                     $query->where('subscribes.state', 'like', "%$filter%");
                 })
                 ->paginate(PAGINATION_COUNT);
-    
+
             if ($filterResult->count() > 0) {
                 return $this->traitResponse($filterResult, 'Search Successfully', 200);
             } else {
