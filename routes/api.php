@@ -470,7 +470,3 @@ Route::controller(ExportController::class)->group(function () {
     Route::get('/export', 'exportToPDF');
 });
 
-
-
-
-
