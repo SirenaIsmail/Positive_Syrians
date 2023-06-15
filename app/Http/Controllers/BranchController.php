@@ -20,7 +20,7 @@ class BranchController extends Controller
     public function index()
     {
       
-        $databranch = Branch::paginate(PAGINATION_COUNT);
+        $databranch = Branch::paginate(5);
 
         if ($databranch) {
             return $this->traitResponse($databranch, 'SUCCESS', 200);
@@ -162,17 +162,33 @@ class BranchController extends Controller
 
     public function search( $filter )
     {
+if($filter != "null")
+{
+    $filterResult = Branch::where("name", "like","%".$filter."%")
+    ->orWhere("No", "like","%".$filter."%")->paginate(3);
 
-        $filterResult = Branch::where("name", "like","%".$filter."%")
-            ->orWhere("No", "like","%".$filter."%")->get();
+if($filterResult)
+{
 
-        if($filterResult)
-        {
+    return $this->traitResponse($filterResult, 'Search Successfully', 200);
 
-            return $this->traitResponse($filterResult, 'Search Successfully', 200);
+}
 
-        }
+}
 
+else{
+    
+    $databranch = Branch::paginate(3);
+
+    if ($databranch) {
+        return $this->traitResponse($databranch, 'SUCCESS', 200);
+
+    }
+
+
+    return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
+}
+    
     }
 
 }

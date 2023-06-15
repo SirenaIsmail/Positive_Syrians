@@ -20,7 +20,7 @@ class SubjectController extends Controller
     public function index()
     {
 
-        $dataSubject = Subject::paginate(PAGINATION_COUNT);
+        $dataSubject = Subject::paginate(2);
 
         if($dataSubject)
         {
