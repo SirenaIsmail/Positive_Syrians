@@ -46,4 +46,21 @@ class Subscribe extends Model
     {
         return $this->belongsTo(Date::class, 'date_id');
     }
+
+
+
+    protected static function boot()
+    {
+        parent::boot();
+    
+        static::updated(function ($subscription) {
+            Payment::where('subscribe_id', $subscription->id)->update(['branch_id' => $subscription->branch_id]);
+        });
+    }
+
+
+
+
+
+
 }

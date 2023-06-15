@@ -6,6 +6,8 @@ use App\Models\Poll;
 use App\Models\Proceed;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ProceedController extends Controller
 {
@@ -17,16 +19,31 @@ class ProceedController extends Controller
      */
     public function index()
     {
-        $dataProceed = Proceed::paginate(PAGINATION_COUNT);
+        if (auth()->check()) {
+            $branchId = Auth::user()->branch_id;
 
-        if($dataProceed)
-        {
-            return $this->traitResponse($dataProceed,'SUCCESS', 200);
-
+            $Result = DB::table('proceeds')
+            ->join('payments', 'payments.id', '=', 'proceeds.payment_id')
+            ->join('subscribes', 'subscribes.id', '=', 'payments.subscribe_id')
+            ->join('cards', 'cards.id', '=', 'subscribes.card_id')
+            ->join('users', 'users.id', '=', 'cards.user_id')
+            ->join('branches', 'branches.id', '=', 'users.branch_id')
+            ->join('courses', 'courses.id', '=', 'subscribes.course_id')
+            ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
+            ->join('dates', 'dates.id', '=', 'proceeds.date_id')
+            ->select('users.first_name','users.last_name','payments.ammount','payments.subammount'
+            ,'subjects.subjectName','subjects.price','payments.date','branches.name','dates.date As dateProcced')
+                ->where('branches.id', '=', $branchId) 
+                ->paginate(PAGINATION_COUNT);
+    
+            if ($Result->count() > 0) {
+                return $this->traitResponse($Result, 'Index Successfully', 200);
+            } else {
+                return $this->traitResponse(null, 'No  results found', 200);
+            }
+        } else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
         }
-
-
-        return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
 
     }
 
@@ -82,20 +99,32 @@ class ProceedController extends Controller
     public function show($id)
     {
 
-        $dataProceed = Proceed::find($id);
+        if (auth()->check()) {
+            $branchId = Auth::user()->branch_id;
 
-        if($dataProceed)
-        {
-            return $this->traitResponse($dataProceed , 'SUCCESS' , 200);
-
-
+            $Result = DB::table('proceeds')
+            ->join('payments', 'payments.id', '=', 'proceeds.payment_id')
+            ->join('subscribes', 'subscribes.id', '=', 'payments.subscribe_id')
+            ->join('cards', 'cards.id', '=', 'subscribes.card_id')
+            ->join('users', 'users.id', '=', 'cards.user_id')
+            ->join('branches', 'branches.id', '=', 'users.branch_id')
+            ->join('courses', 'courses.id', '=', 'subscribes.course_id')
+            ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
+            ->join('dates', 'dates.id', '=', 'proceeds.date_id')
+            ->select('users.first_name','users.last_name','payments.ammount','payments.subammount'
+            ,'subjects.subjectName','subjects.price','payments.date','branches.name','dates.date As dateProcced')
+                ->where('branches.id', '=', $branchId) 
+                ->where('polls.id', '=', $id) 
+                ->get();
+    
+            if ($Result->count() > 0) {
+                return $this->traitResponse($Result, 'Show Successfully', 200);
+            } else {
+                return $this->traitResponse(null, 'No  matching  results found', 200);
+            }
+        } else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
         }
-
-        return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
-
-
-
-
 
     }
 

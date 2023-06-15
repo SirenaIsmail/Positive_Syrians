@@ -33,6 +33,24 @@ class SubjectController extends Controller
 
     }
 
+
+
+    public function view()
+    {
+
+        $dataSubject = Subject::get();
+
+        if($dataSubject)
+        {
+            return $this->traitResponse($dataSubject,'SUCCESS', 200);
+
+        }
+
+
+        return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
+
+    }
+
     /**
      * Show the form for creating a new resource.
      *

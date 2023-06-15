@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\AttendController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\ClassRoomController;
@@ -8,11 +8,15 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\DateController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ReceiptStudentController;
+use App\Http\Controllers\ProcessingFeeController;
+use App\Http\Controllers\WithdrawController;
 use App\Http\Controllers\PollController;
 use App\Http\Controllers\ProceedController;
 use App\Http\Controllers\QuestionBankController;
 use App\Http\Controllers\ReferanceController;
 use App\Http\Controllers\StudentProfileController;
+use App\Http\Controllers\StudentAccountController;
 use App\Http\Controllers\SubjectTrainerController;
 use App\Http\Controllers\SubscribeController;
 use App\Http\Controllers\SubjectController;
@@ -70,6 +74,7 @@ Route::controller(SubscribeController::class)->group(function () {
 Route::controller(SubjectController::class)->group(function (){
     Route::Post('/subject/store','store');
     Route::get('/subject/index','index');
+    Route::get('/subject/view','view');
     Route::get('/subject/show/{id}','show');
     Route::Post('/subject/update/{id}','update');
     Route::Post('/subject/destroy/{id}','destroy');
@@ -107,6 +112,11 @@ Route::controller(UserController::class)->group(function () {
     Route::post('/add_employee', 'addEmployee');
     Route::post('/add_trainer', 'addTrainer');
     Route::get('/user/search/{filter}','search');
+    Route::get('/user/show/{id}', 'show');
+    Route::get('/user/index', 'index');
+    Route::Post('/user/store', 'store');
+    Route::Post('/user/update/{id}', 'update');
+    Route::Post('/user/destroy/{id}', 'destroy');
 });
 
 
@@ -118,6 +128,7 @@ Route::controller(UserController::class)->group(function () {
     Route::controller(BranchController::class)->group(function () {
         Route::Post('/branch/store','store');
         Route::get('/branch/index','index');
+        Route::get('/branch/view','view');
         Route::get('/branch/show/{id}','show');
         Route::Post('/branch/update/{id}','update');
         Route::Post('/branch/destroy/{id}','destroy');
@@ -239,14 +250,49 @@ Route::controller(UserController::class)->group(function () {
 
     //PAYMENT ROUTES
     Route::controller(PaymentController::class)->group(function () {
-        Route::Post('/payment/store', 'store');
+        Route::Post('/payment/store/{subscriptionId}', 'store');
         Route::get('/payment/index','index');
         Route::get('/payment/show/{id}', 'show');
         Route::Post('/payment/update/{id}', 'update');
         Route::Post('/payment/destroy/{id}','destroy');
-        Route::get('/payment/createPayment/{id}', 'createPayment');
+      
     });
     //PAYMENT END
+
+
+    Route::controller(ReceiptStudentController::class)->group(function () {
+        Route::Post('/receipt/store', 'store');
+        Route::get('/receipt/index','index');
+        Route::get('/receipt/show/{id}', 'show');
+        Route::Post('/receipt/update/{id}', 'update');
+        Route::Post('/receipt/destroy/{id}','destroy');
+      
+    });
+
+
+    
+    Route::controller(ProcessingFeeController::class)->group(function () {
+        Route::Post('/processing/store', 'store');
+        Route::get('/processing/index','index');
+        Route::get('/processing/show/{id}', 'show');
+        Route::Post('/processing/update/{id}', 'update');
+        Route::Post('/processing/destroy/{id}','destroy');
+      
+    });
+
+
+
+    Route::controller(WithdrawController::class)->group(function () {
+        Route::Post('/withdraw/store', 'store');
+        Route::get('/withdraw/index','index');
+        Route::get('/withdraw/show/{id}', 'show');
+        Route::Post('/withdraw/update/{id}', 'update');
+        Route::Post('/withdraw/destroy/{id}','destroy');
+      
+    });
+
+
+
 
     //Student State
     Route::controller(SubscribeController::class)->group(function () {
@@ -259,11 +305,18 @@ Route::controller(UserController::class)->group(function () {
 
         Route::get('/subscribe/search/{filter}', 'search');
 
-
-
-
     });
+
     //End Student State
+
+    Route::controller(AttendController::class)->group(function () {
+        Route::Post('/attend/store', 'store');
+        Route::get('/attend/index','index');
+        Route::get('/attend/show/{id}', 'show');
+        Route::Post('/attend/update/{id}', 'update');
+        Route::Post('/attend/destroy/{id}','destroy');
+       
+    });
 
    // });
 //End Receptionist Role
@@ -393,6 +446,8 @@ Route::controller(SubjectTrainerController::class)->group(function () {
 
 Route::controller(TrainerProfileController::class)->group(function () {
     Route::get('/trainerProfile/search/{filter}','search');
+    Route::get('/trainerProfile/index','index');
+    Route::get('/trainerProfile/view','view');
 });
 
 Route::controller(TaskController::class)->group(function () {

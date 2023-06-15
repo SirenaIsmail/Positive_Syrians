@@ -23,5 +23,12 @@ class Poll extends Model
 
     public function subjects(){
         return $this->belongsTo(Subject::class,'subject_id' , 'id');
+
     }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
 }

@@ -13,6 +13,7 @@ class Payment extends Model
         'subscribe_id',
         'ammount',
         'subammount',
+        'date',
     ];
 
     public function proceedes()
@@ -29,4 +30,15 @@ class Payment extends Model
     {
         return $this->belongsTo(Subscribe::class, 'subscribe_id');
     }
+  
+    public function studentAccount()
+    {
+        return $this->hasOne(Proceed::class, 'stusent_account_id','id');
+    }
+
+   
+
+
+
+
 }

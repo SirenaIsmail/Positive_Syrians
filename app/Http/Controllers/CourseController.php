@@ -19,17 +19,28 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $dataCourse = Course::paginate(PAGINATION_COUNT);
-
-        if($dataCourse)
-        {
-            return $this->traitResponse($dataCourse,'SUCCESS', 200);
-
+        if (auth()->check()) {
+            $branchId = Auth::user()->branch_id;
+    
+            $Result = DB::table('courses')
+                ->join('branches', 'courses.branch_id', '=', 'branches.id')
+                ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+                ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
+                ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
+                ->select('courses.*','subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','users.first_name','users.last_name')
+                ->where('branches.id', '=', $branchId) 
+                ->paginate(PAGINATION_COUNT);
+    
+            if ($Result->count() > 0) {
+                return $this->traitResponse($Result, 'Index Successfully', 200);
+            } else {
+                return $this->traitResponse(null, 'No  results found', 200);
+            }
+        } else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
         }
-
-
-        return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -92,21 +103,27 @@ class CourseController extends Controller
      */
     public function show($id)
     {
-
-
-        $dataCourse = Course::find($id);
-
-        if($dataCourse)
-        {
-            return $this->traitResponse($dataCourse , 'SUCCESS' , 200);
-
-
+        if (auth()->check()) {
+            $branchId = Auth::user()->branch_id;
+    
+            $Result = DB::table('courses')
+                ->join('branches', 'courses.branch_id', '=', 'branches.id')
+                ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+                ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
+                ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
+                ->select('subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','courses.start','courses.end','users.first_name','users.last_name')
+                ->where('branches.id', '=', $branchId) 
+                ->where('courses.id', '=', $id) 
+                ->get();
+    
+            if ($Result->count() > 0) {
+                return $this->traitResponse($Result, 'Show Successfully', 200);
+            } else {
+                return $this->traitResponse(null, 'No matching results found', 200);
+            }
+        } else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
         }
-
-        return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
-
-
-
     }
 
     /**

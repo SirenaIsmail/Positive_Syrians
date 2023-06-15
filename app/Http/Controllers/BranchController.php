@@ -32,6 +32,22 @@ class BranchController extends Controller
 
     }
 
+
+
+    public function view()
+    {
+      
+        $databranch = Branch::get();
+
+        if ($databranch) {
+            return $this->traitResponse($databranch, 'SUCCESS', 200);
+
+        }
+
+
+        return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
+
+    }
     /**
      * Show the form for creating a new resource.
      *

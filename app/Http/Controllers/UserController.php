@@ -146,6 +146,124 @@ class UserController extends Controller
         ]);
     }
 
+    public function index()
+    {
+        if (auth()->check()) {
+            $branchId = Auth::user()->branch_id;
+
+            $filterResult = DB::table('users')
+            ->join('branches', 'users.branch_id', '=', 'branches.id')
+            ->select('users.roll_number', 'users.first_name', 'users.last_name', 'users.birth_day'
+            , 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name')
+                ->where('branches.id', '=', $branchId) 
+                ->paginate(PAGINATION_COUNT);
+    
+            if ($filterResult->count() > 0) {
+                return $this->traitResponse($filterResult, 'index  Successfully', 200);
+            } else {
+                return $this->traitResponse(null, 'No matching results found', 200);
+            }
+        } else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
+        }
+    }
+
+
+    public function store(Request $request)
+    {
+
+        $validation = validator::make($request->all(), [
+
+            'phone_number' => 'required',
+
+
+        ]);
+        if ($validation->fails()) {
+            return $this->traitResponse(null, $validation->errors(), 400);
+
+        }
+
+
+        $dataUsers = User::create($request->all());
+
+        if ($dataUsers) {
+            return $this->traitResponse($dataUsers, 'Saved Successfully', 200);
+
+        }
+        return $this->traitResponse(null, 'Saved Failed', 400);
+
+
+    }
+  
+
+
+
+
+
+
+    public function show($id)
+    {
+        if (auth()->check()) {
+            $branchId = Auth::user()->branch_id;
+
+            $filterResult = DB::table('users')
+            ->join('branches', 'users.branch_id', '=', 'branches.id')
+            ->select('users.roll_number', 'users.first_name', 'users.last_name', 'users.birth_day'
+            , 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name')
+                ->where('branches.id', '=', $branchId) 
+                ->where('users.id', '=', $id) 
+                ->gate();
+    
+            if ($filterResult->count() > 0) {
+                return $this->traitResponse($filterResult, 'Show  Successfully', 200);
+            } else {
+                return $this->traitResponse(null, 'No matching results found', 200);
+            }
+        } else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
+        }
+    }
+
+
+    public function update(Request $request, $id)
+    {
+
+        $dataUsers = User::find($id);
+
+        if (!$dataUsers) {
+            return $this->traitResponse(null, ' Sorry Not Found', 404);
+
+        }
+
+        $dataUsers->update($request->all());
+        if ($dataUsers) {
+            return $this->traitResponse($dataUsers, 'Updated Successfully', 200);
+
+        }
+        return $this->traitResponse(null, 'Failed Updated', 400);
+    }
+
+
+    public function destroy($id)
+    {
+
+        $dataUsers = User::find($id);
+
+        if (!$dataUsers) {
+            return $this->traitResponse(null, 'Not Found ', 404);
+        }
+
+        $dataUsers->delete($id);
+
+        if ($dataUsers) {
+            return $this->traitResponse(null, 'Deleted Successfully ', 200);
+
+        }
+        return $this->traitResponse(null, 'Deleted Failed ', 404);
+
+    }
+
+
     public function search($filter)
     {
         if (auth()->check()) {
@@ -153,7 +271,8 @@ class UserController extends Controller
     
             $filterResult = DB::table('users')
                 ->join('branches', 'users.branch_id', '=', 'branches.id')
-                ->select('users.roll_number', 'users.first_name', 'users.last_name', 'users.birth_day', 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name')
+                ->select('users.roll_number', 'users.first_name', 'users.last_name', 'users.birth_day'
+                , 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name')
                 ->where('branches.id', '=', $branchId) // تحديد فقط المستخدمين في فرع المستخدم
                 ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
                     $query->where('users.roll_number', 'like', "%$filter%")

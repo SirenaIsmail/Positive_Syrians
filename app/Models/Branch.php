@@ -60,6 +60,9 @@ class Branch extends Model
         return $this->hasMany(TrainerRating::class, 'rating_id','id');
     }
 
+    public function polls(){
+        return $this->hasMany(Poll::class,'poll_id' , 'id');
+    }
  
    
 
