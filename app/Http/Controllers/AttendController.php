@@ -134,6 +134,8 @@ class AttendController extends Controller
        
     }
 
+    
+
     public function scanAttend($barcode){
         $cardId= DB::table('cards')->where('barcode', $barcode)->first();
         $history = DB::table('histories')->where('card_id',$cardId);
