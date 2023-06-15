@@ -210,7 +210,6 @@ class UserController extends Controller
 
     }
 
-
     public function search(Request $request, $filter)
     {
         if (auth()->check() ) {
@@ -259,6 +258,8 @@ class UserController extends Controller
             return $this->traitResponse(null, 'User not authenticated', 401);
         }
     }
+
+
 
 }
 
