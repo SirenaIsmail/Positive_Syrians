@@ -1,17 +1,16 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\TrainerProfile;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
-class UserController extends Controller
-{
+use Illuminate\Http\Request;
 
+class UsersController extends Controller
+{
     use apiResponse;
 
     public function __construct()
@@ -146,6 +145,7 @@ class UserController extends Controller
         ]);
     }
 
+
     public function search(Request $request, $filter)
     {
         if (auth()->check() ) {
@@ -183,17 +183,9 @@ class UserController extends Controller
                 return $this->traitResponse(null, 'No matching results found', 200);
             }
 
-
-
-
-
-
-
-
         } else {
             return $this->traitResponse(null, 'User not authenticated', 401);
         }
     }
-
 
 }

@@ -78,16 +78,16 @@ class AuthController extends Controller
         ]);
         $card = ( new CardController)->store($cardReq);
 
-        $token = Auth::login($user);
+       // $token = Auth::login($user);
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',
             'user' => $user,
             'card' => $card,
-            'authorisation' => [
-                'token' => $token,
-                'type' => 'bearer',
-            ]
+            // 'authorisation' => [
+            //     'token' => $token,
+            //     'type' => 'bearer',
+            // ]
         ]);
     }
 

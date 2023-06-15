@@ -26,7 +26,7 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TaskAnswerController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TrainerProfileController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -46,7 +46,7 @@ use App\Http\Controllers\AuthController;
 //    return $request->user();
 //});
 
-define('PAGINATION_COUNT',10);
+//define('PAGINATION_COUNT',10);
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
@@ -102,7 +102,7 @@ Route::controller(QuestionBankController::class)->group(function () {
     Route::Post('/qbank/destroy/{id}', 'destroy');
 });
 
-Route::controller(UserController::class)->group(function () {
+Route::controller(UsersController::class)->group(function () {
     Route::post('/add_employee', 'addEmployee');
     Route::post('/add_trainer', 'addTrainer');
     Route::get('/user/search/{filter}','search');
@@ -142,7 +142,7 @@ Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth']],function 
 
 
     //Add admin user
-    Route::controller(UserController::class)->group(function () {
+    Route::controller(UsersController::class)->group(function () {
         Route::post('/add_admin', 'addAdmin');
     })->middleware('general_admin');
     //End add admin user
@@ -207,7 +207,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
 
 
     //Add Receptionist or Trainer user
-    Route::controller(UserController::class)->group(function () {
+    Route::controller(UsersController::class)->group(function () {
         Route::post('/add_employee', 'addEmployee');
         Route::post('/add_trainer', 'addTrainer');
     })->middleware('branch_admin');
