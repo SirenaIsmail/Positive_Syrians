@@ -40,6 +40,7 @@ return new class extends Migration
             $table->decimal('Credit')->nullable();
             $table->date('date');
             $table->timestamps();
+            
         });
     }
 

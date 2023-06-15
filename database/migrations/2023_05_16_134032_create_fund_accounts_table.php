@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->date('date');
 
+            
 
             $table->timestamps();
         });

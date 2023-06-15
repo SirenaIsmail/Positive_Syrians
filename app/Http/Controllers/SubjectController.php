@@ -37,6 +37,7 @@ class SubjectController extends Controller
 
     public function view()
     {
+        
 
         $dataSubject = Subject::get();
 
