@@ -315,7 +315,12 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
     });
     //End Student State
 
-   // });
+    //لمسح الحضور
+    Route::controller(AttendController::class)->group(function (){
+       Route::Post('/scan_attend/{barcode}','scanAttend');
+    })->middleware('receptionist');
+
+});
 //End Receptionist Role
 
 
