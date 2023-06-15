@@ -14,10 +14,6 @@ class ClassRoom extends Model
         'branch_id'
     ];
 
-    public function attends(){
-        return $this->hasOne(Attend::class,'attend_id' , 'id');
-    }
-
     public function branches(){
         return $this->belongsTo(Branch::class,'branch_id' );
     }

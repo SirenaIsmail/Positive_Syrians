@@ -32,6 +32,22 @@ class TrainerProfileController extends Controller
 
     }
 
+
+    public function view()
+    {
+        $dataTrainerProfile = TrainerProfile::get();
+
+        if($dataTrainerProfile)
+        {
+            return $this->traitResponse($dataTrainerProfile,'SUCCESS', 200);
+
+        }
+
+
+        return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
+
+    }
+
     /**
      * Show the form for creating a new resource.
      *

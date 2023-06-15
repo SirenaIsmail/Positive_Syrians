@@ -18,6 +18,10 @@ return new class extends Migration
             $table->string('full_name');
             $table->string('mother_name');
             $table->string('address');
+            $table->foreignId('branch_id')
+            ->constrained('branches')
+            ->onUpdate('cascade')
+            ->onDelete('cascade');
             $table->foreignId('first_subj')
                 ->constrained('subjects')
                 ->onUpdate('cascade')

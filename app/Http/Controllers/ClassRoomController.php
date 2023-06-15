@@ -21,20 +21,26 @@ class ClassRoomController extends Controller
      */
     public function index()
     {
-
-
-       $dataclass= ClassRoom::paginate(PAGINATION_COUNT);
-
-
-
-        if ($dataclass) {
-            return $this->traitResponse($dataclass, 'SUCCESS', 200);
-       }
-        return $this->traitResponse(null, 'Sorry Failed Not Fond', 404);
-
-
+        if (auth()->check()) {
+            $branchId = Auth::user()->branch_id;
+    
+            $Result = DB::table('branches')
+                ->join('class_rooms', 'class_rooms.branch_id', '=', 'branches.id')
+                ->select('class_rooms.className', 'class_rooms.Number', 'class_rooms.size', 'branches.No', 'branches.name')
+                ->where('branches.id', '=', $branchId) 
+                ->paginate(PAGINATION_COUNT);
+    
+            if ($Result->count() > 0) {
+                return $this->traitResponse($Result, 'Index Successfully', 200);
+            }
+            else {
+                return $this->traitResponse(null, 'No results found', 200);
+            }
+        }
+        else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
+        }
     }
-
     /**
      * Show the form for creating a new resource.
      *
@@ -85,16 +91,26 @@ class ClassRoomController extends Controller
      */
     public function show($id)
     {
-        $dataClass = ClassRoom::find($id);
-
-        if ($dataClass) {
-            return $this->traitResponse($dataClass, 'SUCCESS', 200);
-
-
+        if (auth()->check()) {
+            $branchId = Auth::user()->branch_id;
+    
+            $Result = DB::table('branches')
+                ->join('class_rooms', 'class_rooms.branch_id', '=', 'branches.id')
+                ->select('class_rooms.*','branches.No', 'branches.name')
+                ->where('branches.id', '=', $branchId) // تحديد فقط الفصول في فرع المستخدم
+                ->where('class_rooms.id', '=', $id)
+                ->get();
+    
+            if ($Result->count() > 0) {
+                return $this->traitResponse($Result, 'Show Successfully', 200);
+            }
+            else {
+                return $this->traitResponse(null, 'No matching results found', 200);
+            }
         }
-
-        return $this->traitResponse(null, 'Sorry Not Found', 404);
-
+        else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
+        }
     }
 
     /**
@@ -168,6 +184,9 @@ class ClassRoomController extends Controller
         return $this->traitResponse(null, 'Deleted Failed ', 404);
 
     }
+
+
+    
     public function search($filter)
     {
         if (auth()->check()) {

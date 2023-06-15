@@ -23,19 +23,30 @@ class SubscribeController extends Controller
     public function index()
     {
 
-
-        $dataSubscribe = Subscribe::paginate(PAGINATION_COUNT);
-
-        if($dataSubscribe)
-        {
-            return $this->traitResponse($dataSubscribe,'SUCCESS', 200);
-
+        if (auth()->check()) {
+            $branchId = Auth::user()->branch_id;
+    
+            $Result = DB::table('subscribes')
+                ->join('subjects', 'subscribes.subject_id', '=', 'subjects.id')
+                ->join('cards', 'subscribes.card_id', '=', 'cards.id')
+                ->join('branches as card_branch', 'cards.branch_id', '=', 'card_branch.id')
+                ->join('users', 'cards.user_id', '=', 'users.id')
+                ->join('branches as user_branch', 'users.branch_id', '=', 'user_branch.id')
+                ->join('dates', 'subscribes.date_id', '=', 'dates.id')
+                ->select('subscribes.state', 'subjects.subjectName', 'subjects.content', 'subjects.price' ,'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number','dates.date')
+                ->where('user_branch.id', '=', $branchId) 
+                ->paginate(PAGINATION_COUNT);
+    
+            if ($Result->count() > 0) {
+                return $this->traitResponse($Result, 'Index Successfully', 200);
+            } else {
+                return $this->traitResponse(null, 'No  results found', 200);
+            }
+        } else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
         }
-
-
-        return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
-
     }
+    
 
     /**
      * Show the form for creating a new resource.
@@ -61,7 +72,7 @@ class SubscribeController extends Controller
             'card_id'=>'required',
             'branch_id'=>'required',
 //            'state'=> 'required|integer',
-            'date_id'=> 'required',
+
 
         ]);
         if($validation->fails())
@@ -77,7 +88,6 @@ class SubscribeController extends Controller
             'card_id'=>  $request -> card_id,
             'branch_id'=>  $request -> branch_id,
             'state'=>  $state,
-            'date_id'=>  $request -> date_id,
         ]);
 
         if($dataSubscribe)
@@ -186,21 +196,29 @@ class SubscribeController extends Controller
      */
     public function show($id)
     {
-        $dataSubscribe = Subscribe::find($id);
-
-        if($dataSubscribe)
-        {
-            return $this->traitResponse($dataSubscribe , 'SUCCESS' , 200);
-
-
+        if (auth()->check()) {
+            $branchId = Auth::user()->branch_id;
+    
+            $Result = DB::table('subscribes')
+                ->join('subjects', 'subscribes.subject_id', '=', 'subjects.id')
+                ->join('cards', 'subscribes.card_id', '=', 'cards.id')
+                ->join('branches as card_branch', 'cards.branch_id', '=', 'card_branch.id')
+                ->join('users', 'cards.user_id', '=', 'users.id')
+                ->join('branches as user_branch', 'users.branch_id', '=', 'user_branch.id')
+                ->join('dates', 'subscribes.date_id', '=', 'dates.id')
+                ->select('subscribes.state', 'subjects.subjectName', 'subjects.content', 'subjects.price' ,'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number','dates.date')
+                ->where('user_branch.id', '=', $branchId)
+                ->where('subscribes.id', '=', $id)  
+                ->gate();
+    
+            if ($Result->count() > 0) {
+                return $this->traitResponse($Result, 'Show Successfully', 200);
+            } else {
+                return $this->traitResponse(null, 'No  results found', 200);
+            }
+        } else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
         }
-
-        return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
-
-
-
-
-
     }
 
     /**
@@ -287,7 +305,7 @@ class SubscribeController extends Controller
     {
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
-    
+
             $filterResult = DB::table('subscribes')
                 ->join('subjects', 'subscribes.subject_id', '=', 'subjects.id')
                 ->join('cards', 'subscribes.card_id', '=', 'cards.id')
@@ -301,7 +319,7 @@ class SubscribeController extends Controller
                     $query->where('subscribes.state', 'like', "%$filter%");
                 })
                 ->paginate(PAGINATION_COUNT);
-    
+
             if ($filterResult->count() > 0) {
                 return $this->traitResponse($filterResult, 'Search Successfully', 200);
             } else {

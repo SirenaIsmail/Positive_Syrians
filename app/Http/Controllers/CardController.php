@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Card;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class CardController extends Controller
 {
@@ -16,17 +18,29 @@ class CardController extends Controller
      */
     public function index()
     {
-
-       $dataCard = Card::paginate(PAGINATION_COUNT);
-       if($dataCard)
-       {
-           return $this->traitResponse($dataCard,'SUCCESS',200);
-
-       }
-
-       return $this->traitResponse(null, 'Sorry Not Found',404);
-
+        if (auth()->check()) {
+            $branchId = Auth::user()->branch_id;
+    
+            $Result = DB::table('cards')
+                ->join('users', 'users.id', '=', 'cards.user_id')
+                ->join('branches', 'branches.id', '=', 'cards.branch_id')
+                ->select('cards.id', 'cards.user_id', 'users.*', 'branches.*')
+                ->where('branches.id', '=', $branchId) // تحديد فقط الفصول في فرع المستخدم
+                ->paginate(PAGINATION_COUNT);
+    
+            if ($Result->count() > 0) {
+                return $this->traitResponse($Result, 'index Successfully', 200);
+            }
+            else {
+                return $this->traitResponse(null, 'No matching results found', 200);
+            }
+        }
+        else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
+        }
+    
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -77,17 +91,30 @@ class CardController extends Controller
 
     public function show($id)
     {
-        $dataCard = Card::find($id);
-
-        if($dataCard)
-        {
-            return $this->traitResponse($dataCard,'SUCCESS',200);
-
+            if (auth()->check()) {
+                $branchId = Auth::user()->branch_id;
+        
+                $Result = DB::table('cards')
+                    ->join('users', 'users.id', '=', 'cards.user_id')
+                    ->join('branches', 'branches.id', '=', 'cards.branch_id')
+                    ->select('cards.id', 'cards.user_id', 'users.*', 'branches.*')
+                    ->where('branches.id', '=', $branchId) 
+                    ->where('cards.id', '=', $id)
+                    ->get();
+        
+                if ($Result->count() > 0) {
+                    return $this->traitResponse($Result, ' Show Successfully', 200);
+                }
+                else {
+                    return $this->traitResponse(null, 'No  results found', 200);
+                }
+            }
+            else {
+                return $this->traitResponse(null, 'User not authenticated', 401);
+            }
+        
         }
-        return $this->traitResponse(null,'Sorry Not Found ',404);
 
-
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -167,8 +194,5 @@ class CardController extends Controller
 
         }
         return  $this->traitResponse(null , 'Deleted Failed ' , 404);
-
-
-
     }
 }

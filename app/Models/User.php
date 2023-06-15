@@ -64,6 +64,29 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(Comment::class, 'comment_id','id');
     }
 
+
+    public function StudentAccount()
+    {
+        return $this->hasMany(StudentAccount::class, 'student_account_id','id');
+    }
+
+
+    public function ReceiptStudent()
+    {
+        return $this->hasMany(ReceiptStudent::class, 'receipt_student_id','id');
+    }
+
+    public function ProcessingFee()
+    {
+        return $this->hasMany(ProcessingFee::class, 'processing_fee_id','id');
+    }
+
+    public function withdraw()
+    {
+        return $this->hasMany(Withdraw::class, 'withdraw_id','id');
+    }
+
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
