@@ -9,16 +9,22 @@ class Attend extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'history_id',
+        'card_id',
+        'course_id',
         'date_id',
         'classroom_id',
         'lesson_number',
         'state',
     ];
 
-    public function histories()
+    public function cards()
     {
-        return $this->belongsTo(History::class, 'history_id');
+        return $this->belongsTo(Card::class, 'card_id');
+    }
+
+    public function courses()
+    {
+        return $this->belongsTo(Course::class, 'course_id');
     }
 
     public function dates()

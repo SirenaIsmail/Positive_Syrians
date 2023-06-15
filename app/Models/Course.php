@@ -32,6 +32,11 @@ class Course extends Model
         return $this->hasMany(QuestionBank::class, 'Question_bank_id','id');
     }
 
+    public function attends()
+    {
+        return $this->hasMany(Attend::class, 'attend_id','id');
+    }
+
     public function branches()
     {
         return $this->belongsTo(Branch::class, 'branch_id');

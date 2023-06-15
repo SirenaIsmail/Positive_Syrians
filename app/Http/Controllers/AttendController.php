@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attend;
+use App\Models\Card;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
 class AttendController extends Controller
@@ -129,6 +130,13 @@ class AttendController extends Controller
             return $this->traitResponse(null, 'User not authenticated', 401);
         }
     
+
+       
+    }
+
+    public function scanAttend($barcode){
+        $cardId= DB::table('cards')->where('barcode', $barcode)->first();
+        $history = DB::table('histories')->where('card_id',$cardId);
     }
     /**
      * Show the form for editing the specified resource.
@@ -178,8 +186,6 @@ class AttendController extends Controller
         }
         return $this->traitResponse(null,'Failed Updated',400);
 
-
-
     }
 
     /**
@@ -205,14 +211,6 @@ class AttendController extends Controller
 
         }
         return  $this->traitResponse(null , 'Deleted Failed ' , 404);
-
-
-
-
-
-
-
-
 
     }
 }

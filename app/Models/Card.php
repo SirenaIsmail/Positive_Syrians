@@ -38,4 +38,8 @@ class Card extends Model
     public function subscribes(){
         return $this->hasMany(Subscribe::class,'subscribe_id' , 'id');
     }
+
+    public function attends(){
+        return $this->hasMany(Attend::class,'attend_id' , 'id');
+    }
 }

@@ -13,7 +13,7 @@ class Subscribe extends Model
         'card_id',
         'branch_id',
         'state',
-        'date_id',
+
     ];
 
 
