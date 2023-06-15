@@ -39,7 +39,7 @@ use App\Http\Controllers\AuthController;
 //    return $request->user();
 //});
 
-define('PAGINATION_COUNT',10);
+//define('PAGINATION_COUNT',10);
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
@@ -55,6 +55,8 @@ Route::controller(CourseController::class)->group(function () {
     Route::get('/course/show/{id}',  'show');
     Route::Post('/course/update/{id}', 'update');
     Route::Post('/course/destroy/{id}', 'destroy');
+    Route::get('/course/search/{filter}','search');
+
     Route::Post('/course/approve/{id}', 'approve');
 });
 
