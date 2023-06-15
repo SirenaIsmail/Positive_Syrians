@@ -270,18 +270,18 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
         Route::get('/receipt/show/{id}', 'show');
         Route::Post('/receipt/update/{id}', 'update');
         Route::Post('/receipt/destroy/{id}','destroy');
-      
+
     });
 
 
-    
+
     Route::controller(ProcessingFeeController::class)->group(function () {
         Route::Post('/processing/store', 'store');
         Route::get('/processing/index','index');
         Route::get('/processing/show/{id}', 'show');
         Route::Post('/processing/update/{id}', 'update');
         Route::Post('/processing/destroy/{id}','destroy');
-      
+
     });
 
 
@@ -292,7 +292,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
         Route::get('/withdraw/show/{id}', 'show');
         Route::Post('/withdraw/update/{id}', 'update');
         Route::Post('/withdraw/destroy/{id}','destroy');
-      
+
     });
 
 
@@ -317,6 +317,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
 
     //لمسح الحضور
     Route::controller(AttendController::class)->group(function (){
+       Route::Post('/scan_attend/{barcode}','scanAttend');
        Route::Post('/scan_attend/{barcode}','scanAttend');
     })->middleware('receptionist');
 

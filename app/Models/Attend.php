@@ -25,9 +25,5 @@ class Attend extends Model
         return $this->belongsTo(Course::class, 'course_id');
     }
 
-    public function dates()
-    {
-        return $this->belongsTo(Date::class, 'date_id');
-    }
 
 }

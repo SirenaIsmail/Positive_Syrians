@@ -27,10 +27,7 @@ return new class extends Migration
                 ->constrained('courses')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->foreignId('date_id')
-                ->constrained('dates')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
+            $table->date('date_id');
             $table->boolean('state');
             $table->timestamps();
         });

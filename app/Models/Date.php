@@ -14,11 +14,6 @@ class Date extends Model
         'year',
     ];
 
-    public function attend()
-    {
-        return $this->hasOne(Attend::class, 'attend_id','id');
-    }
-
     public function topCourses()
     {
         return $this->hasMany(TopCourse::class, 'top_id','id');

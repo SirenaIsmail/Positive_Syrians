@@ -21,7 +21,7 @@ class AttendController extends Controller
     {
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
-    
+
             $Result = DB::table('attends')
                 ->join('class_rooms', 'class_rooms.id', '=', 'attends.classroom_id')
                 ->join('dates', 'dates.id', '=', 'attends.date_id')
@@ -34,9 +34,9 @@ class AttendController extends Controller
                 ->select('attends.*', 'dates.date', 'histories.course_id'
                 , 'subjects.subjectName','cards.id','cards.barcode','users.id','users.first_name'
                 ,'users.last_name','users.phone_number')
-                ->where('branches.id', '=', $branchId) 
+                ->where('branches.id', '=', $branchId)
                 ->paginate(PAGINATION_COUNT);
-    
+
             if ($Result->count() > 0) {
                 return $this->traitResponse($Result, 'Index Successfully', 200);
             }
@@ -47,7 +47,7 @@ class AttendController extends Controller
         else {
             return $this->traitResponse(null, 'User not authenticated', 401);
         }
-    
+
     }
 
     /**
@@ -111,7 +111,7 @@ class AttendController extends Controller
     {
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
-    
+
             $Result = DB::table('attends')
                 ->join('class_rooms', 'class_rooms.id', '=', 'attends.classroom_id')
                 ->join('dates', 'dates.id', '=', 'attends.date_id')
@@ -124,10 +124,10 @@ class AttendController extends Controller
                 ->select('attends.*', 'dates.date', 'histories.course_id'
                 , 'subjects.subjectName','cards.id','cards.barcode','users.id','users.first_name'
                 ,'users.last_name','users.phone_number')
-                ->where('branches.id', '=', $branchId) 
+                ->where('branches.id', '=', $branchId)
                 ->where('attends.id', '=', $id)
                 ->paginate(PAGINATION_COUNT);
-    
+
             if ($Result->count() > 0) {
                 return $this->traitResponse($Result, 'Show Successfully', 200);
             }
@@ -138,14 +138,14 @@ class AttendController extends Controller
         else {
             return $this->traitResponse(null, 'User not authenticated', 401);
         }
-    
 
-       
+
+
     }
 
-    
 
-    public function scanAttend($barcode){
+
+    public function scanAttend($barcode,Request $request){
         $cardId= DB::table('cards')->where('barcode', $barcode)->first();
         $subscribe = DB::table('subscribes')
             ->where('card_id', $cardId)
@@ -159,7 +159,7 @@ class AttendController extends Controller
                 $attendReq = new Request([
                     'card_id' => $cardId,
                     'course_id' => $request->course_id,
-                    'date_id' => $request->date_id,
+                    'date_id' => $thsDate,
                     'state' => $state,
                 ]);
                 $attend = (new AttendController())->store($attendReq);

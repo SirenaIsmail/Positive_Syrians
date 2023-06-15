@@ -23,7 +23,7 @@ class PollController extends Controller
 
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
-    
+
             $Result = DB::table('polls')
                 ->join('branches', 'polls.branch_id', '=', 'branches.id')
                 ->join('subjects AS subject1', 'polls.first_subj', '=', 'subject1.id')
@@ -31,11 +31,11 @@ class PollController extends Controller
                 ->join('subjects AS subject3', 'polls.third_subj', '=', 'subject3.id')
                 ->select('polls.full_name', 'polls.mother_name', 'polls.address', 'polls.poll_date', 'subject1.subjectName', 'polls.first_time', 'subject2.subjectName  As subjectName2'
                 , 'polls.secound_time', 'subject3.subjectName  As subjectName3', 'polls.third_time')
-                ->where('branches.id', '=', $branchId) 
+                ->where('branches.id', '=', $branchId)
                  ->paginate(PAGINATION_COUNT);
-              
-               
-        
+
+
+
                    if ($Result->count() > 0) {
                     return $this->traitResponse($Result, 'Index Successfully', 200);
                 } else {
@@ -70,14 +70,16 @@ class PollController extends Controller
 
 
         $validation = Validator::make($request->all(), [
-            'full_name'=>'required',
+            'full_name_ar'=>'required',
+            'poll_date'=>'required',
+            'phone_numb'=>'required',
+            'whatsapp_numb'=>'required',
             'first_subj'=>'required',
             'secound_subj' => 'required',
             'third_subj'=>'required',
             'first_time'=>'required',
             'secound_time'=>'required',
             'third_time'=>'required',
-            'poll_date'=> 'required',
 
         ]);
         if($validation->fails())
@@ -113,20 +115,20 @@ class PollController extends Controller
     {
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
-    
+
             $Result = DB::table('polls')
                 ->join('branches', 'polls.branch_id', '=', 'branches.id')
                 ->join('subjects AS subject1', 'polls.first_subj', '=', 'subject1.id')
                 ->join('subjects AS subject2', 'polls.secound_subj', '=', 'subject2.id')
                 ->join('subjects AS subject3', 'polls.third_subj', '=', 'subject3.id')
-                ->select('polls.full_name', 'polls.mother_name', 'polls.address', 'polls.poll_date', 'subject1.subjectName', 'polls.first_time', 'subject2.subjectName  As subjectName2'
+                ->select('polls.full_name_ar','polls.full_name_en', 'polls.mother_name', 'polls.address','polls.phone_numb','polls.whatsapp_numb', 'polls.poll_date', 'subject1.subjectName', 'polls.first_time', 'subject2.subjectName  As subjectName2'
                 , 'polls.secound_time', 'subject3.subjectName  As subjectName3', 'polls.third_time')
-                ->where('branches.id', '=', $branchId) 
-                ->where('polls.id', '=', $id) 
+                ->where('branches.id', '=', $branchId)
+                ->where('polls.id', '=', $id)
                  ->get();
-              
-               
-        
+
+
+
                    if ($Result->count() > 0) {
                     return $this->traitResponse($Result, 'Index Successfully', 200);
                 } else {
@@ -232,17 +234,17 @@ class PollController extends Controller
             ->join('subjects AS subject1', 'polls.first_subj', '=', 'subject1.id')
             ->join('subjects AS subject2', 'polls.secound_subj', '=', 'subject2.id')
             ->join('subjects AS subject3', 'polls.third_subj', '=', 'subject3.id')
-            ->select('polls.full_name', 'polls.mother_name', 'polls.address', 'polls.poll_date', 'subject1.subjectName', 'polls.first_time', 'subject2.subjectName  As subjectName2'
+            ->select('polls.full_name_ar','polls.full_name_en', 'polls.mother_name', 'polls.address','polls.phone_numb','polls.whatsapp_numb', 'polls.poll_date', 'subject1.subjectName', 'polls.first_time', 'subject2.subjectName  As subjectName2'
             , 'polls.secound_time', 'subject3.subjectName  As subjectName3', 'polls.third_time')
-            ->where('branches.id', '=', $branchId) 
-            ->where(function ($query) use ($filter) { 
+            ->where('branches.id', '=', $branchId)
+            ->where(function ($query) use ($filter) {
                 $query  ->where("subject1.subjectName", "like","%".$filter."%")
                 ->orWhere("subject2.subjectName", "like","%".$filter."%")
                 ->orWhere("subject3.subjectName", "like","%".$filter."%");
                }) ->paginate(PAGINATION_COUNT);
-          
-           
-    
+
+
+
                if ($filterResult->count() > 0) {
                 return $this->traitResponse($filterResult, 'Show Successfully', 200);
             } else {

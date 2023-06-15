@@ -15,13 +15,13 @@ return new class extends Migration
     {
         Schema::create('polls', function (Blueprint $table) {
             $table->id();
-            $table->string('full_name');
+            $table->string('full_name_ar');
+            $table->string('full_name_en');
             $table->string('mother_name');
             $table->string('address');
-            $table->foreignId('branch_id')
-            ->constrained('branches')
-            ->onUpdate('cascade')
-            ->onDelete('cascade');
+            $table->date('poll_date');
+            $table->string('phone_numb');
+            $table->string('whatsapp_numb');
             $table->foreignId('first_subj')
                 ->constrained('subjects')
                 ->onUpdate('cascade')
@@ -37,7 +37,11 @@ return new class extends Migration
             $table->string('first_time');
             $table->string('secound_time');
             $table->string('third_time');
-            $table->date('poll_date');
+            $table->text('notice');
+            $table->foreignId('branch_id')
+                ->constrained('branches')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }
