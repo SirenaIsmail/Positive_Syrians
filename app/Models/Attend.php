@@ -12,8 +12,6 @@ class Attend extends Model
         'card_id',
         'course_id',
         'date_id',
-        'classroom_id',
-        'lesson_number',
         'state',
     ];
 
@@ -32,8 +30,4 @@ class Attend extends Model
         return $this->belongsTo(Date::class, 'date_id');
     }
 
-    public function classrooms()
-    {
-        return $this->belongsTo(Classroom::class, 'classroom_id');
-    }
 }

@@ -53,7 +53,11 @@ class AttendController extends Controller
     public function store(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'lesson_number'=> 'required',
+            'card_id'=>'required|integer',
+            'course_id'=>'required|integer',
+            'date_id'=>'required|integer',
+            'state'=> 'required',
+
 
         ]);
         if($validation->fails())
@@ -62,8 +66,13 @@ class AttendController extends Controller
             return $this->traitResponse(null,$validation->errors(),400);
 
         }
-
-        $dataAttend = Attend::create($request -> all());
+        $state=false;
+        $dataAttend = Attend::create([
+            'card_id' =>$request->card_id,
+            'course_id' =>$request->course_id,
+            'date_id' => $request->date_id,
+            'state' =>$state,
+        ]);
 
         if($dataAttend)
         {
@@ -98,9 +107,38 @@ class AttendController extends Controller
 
     }
 
-    public function scanAttend($barcode){
+    public function scanAttend($barcode,Request $request){
         $cardId= DB::table('cards')->where('barcode', $barcode)->first();
-        $history = DB::table('histories')->where('card_id',$cardId);
+        $subscribe = DB::table('subscribes')
+            ->where('card_id', $cardId)
+            ->where('course_id', $request->course_id)
+            ->exists();
+        $thsDate =now()->format('Y-m-d');
+//        $studentsCount = DB::table('subscribes')->where('course_id', $request->course_id)->count();
+//        for ($i = 0; $i < $studentsCount; $i++) {
+            if ($subscribe) {
+                $state = true;
+                $attendReq = new Request([
+                    'card_id' => $cardId,
+                    'course_id' => $request->course_id,
+                    'date_id' => $request->date_id,
+                    'state' => $state,
+                ]);
+                $attend = (new AttendController())->store($attendReq);
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Student is attended successfully',
+                    'attend' => $attend
+                ]);
+
+            } else {
+                return response()->json([
+                    'status' => 'denied',
+                    'message' => 'Student is not subscribed in this course',
+                ]);
+            }
+
+
     }
 
     /**
@@ -133,7 +171,11 @@ class AttendController extends Controller
         }
 
         $validation = Validator::make($request->all(), [
+            'card_id'=>'required|integer',
+            'course_id'=>'required|integer',
+            'date_id'=>'required|integer',
             'state'=> 'required',
+
 
         ]);
         if($validation->fails())

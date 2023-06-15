@@ -31,11 +31,6 @@ return new class extends Migration
                 ->constrained('dates')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->foreignId('classroom_id')
-                ->constrained('classrooms')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
-            $table->integer('lesson_number');
             $table->boolean('state');
             $table->timestamps();
         });

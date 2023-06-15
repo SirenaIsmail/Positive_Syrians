@@ -219,7 +219,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
 
     //لمسح الحضور
     Route::controller(AttendController::class)->group(function (){
-       Route::Post('/scan_attend/{id}','scanAttend');
+       Route::Post('/scan_attend/{barcode}','scanAttend');
     })->middleware('receptionist');
 
 });
