@@ -70,7 +70,7 @@ class SubscribeController extends Controller
         $validation = Validator::make($request->all(), [
             'course_id'=>'required',
             'card_id'=>'required',
-            'branch_id'=>'required',
+            //'branch_id'=>'required',
 //            'state'=> 'required|integer',
 
 
@@ -81,12 +81,13 @@ class SubscribeController extends Controller
             return $this->traitResponse(null,$validation->errors(),400);
 
         }
-
+        $branchId = Auth::user()->branch_id;
+       
         $state = 1;
         $dataSubscribe = Subscribe::create([
             'course_id'=>  $request -> course_id,
             'card_id'=>  $request -> card_id,
-            'branch_id'=>  $request -> branch_id,
+            'branch_id'=>  $branchId,
             'state'=>  $state,
         ]);
 

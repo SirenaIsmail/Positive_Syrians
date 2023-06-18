@@ -194,7 +194,7 @@ if($filterResult)
 
 else{
     
-    $databranch = Branch::paginate(3);
+    $databranch = Branch::paginate(10);
 
     if ($databranch) {
         return $this->traitResponse($databranch, 'SUCCESS', 200);
