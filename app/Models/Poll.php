@@ -24,6 +24,7 @@ class Poll extends Model
         'third_time',
         'notice',
         'branch_id',
+
     ];
 
     public function subjects(){

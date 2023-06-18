@@ -167,8 +167,13 @@ Route::group(['prefix' => '/scientific_affairs' , 'middleware' => ['auth']],func
             Route::Post('/destroy/{id}', 'destroy');
         });
     })->middleware('scientific_affairs');
-
     //QUESTION BANK END
+
+    Route::controller(ExportController::class)->group(function () {
+        Route::get('/encrypt_excel/{key}', 'encryptExcel');
+        Route::get('/decrypt_excel/{key}', 'decryptExcel');
+    })->middleware('scientific_affairs');
+
 });
 //End Scientific Affairs Role
 
@@ -317,7 +322,6 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
 
     //لمسح الحضور
     Route::controller(AttendController::class)->group(function (){
-       Route::Post('/scan_attend/{barcode}','scanAttend');
        Route::Post('/scan_attend/{barcode}','scanAttend');
     })->middleware('receptionist');
 
