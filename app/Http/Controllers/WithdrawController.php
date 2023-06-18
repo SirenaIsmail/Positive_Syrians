@@ -56,8 +56,8 @@ class WithdrawController extends Controller
 
              $fund_account = new FundAccount();
              $fund_account->withdraw_id = $withdraw->id;
-             $fund_account->Debit = $request->amount;
-             $fund_account->Credit = 0.00;
+             $fund_account->Debit =  0.00;
+             $fund_account->Credit =$request->amount;
              $fund_account->description = $request->description;
              $fund_account->date = date('Y-m-d');
              $fund_account->save();
@@ -68,7 +68,7 @@ class WithdrawController extends Controller
             $studentAccount->payment_id =  $request->payment_id;
             $studentAccount->withdraw_id = $withdraw->id;
             $studentAccount->type = 'withdraw';
-            $studentAccount->Debit = $request->amount;
+            $studentAccount->Debit = 0.00;
             $studentAccount->Credit =0.00;
             $studentAccount->date = date('Y-m-d');
             $studentAccount->save();
@@ -90,19 +90,6 @@ class WithdrawController extends Controller
         return response()->json(['message' => 'تم إضافة البيانات بنجاح']);
 
      }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     }
 

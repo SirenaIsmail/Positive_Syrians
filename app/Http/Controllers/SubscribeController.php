@@ -100,9 +100,6 @@ class SubscribeController extends Controller
 
     }
 
-
-
-
     public function attend($id){
         $Subscribe = Subscribe::find($id);
         if($Subscribe)
@@ -160,10 +157,6 @@ class SubscribeController extends Controller
 
     }
 
-
-
-
-
     public function pending($id){
         $Subscribe = Subscribe::find($id);
         if($Subscribe)
@@ -182,10 +175,6 @@ class SubscribeController extends Controller
         return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
 
     }
-
-
-
-
 
 
     /**
@@ -267,11 +256,6 @@ class SubscribeController extends Controller
 
         }
         return $this->traitResponse(null,'Failed Updated',400);
-
-
-
-
-
     }
 
     /**
