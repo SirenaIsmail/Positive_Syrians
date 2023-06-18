@@ -37,9 +37,9 @@ class SubjectController extends Controller
 
     public function view()
     {
-        
 
-        $dataSubject = Subject::get();
+
+        $dataSubject = Subject::select('name', 'content','price','houers','number_of_lessons')->get();
 
         if($dataSubject)
         {

@@ -21,16 +21,16 @@ class CourseController extends Controller
     {
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
-    
+
             $Result = DB::table('courses')
                 ->join('branches', 'courses.branch_id', '=', 'branches.id')
                 ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
                 ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
                 ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
                 ->select('courses.*','subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','users.first_name','users.last_name')
-                ->where('branches.id', '=', $branchId) 
+                ->where('branches.id', '=', $branchId)
                 ->paginate(PAGINATION_COUNT);
-    
+
             if ($Result->count() > 0) {
                 return $this->traitResponse($Result, 'Index Successfully', 200);
             } else {
@@ -105,17 +105,17 @@ class CourseController extends Controller
     {
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
-    
+
             $Result = DB::table('courses')
                 ->join('branches', 'courses.branch_id', '=', 'branches.id')
                 ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
                 ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
                 ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
                 ->select('subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','courses.start','courses.end','users.first_name','users.last_name')
-                ->where('branches.id', '=', $branchId) 
-                ->where('courses.id', '=', $id) 
+                ->where('branches.id', '=', $branchId)
+                ->where('courses.id', '=', $id)
                 ->get();
-    
+
             if ($Result->count() > 0) {
                 return $this->traitResponse($Result, 'Show Successfully', 200);
             } else {
@@ -218,20 +218,20 @@ class CourseController extends Controller
     {
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
-    
+
             $filterResult = DB::table('courses')
                 ->join('branches', 'courses.branch_id', '=', 'branches.id')
                 ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
                 ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
                 ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
-                ->select('subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','courses.start','courses.end','branches.name','branches.No','users.first_name','users.last_name')
+                ->select('subjects.name','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','courses.start','courses.end','branches.name','branches.No','users.first_name','users.last_name')
                 ->where('branches.id', '=', $branchId) // تحديد فقط الدورات في فرع المستخدم
                 ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
                     $query->where('courses.start', 'like', "%$filter%")
                         ->orWhere('courses.end', 'like', "%$filter%");
                 })
                 ->get();
-    
+
             if ($filterResult->count() > 0) {
                 return $this->traitResponse($filterResult, 'Search Successfully', 200);
             } else {
