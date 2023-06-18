@@ -22,8 +22,9 @@ class SubscribeController extends Controller
      */
     public function index()
     {
-
-        if (auth()->check()) {
+             
+        if (auth()->check()) 
+        {
             $branchId = Auth::user()->branch_id;
     
             $Result = DB::table('subscribes')
