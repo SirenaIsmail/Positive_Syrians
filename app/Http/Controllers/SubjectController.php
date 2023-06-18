@@ -39,7 +39,7 @@ class SubjectController extends Controller
     {
 
 
-        $dataSubject = Subject::select('name', 'content','price','houers','number_of_lessons')->get();
+        $dataSubject = Subject::get();
 
         if($dataSubject)
         {
