@@ -82,6 +82,7 @@ Route::controller(BranchController::class)->group(function () {
     Route::Post('/branch/store','store');
     Route::get('/branch/index','index');
     Route::get('/branch/show/{id}','show');
+    Route::get('/branch/search/{filter}','search');
     Route::Post('/branch/update/{id}','update');
     Route::Post('/branch/destroy/{id}','destroy');
 });

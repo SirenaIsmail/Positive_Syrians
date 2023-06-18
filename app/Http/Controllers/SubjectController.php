@@ -258,10 +258,14 @@ class SubjectController extends Controller
 
     public function search( $filter )
     {
-
+        if($filter != "null"){
+            
         $filterResult = Subject::where("subjectName", "like","%$filter%")
            ->get();
-
+        }
+        else{
+            $filterResult = Subject::get();
+        }
         if($filterResult)
         {
 
