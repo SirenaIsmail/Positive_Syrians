@@ -29,8 +29,8 @@ class PollController extends Controller
                 ->join('subjects AS subject1', 'polls.first_subj', '=', 'subject1.id')
                 ->join('subjects AS subject2', 'polls.secound_subj', '=', 'subject2.id')
                 ->join('subjects AS subject3', 'polls.third_subj', '=', 'subject3.id')
-                ->select('polls.full_name', 'polls.mother_name', 'polls.address', 'polls.poll_date', 'subject1.subjectName', 'polls.first_time', 'subject2.subjectName  As subjectName2'
-                , 'polls.secound_time', 'subject3.subjectName  As subjectName3', 'polls.third_time')
+                ->select('polls.full_name_ar','polls.full_name_en', 'polls.mother_name', 'polls.address', 'polls.poll_date','polls.phone_numb','polls.whatsapp_numb', 'subject1.subjectName', 'polls.first_time', 'subject2.subjectName  As subjectName2'
+                , 'polls.secound_time', 'subject3.subjectName  As subjectName3', 'polls.third_time','polls.notice')
                 ->where('branches.id', '=', $branchId)
                  ->paginate(PAGINATION_COUNT);
 
@@ -122,7 +122,7 @@ class PollController extends Controller
                 ->join('subjects AS subject2', 'polls.secound_subj', '=', 'subject2.id')
                 ->join('subjects AS subject3', 'polls.third_subj', '=', 'subject3.id')
                 ->select('polls.full_name_ar','polls.full_name_en', 'polls.mother_name', 'polls.address','polls.phone_numb','polls.whatsapp_numb', 'polls.poll_date', 'subject1.subjectName', 'polls.first_time', 'subject2.subjectName  As subjectName2'
-                , 'polls.secound_time', 'subject3.subjectName  As subjectName3', 'polls.third_time')
+                , 'polls.secound_time', 'subject3.subjectName  As subjectName3', 'polls.third_time','polls.notice')
                 ->where('branches.id', '=', $branchId)
                 ->where('polls.id', '=', $id)
                  ->get();
@@ -235,7 +235,7 @@ class PollController extends Controller
             ->join('subjects AS subject2', 'polls.secound_subj', '=', 'subject2.id')
             ->join('subjects AS subject3', 'polls.third_subj', '=', 'subject3.id')
             ->select('polls.full_name_ar','polls.full_name_en', 'polls.mother_name', 'polls.address','polls.phone_numb','polls.whatsapp_numb', 'polls.poll_date', 'subject1.subjectName', 'polls.first_time', 'subject2.subjectName  As subjectName2'
-            , 'polls.secound_time', 'subject3.subjectName  As subjectName3', 'polls.third_time')
+            , 'polls.secound_time', 'subject3.subjectName  As subjectName3', 'polls.third_time','polls.notice')
             ->where('branches.id', '=', $branchId)
             ->where(function ($query) use ($filter) {
                 $query  ->where("subject1.subjectName", "like","%".$filter."%")

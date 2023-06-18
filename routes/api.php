@@ -168,8 +168,13 @@ Route::group(['prefix' => '/scientific_affairs' , 'middleware' => ['auth']],func
             Route::Post('/destroy/{id}', 'destroy');
         });
     })->middleware('scientific_affairs');
-
     //QUESTION BANK END
+
+    Route::controller(ExportController::class)->group(function () {
+        Route::get('/encrypt_excel/{key}', 'encryptExcel');
+        Route::get('/decrypt_excel/{key}', 'decryptExcel');
+    })->middleware('scientific_affairs');
+
 });
 //End Scientific Affairs Role
 
@@ -227,9 +232,9 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
 //////////////////////////////////////////////////////////////////////////////////
 
 //Receptionist Role Start
-Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function () {
-    //CARD ROUTES
-    Route::prefix('/card')->group(function (){
+// Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function () {
+//     //CARD ROUTES
+//     Route::prefix('/card')->group(function (){
         Route::controller(CardController::class)->group(function () {
             Route::Post('/store','store');
             Route::get('/index','index');
@@ -237,11 +242,11 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
             Route::Post('/update/{id}','update');
             Route::Post('/destroy/{id}','destroy');
         });
-    })->middleware('receptionist');
+    // })->middleware('receptionist');
     //CARD END
 
     //COURSE ROUTES
-    Route::prefix('/course')->group(function (){
+    // Route::prefix('/course')->group(function (){
         Route::controller(CourseController::class)->group(function () {
             Route::Post('/store',  'store');
             Route::get('/index',  'index');
@@ -251,7 +256,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
             Route::Post('/destroy/{id}', 'destroy');
             Route::Post('/approve/{id}', 'approve');
         });
-    })->middleware('receptionist');
+    // })->middleware('receptionist');
     //COURSE END
 
     //PAYMENT ROUTES
@@ -269,7 +274,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
     Route::controller(ReceiptStudentController::class)->group(function () {
         Route::Post('/receipt/store', 'store');
         Route::get('/receipt/index','index');
-        Route::get('/receipt/show/{id}', 'show');
+        Route::get('/receipt/show/{payment_id}/{user_id}','show');
         Route::Post('/receipt/update/{id}', 'update');
         Route::Post('/receipt/destroy/{id}','destroy');
 
@@ -320,10 +325,9 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
     //لمسح الحضور
     Route::controller(AttendController::class)->group(function (){
        Route::Post('/scan_attend/{barcode}','scanAttend');
-       Route::Post('/scan_attend/{barcode}','scanAttend');
     })->middleware('receptionist');
 
-});
+// });
 //End Receptionist Role
 
 
