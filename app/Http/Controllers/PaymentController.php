@@ -35,10 +35,9 @@ class PaymentController extends Controller
             ->join('branches', 'branches.id', '=', 'users.branch_id')
             ->join('courses', 'courses.id', '=', 'subscribes.course_id')
             ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
-            ->join('student_accounts', 'student_accounts.payment_id', '=', 'payments.id')
             ->select('users.first_name','users.last_name'
-            ,'subjects.subjectName','subjects.price','users.phone_number'
-            ,'payments.date','branches.name','student_accounts.Debit','student_accounts.Credit')
+            ,'subjects.subjectName','payments.ammount','users.phone_number'
+            ,'payments.date')
                 ->where('branches.id', '=', $branchId) 
                 ->paginate(10);
     
@@ -72,7 +71,6 @@ class PaymentController extends Controller
     public function store( $subscriptionId)
    
     {
-
                         // Get subscription information
               $subscription = Subscribe::find($subscriptionId);
               $card = Card::where('id', $subscription->card_id)->first();
@@ -124,18 +122,12 @@ class PaymentController extends Controller
         return response()->json(['message' => 'تم إضافة البيانات بنجاح']);
     } 
 
-
-    
-
-
     
     public function show($id)
     {
 
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
-    
-            
             $Result = DB::table('payments')
             ->join('subscribes', 'subscribes.id', '=', 'payments.subscribe_id')
             ->join('cards', 'cards.id', '=', 'subscribes.card_id')
@@ -143,12 +135,11 @@ class PaymentController extends Controller
             ->join('branches', 'branches.id', '=', 'users.branch_id')
             ->join('courses', 'courses.id', '=', 'subscribes.course_id')
             ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
-            ->join('student_accounts', 'student_accounts.payment_id', '=', 'payments.id')
-            ->select('users.first_name','users.last_name'
-            ,'subjects.subjectName','subjects.price','users.phone_number'
-            ,'payments.date','branches.name')
+            ->select('users.first_name','users.last_name',
+            'subjects.subjectName','subjects.price','users.phone_number',
+            'payments.date')
                 ->where('branches.id', '=', $branchId) 
-                >where('payments.id', '=', $id) 
+                ->where('payments.id', '=', $id) 
                 ->get();
     
             if ($Result->count() > 0) {
@@ -186,37 +177,35 @@ class PaymentController extends Controller
     {
 
 
-        $dataPayment = Payment::find($id);
+        // $dataPayment = Payment::find($id);
 
-        if(!$dataPayment)
-        {
-            return $this->traitResponse(null,' Sorry Not Found',404);
+        // if(!$dataPayment)
+        // {
+        //     return $this->traitResponse(null,' Sorry Not Found',404);
 
-        }
+        // }
 
-        $validation = Validator::make($request->all(), [
-            'branch_id'=> 'required',
-            'subscribe_id'=> 'required',
-            'ammount'=> 'required',
-            'subammount'=> 'required',
+        // $validation = Validator::make($request->all(), [
+        //     'branch_id'=> 'required',
+        //     'subscribe_id'=> 'required',
+        //     'ammount'=> 'required',
+            
 
-        ]);
-        if($validation->fails())
+        // ]);
+        // if($validation->fails())
 
-        {
-            return $this->traitResponse(null,$validation->errors(),400);
+        // {
+        //     return $this->traitResponse(null,$validation->errors(),400);
 
-        }
+        // }
 
-        $dataPayment->update($request->all());
-        if($dataPayment)
-        {
-            return $this->traitResponse($dataPayment , 'Updated Successfully',200);
+        // $dataPayment->update($request->all());
+        // if($dataPayment)
+        // {
+        //     return $this->traitResponse($dataPayment , 'Updated Successfully',200);
 
-        }
-        return $this->traitResponse(null,'Failed Updated',400);
-
-
+        // }
+        // return $this->traitResponse(null,'Failed Updated',400);
 
 
     }
@@ -229,7 +218,6 @@ class PaymentController extends Controller
      */
     public function destroy($id)
     {
-
 
         $dataPayment = Payment::find($id);
 
@@ -246,8 +234,6 @@ class PaymentController extends Controller
 
         }
         return  $this->traitResponse(null , 'Deleted Failed ' , 404);
-
-
 
     }
 
