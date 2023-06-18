@@ -191,6 +191,7 @@ class ClassRoomController extends Controller
     {
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
+           if($filter != "null"){
     
             $filterResult = DB::table('branches')
                 ->join('class_rooms', 'class_rooms.branch_id', '=', 'branches.id')
@@ -200,14 +201,27 @@ class ClassRoomController extends Controller
                     $query->where('class_rooms.className', 'like', "%$filter%")
                         ->orWhere('class_rooms.Number', 'like', "%$filter%");
                 })
-                ->paginate(PAGINATION_COUNT);
-    
+                ->paginate(10);
+
+            }
+            else{
+                
+            $filterResult = DB::table('branches')
+            ->join('class_rooms', 'class_rooms.branch_id', '=', 'branches.id')
+            ->select('class_rooms.className', 'class_rooms.Number', 'class_rooms.size', 'branches.No', 'branches.name')
+            ->where('branches.id', '=', $branchId) // تحديد فقط الفصول في فرع المستخدم
+            
+            ->paginate(10);
+
+            }
+        
             if ($filterResult->count() > 0) {
                 return $this->traitResponse($filterResult, 'Search Successfully', 200);
             }
             else {
                 return $this->traitResponse(null, 'No matching results found', 200);
             }
+
         }
         else {
             return $this->traitResponse(null, 'User not authenticated', 401);
