@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Redirect;
 
 class ProcessingFeeController extends Controller
 {
+    use apiResponse;
     /**
      * Display a listing of the resource.
      *
@@ -46,6 +47,25 @@ class ProcessingFeeController extends Controller
              $processing_fee->date = date('Y-m-d');
              $processing_fee->save();
 
+             $DebitTotal = StudentAccount::where('user_id', $request->user_id)
+             ->where('payment_id', $request->payment_id)
+              ->sum('Debit');
+ 
+         $CreditTotal = StudentAccount::where('user_id', $request->user_id)
+              ->where('payment_id', $request->payment_id)
+              ->sum('Credit');
+ 
+         $availableBalance = $DebitTotal - $CreditTotal;
+         $requestedAmount = $request->amount;
+         
+ 
+         if ($requestedAmount > $availableBalance) {
+             return response()->json(['error' => 'المبلغ المراد معالجته  يتجاوز المبلغ الواجب معالجته.'], 422);
+         }
+ 
+         if ($requestedAmount < $availableBalance) {
+             return response()->json(['error' => 'المبلغ المراد معالجته  أقل من  المبلغ الواجب معالجته.'], 422);
+         }
 
 
             $studentAccount = new StudentAccount();
@@ -58,6 +78,7 @@ class ProcessingFeeController extends Controller
             $studentAccount->date = date('Y-m-d');
             $studentAccount->save();
         
+       
         
 
         DB::commit();
@@ -115,10 +136,65 @@ class ProcessingFeeController extends Controller
      * @param  \App\Models\ProcessingFee  $processingFee
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, ProcessingFee $processingFee)
+    
+    public function update(Request $request, $id)
     {
-        //
+       
+        $dataProcessing = ProcessingFee::find($id);
+        if (!$dataProcessing) {
+            return $this->traitResponse(null,' Sorry Not Found',404);
+        }
+    
+        DB::beginTransaction();
+    
+        try {
+            
+            $dataProcessing->user_id = $request->user_id;
+            $dataProcessing->amount = $request->amount;
+            $dataProcessing->description = $request->description;
+            $dataProcessing->date = date('Y-m-d');
+            $dataProcessing->save();
+            
+            $DebitTotal = StudentAccount::where('user_id', $request->user_id)
+             ->where('payment_id', $request->payment_id)
+              ->sum('Debit');
+    
+
+            $CreditTotal = StudentAccount::where('user_id', $request->user_id)
+            ->where('payment_id', $request->payment_id)
+            ->sum('Credit');
+
+          $availableBalance = $DebitTotal - $CreditTotal;
+          $requestedAmount = $request->amount;
+        
+
+       if ($requestedAmount > $availableBalance) {
+           return response()->json(['error' => 'المبلغ المراد معالجته  يتجاوز المبلغ الواجب معالجته.'], 422);
+       }
+
+       if ($requestedAmount < $availableBalance) {
+           return response()->json(['error' => 'المبلغ المراد معالجته  أقل من  المبلغ الواجب معالجته.'], 422);
+       }
+
+
+            $studentAccount = StudentAccount::where('receipt_id', $id)->first();
+            if ($studentAccount) {
+                $studentAccount->user_id = $request->user_id;
+                $studentAccount->Credit = $request->amount;
+                $studentAccount->date = date('Y-m-d');
+                $studentAccount->save();
+            }
+       
+    
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+        }
+    
+        return response()->json(['message' => 'تم تحديث البيانات بنجاح']);
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -126,8 +202,26 @@ class ProcessingFeeController extends Controller
      * @param  \App\Models\ProcessingFee  $processingFee
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ProcessingFee $processingFee)
+
+
+    public function destroy($id)
     {
-        //
+        $dataProcessing= ReceiptStudent::find($id);
+
+        if(!$dataProcessing)
+        {
+            return $this->traitResponse(null,'Not Found ' , 404);
+        }
+
+        $dataProcessing->delete($id);
+
+        if($dataProcessing)
+        {
+            return  $this->traitResponse(null , 'تم الحذف بنجاح ' , 200);
+
+        }
+        return  $this->traitResponse(null , 'فشل الحذف' , 404);
+
+         }
     }
-}
+
