@@ -28,8 +28,8 @@ class CourseController extends Controller
                 ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
                 ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
                 ->select('courses.*','subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','users.first_name','users.last_name')
-                ->where('branches.id', '=', $branchId)
-                ->paginate(PAGINATION_COUNT);
+                ->where('branches.id', '=', $branchId);
+                
 
             if ($Result->count() > 0) {
                 return $this->traitResponse($Result, 'Index Successfully', 200);

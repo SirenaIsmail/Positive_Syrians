@@ -234,9 +234,9 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
 //////////////////////////////////////////////////////////////////////////////////
 
 //Receptionist Role Start
-// Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function () {
-//     //CARD ROUTES
-//     Route::prefix('/card')->group(function (){
+Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function () {
+    //CARD ROUTES
+    Route::prefix('/card')->group(function (){
         Route::controller(CardController::class)->group(function () {
             Route::Post('/store','store');
             Route::get('/index','index');
@@ -244,11 +244,11 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
             Route::Post('/update/{id}','update');
             Route::Post('/destroy/{id}','destroy');
         });
-    // })->middleware('receptionist');
+    })->middleware('receptionist');
     //CARD END
 
     //COURSE ROUTES
-    // Route::prefix('/course')->group(function (){
+    Route::prefix('/course')->group(function (){
         Route::controller(CourseController::class)->group(function () {
             Route::Post('/store',  'store');
             Route::get('/index',  'index');
@@ -258,7 +258,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
             Route::Post('/destroy/{id}', 'destroy');
             Route::Post('/approve/{id}', 'approve');
         });
-    // })->middleware('receptionist');
+    })->middleware('receptionist');
     //COURSE END
 
     //PAYMENT ROUTES
