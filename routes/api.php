@@ -61,6 +61,7 @@ Route::controller(SubscribeController::class)->group(function () {
     Route::Post('/subscribe/store','store');
     Route::get('/subscribe/index','index');
     Route::get('/subscribe/show/{id}','show');
+    Route::get('/subscribe/search/{filter}','search');
     Route::Post('/subscribe/update/{id}','update');
     Route::Post('/subscribe/destroy/{id}','destroy');
 
@@ -207,7 +208,6 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
             Route::get('/show/{id}','show');
             Route::Post('/update/{id}','update');
             Route::Post('/destroy/{id}','destroy');
-//    Route::get('/subject/download/{filename}','download');
         });
     })->middleware('branch_admin');
 
@@ -219,11 +219,6 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
         Route::post('/add_employee', 'addEmployee');
         Route::post('/add_trainer', 'addTrainer');
     })->middleware('branch_admin');
-
-    //End add Receptionist or Trainer user
-
-
-
 
 });
 //End Branch Admin Role
@@ -329,7 +324,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
        Route::Post('/scan_attend/{barcode}','scanAttend');
     })->middleware('receptionist');
 
-// });
+ });
 //End Receptionist Role
 
 
