@@ -70,6 +70,7 @@ Route::controller(SubjectController::class)->group(function (){
     Route::Post('/subject/store','store');
     Route::get('/subject/index','index');
     Route::get('/subject/show/{id}','show');
+    Route::get('/subject/view/','view');  
     Route::Post('/subject/update/{id}','update');
     Route::Post('/subject/destroy/{id}','destroy');
     Route::get('/subject/search/{filter}','search');
@@ -245,6 +246,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
             Route::Post('/store',  'store');
             Route::get('/index',  'index');
             Route::get('/show/{id}',  'show');
+            Route::get('/search/{filter}','search');
             Route::Post('/update/{id}', 'update');
             Route::Post('/destroy/{id}', 'destroy');
             Route::Post('/approve/{id}', 'approve');
@@ -469,6 +471,7 @@ Route::prefix('/strainer')->group(function (){
 
 Route::controller(TrainerProfileController::class)->group(function () {
     Route::get('/trainerProfile/search/{filter}','search');
+    Route::get('/trainerProfile/view','view');
 });
 
 
