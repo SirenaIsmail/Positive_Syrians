@@ -36,11 +36,12 @@ class TrainerProfileController extends Controller
     public function view(Request $request)
     {
         $branchId = Auth::user()->branch_id;
-        $dataTrainerProfile = DB::table('users')
-            ->join('branches','users.branch_id','=','branches.id')
-            ->select('users.first_name')
+        $dataTrainerProfile = DB::table('trainer_profiles')
+            ->join('users','users.id','=','trainer_profiles.user_id')
+            ->select('users.first_name','trainer_profiles.id')
             ->where('users.roll_number', '=', $request->query('roll_number')) // تحديد فقط المستخدمين في فرع المستخدم
-            ->where('users.branch_id', '=', $branchId);
+            ->where('users.branch_id', '=', $branchId)
+            ->get();
 
         if($dataTrainerProfile)
         {
