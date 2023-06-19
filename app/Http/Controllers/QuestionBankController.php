@@ -197,7 +197,7 @@ class QuestionBankController extends Controller
    public function search($filter)
    
    {
-    return $this->traitResponse(null, 'No matching results found', 200);
+
        if (auth()->check()) {
            $branchId = Auth::user()->branch_id;
 
@@ -207,8 +207,7 @@ class QuestionBankController extends Controller
                ->join('trainer_profiles', 'trainer_profiles.id', '=', 'courses.trainer_id')
                ->join('users', 'users.id', '=', 'trainer_profiles.user_id')
                ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
-               ->select('question_banks.model', 'question_banks.file', 'subjects.subjectName', 'subjects.content'
-               ,'users.first_name ' ,'users.last_name ')
+               ->select('question_banks.model', 'question_banks.file', 'subjects.subjectName', 'subjects.content')
                ->where('branches.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
                ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
                    $query->where('question_banks.model', 'like', "%$filter%");

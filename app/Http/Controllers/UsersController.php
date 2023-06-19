@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 use App\Models\TrainerProfile;
 use App\Models\User;
+use App\Models\Subscribe;
+use App\Models\Course;
+use App\Models\Card;
+use App\Models\Subject;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -189,5 +193,29 @@ class UsersController extends Controller
             return $this->traitResponse(null, 'User not authenticated', 401);
         }
     }
+
+
+   public function show($id)
+   {
+
+    $Result = DB::table('subscribes')
+    ->join('courses', 'courses.id', '=', 'subscribes.course_id')
+    ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
+    >join('cards', 'cards.id', '=', 'subscribes.card_id')
+    ->join('users', 'users.id', '=', 'cards.user_id')
+    ->select( 'users.first_name', 'users.last_name', 'users.phone_number','subjects.subjectName', 'subjects.content')
+    ->where('users.id', '=', $id) 
+    // ->where('subscribes.state', '=', 1)
+    ->paginate(10);
+
+    if ($Result->count() > 0) {
+     return $this->traitResponse($Result, 'Index Successfully', 200);
+      } else {
+      return $this->traitResponse(null, 'No  results found', 200);
+          }
+
+   }
+
+
 
 }

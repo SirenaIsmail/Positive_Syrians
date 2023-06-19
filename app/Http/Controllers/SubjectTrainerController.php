@@ -72,9 +72,6 @@ class SubjectTrainerController extends Controller
 
         return  $this->traitResponse(null,'Saved Failed ' , 400);
 
-
-
-
     }
 
     /**
@@ -96,10 +93,32 @@ class SubjectTrainerController extends Controller
         }
 
         return  $this->traitResponse(null , 'Sorry Not Found ' , 404);
-
-
-
     }
+
+
+    
+    public function view($id)
+    {
+        $Result = DB::table('subject_trainers')
+    ->join('subjects', 'subjects.id', '=', 'subject_trainers.subject_id')
+    >join('trainer_profiles', 'trainer_profiles.id', '=', 'subject_trainers.trainer_id')
+    ->join('users', 'users.id', '=', 'trainer_profiles.user_id')
+    ->select( 'users.first_name', 'users.last_name', 'users.phone_number','subjects.subjectName', 'subjects.content')
+    ->where('users.id', '=', $id) 
+    ->paginate(10);
+
+if ($Result->count() > 0) {
+    return $this->traitResponse($Result, 'Index Successfully', 200);
+     } else {
+    return $this->traitResponse(null, 'No  results found', 200);
+         }
+    }
+
+
+
+
+
+
 
     /**
      * Show the form for editing the specified resource.

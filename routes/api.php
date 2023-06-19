@@ -109,12 +109,13 @@ Route::controller(UsersController::class)->group(function () {
     Route::post('/add_employee', 'addEmployee');
     Route::post('/add_trainer', 'addTrainer');
     Route::get('/user/search/{filter}','search');
+    Route::get('/user/show/{id}','show');
 });
 
 
 
 //General Admin Role Start
-Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth']],function () {
+// Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth']],function () {
 
     //BRANCH ROUTES  START
 
@@ -140,7 +141,7 @@ Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth']],function 
             Route::Post('/update/{id}',  'update');
             Route::Post('/destroy/{id}', 'destroy');
         });
-    })->middleware('general_admin');
+    // })->middleware('general_admin');
     //PROCEED END
 
 
@@ -465,15 +466,16 @@ Route::prefix('/poll')->group(function (){
 
 
 //SUBJECT_TRAINER ROUTES
-Route::prefix('/strainer')->group(function (){
+// Route::prefix('/strainer')->group(function (){
     Route::controller(SubjectTrainerController::class)->group(function () {
         Route::Post('/store','store');
         Route::get('/index','index');
-        Route::get('/show/{id}','show');
+        Route::get('/subjectTrainer/show/{id}','show');
+        Route::get('/subjectTrainer/view/{id}','view');
         Route::Post('/update/{id}','update');
         Route::Post('/destroy/{id}','destroy');
     });
-});
+// });
 //SUBJECT_TRAINER END
 
 
