@@ -147,6 +147,7 @@ Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth']],function 
     //Add admin user
     Route::controller(UsersController::class)->group(function () {
         Route::post('/add_admin', 'addAdmin');
+        Route::get('/user/search/{filter}', 'searchForGenToBrn');
     })->middleware('general_admin');
     //End add admin user
 
