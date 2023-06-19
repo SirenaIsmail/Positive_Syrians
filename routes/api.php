@@ -61,6 +61,7 @@ Route::controller(SubscribeController::class)->group(function () {
     Route::Post('/subscribe/store','store');
     Route::get('/subscribe/index','index');
     Route::get('/subscribe/show/{id}','show');
+    Route::get('/subscribe/search/{filter}','search');
     Route::Post('/subscribe/update/{id}','update');
     Route::Post('/subscribe/destroy/{id}','destroy');
 
@@ -82,6 +83,7 @@ Route::controller(BranchController::class)->group(function () {
     Route::Post('/branch/store','store');
     Route::get('/branch/index','index');
     Route::get('/branch/show/{id}','show');
+    Route::get('/branch/search/{filter}','search');
     Route::Post('/branch/update/{id}','update');
     Route::Post('/branch/destroy/{id}','destroy');
 
@@ -148,6 +150,7 @@ Route::controller(UsersController::class)->group(function () {
     //Add admin user
     Route::controller(UsersController::class)->group(function () {
         Route::post('/add_admin', 'addAdmin');
+        Route::get('/user/search/{filter}', 'searchForGenToBrn');
     })->middleware('general_admin');
     //End add admin user
 
@@ -194,6 +197,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
             Route::Post('/store','store');
             Route::get('/index','index');
             Route::get('/show/{id}','show');
+            Route::get('/search/{filter}','show');    
             Route::Post('/update/{id}','update');
             Route::Post('/destroy/{id}','destroy');
         });
@@ -209,7 +213,6 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
             Route::get('/show/{id}','show');
             Route::Post('/update/{id}','update');
             Route::Post('/destroy/{id}','destroy');
-//    Route::get('/subject/download/{filename}','download');
         });
     })->middleware('branch_admin');
 
@@ -222,11 +225,6 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
         Route::post('/add_trainer', 'addTrainer');
     })->middleware('branch_admin');
 
-    //End add Receptionist or Trainer user
-
-
-
-
 });
 //End Branch Admin Role
 
@@ -236,9 +234,9 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
 //////////////////////////////////////////////////////////////////////////////////
 
 //Receptionist Role Start
-// Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function () {
-//     //CARD ROUTES
-//     Route::prefix('/card')->group(function (){
+Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function () {
+    //CARD ROUTES
+    Route::prefix('/card')->group(function (){
         Route::controller(CardController::class)->group(function () {
             Route::Post('/store','store');
             Route::get('/index','index');
@@ -246,11 +244,11 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
             Route::Post('/update/{id}','update');
             Route::Post('/destroy/{id}','destroy');
         });
-    // })->middleware('receptionist');
+    })->middleware('receptionist');
     //CARD END
 
     //COURSE ROUTES
-    // Route::prefix('/course')->group(function (){
+    Route::prefix('/course')->group(function (){
         Route::controller(CourseController::class)->group(function () {
             Route::Post('/store',  'store');
             Route::get('/index',  'index');
@@ -260,7 +258,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
             Route::Post('/destroy/{id}', 'destroy');
             Route::Post('/approve/{id}', 'approve');
         });
-    // })->middleware('receptionist');
+    })->middleware('receptionist');
     //COURSE END
 
     //PAYMENT ROUTES
@@ -332,7 +330,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
        Route::Post('/scan_attend/{barcode}','scanAttend');
     })->middleware('receptionist');
 
-// });
+ });
 //End Receptionist Role
 
 

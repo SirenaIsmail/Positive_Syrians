@@ -33,9 +33,14 @@ class TrainerProfileController extends Controller
     }
 
 
-    public function view()
+    public function view(Request $request)
     {
-        $dataTrainerProfile = TrainerProfile::get();
+        $branchId = Auth::user()->branch_id;
+        $dataTrainerProfile = DB::table('users')
+            ->join('branches','users.branch_id','=','branches.id')
+            ->select('users.first_name')
+            ->where('users.roll_number', '=', $request->query('roll_number')) // تحديد فقط المستخدمين في فرع المستخدم
+            ->where('users.branch_id', '=', $branchId);
 
         if($dataTrainerProfile)
         {
@@ -209,7 +214,7 @@ class TrainerProfileController extends Controller
                 ->where('branches.id', '=', $branchId) // تحديد فقط المدربين في فرع المستخدم
                 ->where('users.first_name', 'like', "%$filter%") // تحديد النتائج المطابقة للتقييم المدخل
                 ->paginate(PAGINATION_COUNT);
-    
+
             if ($filterResult->count() > 0) {
                 return $this->traitResponse($filterResult, 'Search Successfully', 200);
             } else {

@@ -37,7 +37,7 @@ class SubjectController extends Controller
 
     public function view()
     {
-        
+
 
         $dataSubject = Subject::get();
 
@@ -71,7 +71,7 @@ class SubjectController extends Controller
     public function store(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'name'=>'required',
+            'subjectName'=>'required',
             'content'=>'required',
             'price'=>'required',
             'houers'=>'required',
@@ -93,7 +93,7 @@ class SubjectController extends Controller
 
         $path = Storage::disk('public')->put('uploads', $content);
         $dataSubject = Subject::create([
-            'name'=> $request->name,
+            'subjectName'=> $request->subjectName,
             'content'=> $path,
             'price'=> $request->price,
             'houers'=> $request->houers,
@@ -258,10 +258,15 @@ class SubjectController extends Controller
 
     public function search( $filter )
     {
-
+        if($filter != "null"){
+            
         $filterResult = Subject::where("subjectName", "like","%$filter%")
-           ->get();
-
+        ->paginate(2) 
+        ->get();
+        }
+        else{
+            $filterResult = Subject::paginate(2);
+        }
         if($filterResult)
         {
 

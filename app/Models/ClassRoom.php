@@ -9,7 +9,8 @@ class ClassRoom extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'No',
+        'Number',
+        'className',
         'size',
         'branch_id'
     ];

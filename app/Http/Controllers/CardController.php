@@ -26,7 +26,7 @@ class CardController extends Controller
                 ->join('branches', 'branches.id', '=', 'cards.branch_id')
                 ->select('cards.id', 'cards.user_id', 'users.*', 'branches.*')
                 ->where('branches.id', '=', $branchId) // تحديد فقط الفصول في فرع المستخدم
-                ->paginate(PAGINATION_COUNT);
+                ->get();
     
             if ($Result->count() > 0) {
                 return $this->traitResponse($Result, 'index Successfully', 200);
