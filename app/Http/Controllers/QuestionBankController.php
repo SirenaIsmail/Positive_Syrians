@@ -3,9 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\QuestionBank;
+use App\Models\Subscribe;
+use App\Models\Coures;
+use App\Models\TrainerProfile;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
+
 
 class QuestionBankController extends Controller
 {
@@ -18,7 +26,7 @@ class QuestionBankController extends Controller
      */
     public function index()
     {
-        $dataQb = QuestionBank::paginate(PAGINATION_COUNT);
+        $dataQb = QuestionBank::paginate(3);
 
         if($dataQb)
         {
@@ -183,5 +191,37 @@ class QuestionBankController extends Controller
 
         }
         return  $this->traitResponse(null , 'Deleted Failed ' , 404);
-    }
+ 
+   }
+
+   public function search($filter)
+   
+   {
+
+       if (auth()->check()) {
+           $branchId = Auth::user()->branch_id;
+
+           $filterResult = DB::table('question_banks')
+               ->join('branches', 'branches.id', '=', 'question_banks.branch_id')
+               ->join('courses', 'courses.id', '=', 'question_banks.course_id')
+               ->join('trainer_profiles', 'trainer_profiles.id', '=', 'courses.trainer_id')
+               ->join('users', 'users.id', '=', 'trainer_profiles.user_id')
+               ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
+               ->select('question_banks.model', 'question_banks.file', 'subjects.subjectName', 'subjects.content')
+               ->where('branches.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
+               ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
+                   $query->where('question_banks.model', 'like', "%$filter%");
+               })
+               ->paginate(2);
+
+           if ($filterResult->count() > 0) {
+               return $this->traitResponse($filterResult, 'Search Successfully', 200);
+           } else {
+               return $this->traitResponse(null, 'No matching results found', 200);
+           }
+       } else {
+           return $this->traitResponse(null, 'User not authenticated', 401);
+       }
+   }
+
 }

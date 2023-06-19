@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 use App\Models\TrainerProfile;
 use App\Models\User;
+use App\Models\Subscribe;
+use App\Models\Course;
+use App\Models\Card;
+use App\Models\Subject;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -171,6 +175,9 @@ class UsersController extends Controller
                 ->paginate(1);
     
             }
+
+            
+
             else{
                 $filterResult = DB::table('users')
                 ->join('branches', 'users.branch_id', '=', 'branches.id')
@@ -191,5 +198,72 @@ class UsersController extends Controller
             return $this->traitResponse(null, 'User not authenticated', 401);
         }
     }
+
+    
+    public function searchForGenToBrn(Request $request, $filter)
+    {
+        if (auth()->check() ) {
+            if($filter != "null"){
+                $filterResult = DB::table('users')
+                ->join('branches', 'users.branch_id', '=', 'branches.id')
+                ->select('users.first_name', 'users.last_name', 'users.birth_day', 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name')
+                ->where('users.roll_number', '=', $request->query('roll_number')) // تحديد فقط المستخدمين في فرع المستخدم
+                ->select('users.roll_number', 'users.first_name', 'users.last_name', 'users.birth_day'
+                , 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name')
+                ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
+                    $query->where('users.roll_number', 'like', "%$filter%")
+                        ->orWhere('users.first_name', 'like', "%$filter%")
+                        ->orWhere('users.last_name', 'like', "%$filter%");
+                })
+                ->paginate(10);
+    
+            }
+
+            
+
+            else{
+                $filterResult = DB::table('users')
+                ->join('branches', 'users.branch_id', '=', 'branches.id')
+                ->select('users.first_name', 'users.last_name', 'users.birth_day', 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name')
+                ->where('users.roll_number', '=', $request->query('roll_number')) // تحديد فقط المستخدمين في فرع المستخدم
+                ->paginate(10);
+
+            }
+            
+            if ($filterResult->count() > 0) {
+                return $this->traitResponse($filterResult, 'Search Successfully', 200);
+            } else {
+                return $this->traitResponse(null, 'No matching results found', 200);
+            }
+
+        } else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
+        }
+    }
+
+
+   public function show($id)
+   {
+
+    $Result = DB::table('subscribes')
+    ->join('courses', 'courses.id', '=', 'subscribes.course_id')
+    ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
+    ->join('cards', 'cards.id', '=', 'subscribes.card_id')
+    ->join('users', 'users.id', '=', 'cards.user_id')
+    ->select( 'subjects.subjectName', 'subjects.content')
+    ->where('users.id', '=', $id) 
+    // ->where('subscribes.state', '=', 1)
+    ->paginate(10);
+
+    if ($Result->count() > 0) {
+     return $this->traitResponse($Result, 'Index Successfully', 200);
+      } 
+       else {
+      return $this->traitResponse(null, 'No  results found', 200);
+          }
+
+   }
+
+
 
 }
