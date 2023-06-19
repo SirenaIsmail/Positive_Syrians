@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SubjectTrainer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class SubjectTrainerController extends Controller
 {
@@ -99,9 +100,9 @@ class SubjectTrainerController extends Controller
     
     public function view($id)
     {
-        $Result = DB::table('subject_trainers')
+    $Result = DB::table('subject_trainers')
     ->join('subjects', 'subjects.id', '=', 'subject_trainers.subject_id')
-    >join('trainer_profiles', 'trainer_profiles.id', '=', 'subject_trainers.trainer_id')
+    ->join('trainer_profiles', 'trainer_profiles.id', '=', 'subject_trainers.trainer_id')
     ->join('users', 'users.id', '=', 'trainer_profiles.user_id')
     ->select( 'users.first_name', 'users.last_name', 'users.phone_number','subjects.subjectName', 'subjects.content')
     ->where('users.id', '=', $id) 
