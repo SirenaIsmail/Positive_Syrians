@@ -84,6 +84,7 @@ Route::controller(BranchController::class)->group(function () {
     Route::get('/branch/show/{id}','show');
     Route::Post('/branch/update/{id}','update');
     Route::Post('/branch/destroy/{id}','destroy');
+
 });
 
 Route::controller(TrainerProfileController::class)->group(function () {
@@ -101,6 +102,7 @@ Route::controller(QuestionBankController::class)->group(function () {
     Route::get('/qbank/show/{id}', 'show');
     Route::Post('/qbank/update/{id}', 'update');
     Route::Post('/qbank/destroy/{id}', 'destroy');
+    Route::get('/qbank/search/{filter}','search');
 });
 
 Route::controller(UsersController::class)->group(function () {
@@ -159,15 +161,16 @@ Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth']],function 
 Route::group(['prefix' => '/scientific_affairs' , 'middleware' => ['auth']],function () {
 
     //QUESTION BANK ROUTES
-    Route::prefix('/qbank')->group(function (){
-        Route::controller(QuestionBankController::class)->group(function () {
-            Route::Post('/store', 'store');
-            Route::get('/index', 'index');
-            Route::get('/show/{id}', 'show');
-            Route::Post('/update/{id}', 'update');
-            Route::Post('/destroy/{id}', 'destroy');
-        });
-    })->middleware('scientific_affairs');
+    // Route::prefix('/qbank')->group(function (){
+        // Route::controller(QuestionBankController::class)->group(function () {
+        //     Route::Post('/store', 'store');
+        //     Route::get('/index', 'index');
+        //     Route::get('/show/{id}', 'show');
+        //     Route::Post('/update/{id}', 'update');
+        //     Route::Post('/destroy/{id}', 'destroy');
+           
+        // });
+    // })->middleware('scientific_affairs');
     //QUESTION BANK END
 
     Route::controller(ExportController::class)->group(function () {
@@ -274,7 +277,8 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
     Route::controller(ReceiptStudentController::class)->group(function () {
         Route::Post('/receipt/store', 'store');
         Route::get('/receipt/index','index');
-        Route::get('/receipt/show/{payment_id}/{user_id}','show');
+        Route::get('/receipt/show/{id}','show');
+        Route::get('/receipt/view/{payment_id}/{user_id}','view');
         Route::Post('/receipt/update/{id}', 'update');
         Route::Post('/receipt/destroy/{id}','destroy');
 

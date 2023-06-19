@@ -23,7 +23,7 @@ return new class extends Migration
                 ->constrained('subscribes')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->double('ammount');
+            $table->decimal('ammount');
             $table->date('date');
             $table->timestamps();
         });
