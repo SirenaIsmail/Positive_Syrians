@@ -63,7 +63,7 @@ class CourseController extends Controller
     public function store(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'branch_id'=> 'required|integer',
+            //'branch_id'=> 'required|integer',
             'subject_id'=> 'required|integer',
             'trainer_id'=> 'required|integer',
 //            'approved'=> 'required',
@@ -79,8 +79,9 @@ class CourseController extends Controller
         }
         $approve = false;
 
+        $branchId = Auth::user()->branch_id;
         $dataCourse = Course::create([
-            'branch_id'=> $request->branch_id,
+            'branch_id'=> $branchId,
             'subject_id'=> $request->subject_id,
             'trainer_id'=> $request->trainer_id,
             'approved'=> $approve,
@@ -220,20 +221,33 @@ class CourseController extends Controller
     {
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
+            if($filter != "null"){
 
             $filterResult = DB::table('courses')
                 ->join('branches', 'courses.branch_id', '=', 'branches.id')
                 ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
                 ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
                 ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
-                ->select('subjects.name','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','courses.start','courses.end','branches.name','branches.No','users.first_name','users.last_name')
+                ->select('subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','courses.start','courses.end','branches.name','branches.No','users.first_name','users.last_name')
                 ->where('branches.id', '=', $branchId) // تحديد فقط الدورات في فرع المستخدم
                 ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
                     $query->where('courses.start', 'like', "%$filter%")
                         ->orWhere('courses.end', 'like', "%$filter%");
                 })
-                ->get();
+                ->paginate(10);
+            }
+            else{
 
+                
+            $filterResult = DB::table('courses')
+            ->join('branches', 'courses.branch_id', '=', 'branches.id')
+            ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+            ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
+            ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
+            ->select('subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','courses.start','courses.end','branches.name','branches.No','users.first_name','users.last_name')
+            ->where('branches.id', '=', $branchId) // تحديد فقط الدورات في فرع المستخدم
+            ->paginate(10);
+            }
             if ($filterResult->count() > 0) {
                 return $this->traitResponse($filterResult, 'Search Successfully', 200);
             } else {
