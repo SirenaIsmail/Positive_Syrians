@@ -30,8 +30,8 @@ class FillDateTable extends Command
      */
     public function handle()
     {
-        $startDate = Carbon::now()->subYear()->startOfYear();
-        $endDate = Carbon::now()->endOfYear();
+        $startDate = Carbon::create(2023, 1, 1);
+        $endDate = Carbon::create(2024, 1, 1)->subDay();
 
         $dates = [];
 
