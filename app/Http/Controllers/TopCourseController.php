@@ -184,7 +184,8 @@ class TopCourseController extends Controller
             ->join('branches', 'top_courses.branch_id', '=', 'branches.id')
             ->join('dates', 'top_courses.date_id', '=', 'dates.id')
             ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-            ->select('branches.name as branch', 'subjects.subjectName as course', 'dates.date', DB::raw('count(top_courses.id) as enrollments_count'))
+            ->select('branches.name as branch', 'subjects.subjectName as course',
+                'dates.date', DB::raw('count(top_courses.id) as enrollments_count'))
             ->groupBy('branches.name', 'subjects.subjectName', 'dates.date')
             ->orderBy('enrollments_count', 'desc')
             ->get();

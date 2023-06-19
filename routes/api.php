@@ -86,8 +86,7 @@ Route::controller(SubjectController::class)->group(function (){
     Route::Post('/subject/update/{id}','update');
     Route::Post('/subject/destroy/{id}','destroy');
     Route::get('/subject/search/{filter}','search');
-
- Route::get('/subject/download/{filename}','download');
+    Route::get('/downloadFile','downloadFile');
 });
 
 Route::controller(BranchController::class)->group(function () {
@@ -199,8 +198,8 @@ Route::group(['prefix' => '/scientific_affairs' , 'middleware' => ['auth']],func
     //QUESTION BANK END
 
     Route::controller(ExportController::class)->group(function () {
-        Route::get('/encrypt_excel/{key}', 'encryptExcel');
-        Route::get('/decrypt_excel/{key}', 'decryptExcel');
+        Route::get('/encrypt_excel', 'encryptExcel');
+        Route::get('/decrypt_excel', 'decryptExcel');
     })->middleware('scientific_affairs');
 
 });
@@ -342,14 +341,14 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
 
 
 
-
     });
     //End Student State
 
-    //لمسح الحضور
+
+//لمسح الحضور
     Route::controller(AttendController::class)->group(function (){
-       Route::Post('/scan_attend/{barcode}','scanAttend');
-    })->middleware('receptionist');
+        Route::Post('/scan_attend/{barcode}','scanAttend');
+    });
 
  });
 //End Receptionist Role
@@ -513,4 +512,5 @@ Route::controller(ExportController::class)->group(function () {
 Route::controller(TopCourseController::class)->group(function () {
     Route::get('/top_courses', 'getTopCoursesReport');
 });
+
 

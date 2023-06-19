@@ -145,10 +145,10 @@ class AttendController extends Controller
 
 
 
-    public function scanAttend($barcode,Request $request){
-        $cardId= DB::table('cards')->where('barcode', $barcode)->first();
+    public function scanAttend(Request $request,$barcode){
+        $cardId= DB::table('cards')->where('barcode',$barcode)->first();
         $subscribe = DB::table('subscribes')
-            ->where('card_id', $cardId)
+            ->where('card_id', $cardId->id)
             ->where('course_id', $request->course_id)
             ->exists();
         $thsDate =now()->format('Y-m-d');
@@ -157,7 +157,7 @@ class AttendController extends Controller
             if ($subscribe) {
                 $state = true;
                 $attendReq = new Request([
-                    'card_id' => $cardId,
+                    'card_id' => $cardId->id,
                     'course_id' => $request->course_id,
                     'date_id' => $thsDate,
                     'state' => $state,
