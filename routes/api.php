@@ -46,7 +46,17 @@ use App\Http\Controllers\AuthController;
 //    return $request->user();
 //});
 
+<<<<<<< Updated upstream
 //define('PAGINATION_COUNT',10);
+=======
+Route::controller(BranchController::class)->group(function () {
+    Route::Post('/branch/store','store');
+    Route::get('/branch/index','index');
+    Route::get('/branch/show/{id}','show');
+    Route::Post('/branch/update/{id}','update');
+    Route::Post('/branch/destroy/{id}','destroy');
+});
+>>>>>>> Stashed changes
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
@@ -120,6 +130,7 @@ Route::controller(UsersController::class)->group(function () {
 // Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth']],function () {
 
     //BRANCH ROUTES  START
+<<<<<<< Updated upstream
 
     Route::controller(BranchController::class)->group(function () {
         Route::Post('/branch/store','store');
@@ -132,6 +143,15 @@ Route::controller(UsersController::class)->group(function () {
 
 
 
+=======
+    // Route::controller(BranchController::class)->group(function () {
+    //     Route::Post('/branch/store','store');
+    //     Route::get('/branch/index','index');
+    //     Route::get('/branch/show/{id}','show');
+    //     Route::Post('/branch/update/{id}','update');
+    //     Route::Post('/branch/destroy/{id}','destroy');
+    // });
+>>>>>>> Stashed changes
     // BRANCH END
 
     //PROCEED ROUTES
@@ -449,15 +469,16 @@ Route::controller(HistoryController::class)->group(function () {
 
 
 //POLL ROUTES
-Route::prefix('/poll')->group(function (){
+// Route::prefix('/poll')->group(function (){
     Route::controller(PollController::class)->group(function () {
         Route::Post('/store', 'store');
         Route::get('/index',  'index');
+        Route::get('poll/serach/{filter}',  'search');
         Route::get('/show/{id}',  'show');
         Route::Post('/update/{id}', 'update');
         Route::Post('/destroy/{id}',  'destroy');
     });
-});
+// });
 //POLL END
 
 

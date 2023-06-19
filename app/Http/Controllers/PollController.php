@@ -235,13 +235,13 @@ class PollController extends Controller
             ->join('subjects AS subject2', 'polls.secound_subj', '=', 'subject2.id')
             ->join('subjects AS subject3', 'polls.third_subj', '=', 'subject3.id')
             ->select('polls.full_name_ar','polls.full_name_en', 'polls.mother_name', 'polls.address','polls.phone_numb','polls.whatsapp_numb', 'polls.poll_date', 'subject1.subjectName', 'polls.first_time', 'subject2.subjectName  As subjectName2'
-            , 'polls.secound_time', 'subject3.subjectName  As subjectName3', 'polls.third_time','polls.notice')
+            ,'polls.secound_time', 'subject3.subjectName  As subjectName3', 'polls.third_time','polls.notice')
             ->where('branches.id', '=', $branchId)
             ->where(function ($query) use ($filter) {
-                $query  ->where("subject1.subjectName", "like","%".$filter."%")
+                $query->where("subject1.subjectName", "like","%".$filter."%")
                 ->orWhere("subject2.subjectName", "like","%".$filter."%")
                 ->orWhere("subject3.subjectName", "like","%".$filter."%");
-               }) ->paginate(PAGINATION_COUNT);
+               }) ->paginate(10);
 
 
 

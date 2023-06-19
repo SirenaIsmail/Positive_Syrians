@@ -66,30 +66,20 @@ class SubscribeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
+
     {
-
-        $validation = Validator::make($request->all(), [
-            'course_id'=>'required',
-            'card_id'=>'required',
-            //'branch_id'=>'required',
-//            'state'=> 'required|integer',
-
-
-        ]);
-        if($validation->fails())
-
-        {
-            return $this->traitResponse(null,$validation->errors(),400);
-
-        }
+       // return $this->traitResponse(null,'sorrrrrrryyyyyy',400);
+       if (auth()->check()) {
         $branchId = Auth::user()->branch_id;
+       
        
         $state = 1;
         $dataSubscribe = Subscribe::create([
-            'course_id'=>  $request -> course_id,
-            'card_id'=>  $request -> card_id,
-            'branch_id'=>  $branchId,
+            'course_id'=> $request->course_id,
+            'card_id'=>  $request->card_id,
+            'branch_id'=> $branchId,
             'state'=>  $state,
+            'date_id'=>$request->date_id,
         ]);
 
         if($dataSubscribe)
@@ -99,8 +89,16 @@ class SubscribeController extends Controller
         }
 
         return  $this->traitResponse(null,'Saved Failed ' , 400);
-
+    }  else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
+        }
     }
+
+
+
+
+
+
 
     public function attend($id){
         $Subscribe = Subscribe::find($id);
@@ -187,11 +185,14 @@ class SubscribeController extends Controller
      */
     public function show($id)
     {
+       // return $this->traitResponse( null ,'Show Successfully', 200);
+
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
     
             $Result = DB::table('subscribes')
-                ->join('subjects', 'subscribes.subject_id', '=', 'subjects.id')
+                ->join('courses', 'subscribes.course_id', '=', 'courses.id')
+                ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
                 ->join('cards', 'subscribes.card_id', '=', 'cards.id')
                 ->join('branches as card_branch', 'cards.branch_id', '=', 'card_branch.id')
                 ->join('users', 'cards.user_id', '=', 'users.id')
@@ -200,7 +201,7 @@ class SubscribeController extends Controller
                 ->select('subscribes.state', 'subjects.subjectName', 'subjects.content', 'subjects.price' ,'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number','dates.date')
                 ->where('user_branch.id', '=', $branchId)
                 ->where('subscribes.id', '=', $id)  
-                ->gate();
+                ->get();
     
             if ($Result->count() > 0) {
                 return $this->traitResponse($Result, 'Show Successfully', 200);
@@ -294,11 +295,12 @@ class SubscribeController extends Controller
             if($filter != "null"){
 
             $filterResult = DB::table('subscribes')
-                ->join('subjects', 'subscribes.subject_id', '=', 'subjects.id')
-                ->join('cards', 'subscribes.card_id', '=', 'cards.id')
-                ->join('branches as card_branch', 'cards.branch_id', '=', 'card_branch.id')
-                ->join('users', 'cards.user_id', '=', 'users.id')
-                ->join('branches as user_branch', 'users.branch_id', '=', 'user_branch.id')
+            ->join('courses', 'subscribes.course_id', '=', 'courses.id')
+            ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+            ->join('cards', 'subscribes.card_id', '=', 'cards.id')
+            ->join('branches as card_branch', 'cards.branch_id', '=', 'card_branch.id')
+            ->join('users', 'cards.user_id', '=', 'users.id')
+            ->join('branches as user_branch', 'users.branch_id', '=', 'user_branch.id')
                 // 'subjects.subjectName', 
                 ->select('subscribes.state','subjects.subjectName','subjects.content', 'subjects.price' ,'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number')
                 ->where('user_branch.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
@@ -330,5 +332,6 @@ class SubscribeController extends Controller
         } else {
             return $this->traitResponse(null, 'User not authenticated', 401);
         }
+        
     }
 }

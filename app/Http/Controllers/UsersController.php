@@ -248,16 +248,17 @@ class UsersController extends Controller
     $Result = DB::table('subscribes')
     ->join('courses', 'courses.id', '=', 'subscribes.course_id')
     ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
-    >join('cards', 'cards.id', '=', 'subscribes.card_id')
+    ->join('cards', 'cards.id', '=', 'subscribes.card_id')
     ->join('users', 'users.id', '=', 'cards.user_id')
-    ->select( 'users.first_name', 'users.last_name', 'users.phone_number','subjects.subjectName', 'subjects.content')
+    ->select( 'subjects.subjectName', 'subjects.content')
     ->where('users.id', '=', $id) 
     // ->where('subscribes.state', '=', 1)
     ->paginate(10);
 
     if ($Result->count() > 0) {
      return $this->traitResponse($Result, 'Index Successfully', 200);
-      } else {
+      } 
+       else {
       return $this->traitResponse(null, 'No  results found', 200);
           }
 
