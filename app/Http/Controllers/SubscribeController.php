@@ -326,21 +326,20 @@ class SubscribeController extends Controller
                 })
                    ->paginate(10);
             }
+            else{
 
-            else {
-                
-
-          $filterResult = DB::table('subscribes')
-            ->join('courses', 'subscribes.course_id', '=', 'courses.id')
-            ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-            ->join('cards', 'subscribes.card_id', '=', 'cards.id')
-            ->join('branches as card_branch', 'cards.branch_id', '=', 'card_branch.id')
-            ->join('users', 'cards.user_id', '=', 'users.id')
-            ->join('branches as user_branch', 'users.branch_id', '=', 'user_branch.id')
-                // 'subjects.subjectName', 
-                ->select('subscribes.state','subjects.subjectName','subjects.content', 'subjects.price' ,'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number')
-                ->where('user_branch.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
-                ->paginate(10);
+                $filterResult = DB::table('subscribes')
+                ->join('courses', 'subscribes.course_id', '=', 'courses.id')
+                ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+                ->join('cards', 'subscribes.card_id', '=', 'cards.id')
+                ->join('branches as card_branch', 'cards.branch_id', '=', 'card_branch.id')
+                ->join('users', 'cards.user_id', '=', 'users.id')
+                ->join('branches as user_branch', 'users.branch_id', '=', 'user_branch.id')
+                    // 'subjects.subjectName',
+                    ->select('subscribes.id','subscribes.state','subjects.subjectName','subjects.price' ,'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number')
+                    ->where('user_branch.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
+                    
+                    ->paginate(10);
             }
             if ($filterResult->count() > 0) {
                 return $this->traitResponse($filterResult, 'Search Successfully', 200);

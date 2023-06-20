@@ -238,4 +238,34 @@ class PaymentController extends Controller
     }
 
 
+    public function search(Request $request, $filter)
+    {
+
+        if (auth()->check()) {
+            $branchId = Auth::user()->branch_id;
+            $Result = DB::table('payments')
+            ->join('subscribes', 'subscribes.id', '=', 'payments.subscribe_id')
+            ->join('cards', 'cards.id', '=', 'subscribes.card_id')
+            ->join('users', 'users.id', '=', 'cards.user_id')
+            ->join('branches', 'branches.id', '=', 'users.branch_id')
+            ->join('courses', 'courses.id', '=', 'subscribes.course_id')
+            ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
+            ->select('users.first_name','users.last_name'
+            ,'subjects.subjectName','payments.ammount','users.phone_number'
+            ,'payments.date')
+                ->where('branches.id', '=', $branchId) 
+                ->paginate(10);
+    
+            if ($Result->count() > 0) {
+                return $this->traitResponse($Result, 'Index Successfully', 200);
+            } else {
+                return $this->traitResponse(null, 'No  results found', 200);
+            }
+        } else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
+        }
+
+    }
+
+
 }

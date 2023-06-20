@@ -296,9 +296,10 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
 
     //PAYMENT ROUTES
     Route::controller(PaymentController::class)->group(function () {
-        Route::Post('/payment/store', 'store');
+        Route::Post('/payment/store/{subscriptionId}', 'store');
         Route::get('/payment/index','index');
         Route::get('/payment/show/{id}', 'show');
+        Route::get('/payment/search/{filter}', 'search');
         Route::Post('/payment/update/{id}', 'update');
         Route::Post('/payment/destroy/{id}','destroy');
         Route::get('/payment/createPayment/{id}', 'createPayment');
