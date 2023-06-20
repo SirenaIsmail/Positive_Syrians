@@ -227,7 +227,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
             Route::Post('/store','store');
             Route::get('/index','index');
             Route::get('/show/{id}','show');
-            Route::get('/search/{filter}','show');
+            Route::get('/search/{filter}','search');
             Route::Post('/update/{id}','update');
             Route::Post('/destroy/{id}','destroy');
         });
