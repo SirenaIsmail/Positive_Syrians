@@ -28,7 +28,7 @@ class ClassRoomController extends Controller
                 ->join('class_rooms', 'class_rooms.branch_id', '=', 'branches.id')
                 ->select('class_rooms.className', 'class_rooms.Number', 'class_rooms.size', 'branches.No', 'branches.name')
                 ->where('branches.id', '=', $branchId) 
-                ->paginate(PAGINATION_COUNT);
+                ->paginate(1);
     
             if ($Result->count() > 0) {
                 return $this->traitResponse($Result, 'Index Successfully', 200);

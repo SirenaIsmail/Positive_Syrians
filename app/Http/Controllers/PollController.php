@@ -224,35 +224,90 @@ class PollController extends Controller
 
 
 
-    public function search($filter)
+    public function search_by_branch($filter)
     {
-        if (auth()->check()) {
         $branchId = Auth::user()->branch_id;
 
-        $filterResult = DB::table('polls')
-            ->join('branches', 'polls.branch_id', '=', 'branches.id')
-            ->join('subjects AS subject1', 'polls.first_subj', '=', 'subject1.id')
-            ->join('subjects AS subject2', 'polls.secound_subj', '=', 'subject2.id')
-            ->join('subjects AS subject3', 'polls.third_subj', '=', 'subject3.id')
-            ->select('polls.full_name_ar','polls.full_name_en', 'polls.mother_name', 'polls.address','polls.phone_numb','polls.whatsapp_numb', 'polls.poll_date', 'subject1.subjectName', 'polls.first_time', 'subject2.subjectName  As subjectName2'
-            ,'polls.secound_time', 'subject3.subjectName  As subjectName3', 'polls.third_time','polls.notice')
-            ->where('branches.id', '=', $branchId)
-            ->where(function ($query) use ($filter) {
-                $query->where("subject1.subjectName", "like","%".$filter."%")
-                ->orWhere("subject2.subjectName", "like","%".$filter."%")
-                ->orWhere("subject3.subjectName", "like","%".$filter."%");
-               }) ->paginate(5);
+        if (auth()->check()) {
+            $branchId = Auth::user()->branch_id;
+            if($filter != "null"){
+                $filterResult = DB::table('polls')
+                ->join('branches', 'polls.branch_id', '=', 'branches.id')
+                ->join('subjects AS subject1', 'polls.first_subj', '=', 'subject1.id')
+                ->join('subjects AS subject2', 'polls.secound_subj', '=', 'subject2.id')
+                ->join('subjects AS subject3', 'polls.third_subj', '=', 'subject3.id')
+                ->select('polls.full_name_ar','polls.full_name_en', 'polls.mother_name', 'polls.address','polls.phone_numb','polls.whatsapp_numb', 'polls.poll_date', 'subject1.subjectName', 'polls.first_time', 'subject2.subjectName  As subjectName2'
+                ,'polls.secound_time', 'subject3.subjectName  As subjectName3', 'polls.third_time','polls.notice')
+                ->where('branches.id', '=', $branchId)
+                ->where(function ($query) use ($filter) {
+                    $query->where("subject1.subjectName", "like","%".$filter."%")
+                    ->orWhere("subject2.subjectName", "like","%".$filter."%")
+                    ->orWhere("subject3.subjectName", "like","%".$filter."%");
+                   }) ->paginate(1);
+            }
+            else{
+                //$branchId = Auth::user()->branch_id;
+                $filterResult = DB::table('polls')
+                ->join('branches', 'polls.branch_id', '=', 'branches.id')
+                ->join('subjects AS subject1', 'polls.first_subj', '=', 'subject1.id')
+                ->join('subjects AS subject2', 'polls.secound_subj', '=', 'subject2.id')
+                ->join('subjects AS subject3', 'polls.third_subj', '=', 'subject3.id')
+                ->select('polls.full_name_ar','polls.full_name_en', 'polls.mother_name', 'polls.address','polls.phone_numb','polls.whatsapp_numb', 'polls.poll_date', 'subject1.subjectName', 'polls.first_time', 'subject2.subjectName  As subjectName2'
+                ,'polls.secound_time', 'subject3.subjectName  As subjectName3', 'polls.third_time','polls.notice')
+                ->where('branches.id', '=', $branchId)
+                ->paginate(1);
+                   } 
 
-
-
-               if ($filterResult->count() > 0) {
-                return $this->traitResponse($filterResult, 'Show Successfully', 200);
+            
+            if ($filterResult->count() > 0) {
+                return $this->traitResponse($filterResult, 'Search Successfully', 200);
             } else {
                 return $this->traitResponse(null, 'No matching results found', 200);
             }
         } else {
             return $this->traitResponse(null, 'User not authenticated', 401);
         }
+        }
+
+
+
+
+
+
+        // if (auth()->check()) {
+        // $branchId = Auth::user()->branch_id;
+        // if($filter != "null"){
+        //     $filterResult = DB::table('polls')
+        //     ->join('branches', 'polls.branch_id', '=', 'branches.id')
+        //     ->join('subjects AS subject1', 'polls.first_subj', '=', 'subject1.id')
+        //     ->join('subjects AS subject2', 'polls.secound_subj', '=', 'subject2.id')
+        //     ->join('subjects AS subject3', 'polls.third_subj', '=', 'subject3.id')
+        //     ->select('polls.full_name_ar','polls.full_name_en', 'polls.mother_name', 'polls.address','polls.phone_numb','polls.whatsapp_numb', 'polls.poll_date', 'subject1.subjectName', 'polls.first_time', 'subject2.subjectName  As subjectName2'
+        //     ,'polls.secound_time', 'subject3.subjectName  As subjectName3', 'polls.third_time','polls.notice')
+        //     ->where('branches.id', '=', $branchId)
+        //     ->where(function ($query) use ($filter) {
+        //         $query->where("subject1.subjectName", "like","%".$filter."%")
+        //         ->orWhere("subject2.subjectName", "like","%".$filter."%")
+        //         ->orWhere("subject3.subjectName", "like","%".$filter."%");
+        //        }) ->paginate(5);
+        // } else {
+        //     return $this->traitResponse(null, 'User not authenticated', 401);
+        // }
+    
+        // if ($filterResult->count() > 0) {
+        //     return $this->traitResponse($filterResult, 'Show Successfully', 200);
+        // } else {
+        //     return $this->traitResponse(null, 'No matching results found', 200);
+        // }
+        
     }
-}
+
+
+
+
+
+
+
+
+
 

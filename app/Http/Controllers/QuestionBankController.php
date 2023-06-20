@@ -199,29 +199,64 @@ class QuestionBankController extends Controller
    {
 
        if (auth()->check()) {
-           $branchId = Auth::user()->branch_id;
+            $branchId = Auth::user()->branch_id;
+            if($filter != "null"){
+            $filterResult = DB::table('question_banks')
+                ->join('branches', 'branches.id', '=', 'question_banks.branch_id')
+                ->join('courses', 'courses.id', '=', 'question_banks.course_id')
+                ->join('trainer_profiles', 'trainer_profiles.id', '=', 'courses.trainer_id')
+                ->join('users', 'users.id', '=', 'trainer_profiles.user_id')
+                ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
+                ->select('question_banks.model', 'question_banks.file', 'subjects.subjectName', 'subjects.content')
+                ->where('branches.id', '=', $branchId) 
+                ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
+                    $query->where('question_banks.model', 'like', "%$filter%");
+                })
+                ->paginate(2);
+                }
 
-           $filterResult = DB::table('question_banks')
-               ->join('branches', 'branches.id', '=', 'question_banks.branch_id')
-               ->join('courses', 'courses.id', '=', 'question_banks.course_id')
-               ->join('trainer_profiles', 'trainer_profiles.id', '=', 'courses.trainer_id')
-               ->join('users', 'users.id', '=', 'trainer_profiles.user_id')
-               ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
-               ->select('question_banks.model', 'question_banks.file', 'subjects.subjectName', 'subjects.content')
-               ->where('branches.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
-               ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
-                   $query->where('question_banks.model', 'like', "%$filter%");
-               })
-               ->paginate(2);
+                else{
+                    $branchId = Auth::user()->branch_id;
+                    $filterResult = DB::table('question_banks')
+                    //  ->join('branches', 'branches.id', '=', 'question_banks.branch_id')
+                        ->join('courses', 'courses.id', '=', 'question_banks.course_id')
+                        ->join('trainer_profiles', 'trainer_profiles.id', '=', 'courses.trainer_id')
+                        ->join('users', 'users.id', '=', 'trainer_profiles.user_id')
+                        ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
+                        ->select('question_banks.model', 'question_banks.file', 'subjects.subjectName', 'subjects.content')
+                        //->where('branches.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
+                        ->paginate(1);
 
-           if ($filterResult->count() > 0) {
-               return $this->traitResponse($filterResult, 'Search Successfully', 200);
-           } else {
-               return $this->traitResponse(null, 'No matching results found', 200);
-           }
-       } else {
-           return $this->traitResponse(null, 'User not authenticated', 401);
-       }
+                }
+            if ($filterResult->count() > 0) {
+                return $this->traitResponse($filterResult, 'Search Successfully', 200);
+            } else {
+                return $this->traitResponse(null, 'No matching results found', 200);
+            }
+        } else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
+        }
    }
 
+   public function search_by_branch($filter){
+        $branchId = Auth::user()->branch_id;
+        $filterResult = DB::table('question_banks')
+        ->join('branches', 'branches.id', '=', 'question_banks.branch_id')
+            ->join('courses', 'courses.id', '=', 'question_banks.course_id')
+            ->join('trainer_profiles', 'trainer_profiles.id', '=', 'courses.trainer_id')
+            ->join('users', 'users.id', '=', 'trainer_profiles.user_id')
+            ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
+            ->select('question_banks.model', 'question_banks.file', 'subjects.subjectName', 'subjects.content')
+            ->where('branches.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
+            ->paginate(1);
+
+        
+        if ($filterResult->count() > 0) {
+        return $this->traitResponse($filterResult, 'Search Successfully', 200);
+        }else{
+            return $this->traitResponse(null, 'No matching results found', 200);
+       
+   }
+
+}
 }

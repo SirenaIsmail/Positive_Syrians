@@ -50,6 +50,15 @@ use App\Http\Controllers\AuthController;
 //<<<<<<< Updated upstream
 //define('PAGINATION_COUNT',10);
 //=======
+  Route::controller(PollController::class)->group(function () {
+        Route::Post('/store', 'store');
+        Route::get('/index',  'index');
+        Route::get('/poll/serach/{filter}',  'search');
+        Route::get('/poll/search_by_branch/{filter}','search_by_branch');
+        Route::get('/show/{id}',  'show');
+        Route::Post('/update/{id}', 'update');
+        Route::Post('/destroy/{id}',  'destroy');
+    });
 Route::controller(BranchController::class)->group(function () {
     Route::Post('/branch/store','store');
     Route::get('/branch/index','index');
@@ -115,6 +124,7 @@ Route::controller(QuestionBankController::class)->group(function () {
     Route::Post('/qbank/update/{id}', 'update');
     Route::Post('/qbank/destroy/{id}', 'destroy');
     Route::get('/qbank/search/{filter}','search');
+    Route::get('/qbank/search_by_branch/{filter}','search_by_branch');
 });
 
 Route::controller(UsersController::class)->group(function () {
@@ -217,7 +227,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
             Route::Post('/store','store');
             Route::get('/index','index');
             Route::get('/show/{id}','show');
-            Route::get('/search/{filter}','show');
+            Route::get('/search/{filter}','search');
             Route::Post('/update/{id}','update');
             Route::Post('/destroy/{id}','destroy');
         });
@@ -249,6 +259,16 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
 //End Branch Admin Role
 
 
+Route::controller(CourseController::class)->group(function () {
+    Route::Post('/course/store',  'store');
+    Route::get('/course/indexa',  'indexa');
+    Route::get('/course/show/{id}',  'show');
+    Route::get('/course/search','search');
+    Route::get('/course/searchbybranch/{filter}','searchbybranch');
+    Route::Post('/course/update/{id}', 'update');
+    Route::Post('/course/destroy/{id}', 'destroy');
+    Route::Post('/course/approve/{id}', 'approve');
+//PAYMENT END
 
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -279,14 +299,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
             Route::Post('/approve/{id}', 'approve');
         });
     })->middleware('receptionist');
-    Route::controller(CourseController::class)->group(function () {
-        Route::Post('/store',  'store');
-        Route::get('/index',  'index');
-        Route::get('/show/{id}',  'show');
-        Route::get('/search/{filter}','search');
-        Route::Post('/update/{id}', 'update');
-        Route::Post('/destroy/{id}', 'destroy');
-        Route::Post('/approve/{id}', 'approve');
+   
     });
     //COURSE END
 
@@ -300,8 +313,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
         Route::Post('/payment/destroy/{id}','destroy');
         Route::get('/payment/createPayment/{id}', 'createPayment');
     });
-    //PAYMENT END
-
+    
 
     Route::controller(ReceiptStudentController::class)->group(function () {
         Route::Post('/receipt/store', 'store');
@@ -480,14 +492,7 @@ Route::controller(HistoryController::class)->group(function () {
 
 //POLL ROUTES
 // Route::prefix('/poll')->group(function (){
-    Route::controller(PollController::class)->group(function () {
-        Route::Post('/store', 'store');
-        Route::get('/index',  'index');
-        Route::get('/poll/serach/{filter}',  'search');
-        Route::get('/show/{id}',  'show');
-        Route::Post('/update/{id}', 'update');
-        Route::Post('/destroy/{id}',  'destroy');
-    });
+  
 // });
 //POLL END
 
