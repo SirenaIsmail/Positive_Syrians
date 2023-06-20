@@ -511,6 +511,7 @@ Route::controller(ExportController::class)->group(function () {
 
 Route::controller(TopCourseController::class)->group(function () {
     Route::get('/top_courses', 'getTopCoursesReport');
+    Route::get('/branch_topCourses/{branch}', 'getBranchTopCoursesReport');
 });
 
 

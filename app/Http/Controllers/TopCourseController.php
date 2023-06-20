@@ -197,4 +197,10 @@ class TopCourseController extends Controller
         }
         return  $this->traitResponse(null , 'Failed ' , 404);
     }
+
+
+
+    public function getBranchTopCoursesReport(){
+
+    }
 }

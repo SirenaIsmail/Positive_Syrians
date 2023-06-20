@@ -81,8 +81,8 @@ class SubscribeController extends Controller
             'course_id'=> $request->course_id,
             'card_id'=>  $request->card_id,
             'branch_id'=> $branchId,
+            'date'=>$date,
             'state'=>  $state,
-            'date_id'=>$date_id,
         ]);
 
 
