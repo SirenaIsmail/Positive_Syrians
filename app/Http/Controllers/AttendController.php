@@ -24,7 +24,7 @@ class AttendController extends Controller
 
             $Result = DB::table('attends')
                 ->join('class_rooms', 'class_rooms.id', '=', 'attends.classroom_id')
-                ->join('dates', 'dates.id', '=', 'attends.date_id')
+                ->join('dates', 'dates.id', '=', 'attends.date')
                 ->join('histories', 'histories.id', '=', 'attends.history_id')
                 ->join('courses', 'courses.id', '=', 'histories.course_id')
                 ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
@@ -71,7 +71,7 @@ class AttendController extends Controller
         $validation = Validator::make($request->all(), [
             'card_id'=>'required|integer',
             'course_id'=>'required|integer',
-            'date_id'=>'required|integer',
+            //'date_id'=>'required|integer',
             'state'=> 'required',
 
 
@@ -86,7 +86,7 @@ class AttendController extends Controller
         $dataAttend = Attend::create([
             'card_id' =>$request->card_id,
             'course_id' =>$request->course_id,
-            'date_id' => $request->date_id,
+            'date' => $request->date,
             'state' =>$state,
         ]);
 
@@ -146,20 +146,24 @@ class AttendController extends Controller
 
 
     public function scanAttend($barcode,Request $request){
-        $cardId= DB::table('cards')->where('barcode', $barcode)->first();
+        
+        $cardId= DB::table('cards')->where('barcode','=', $barcode)->first();
+        
         $subscribe = DB::table('subscribes')
-            ->where('card_id', $cardId)
-            ->where('course_id', $request->course_id)
+            ->where('card_id','=', $cardId->id)
+            ->where('course_id','=', $request->query('course_id'))
             ->exists();
-        $thsDate =now()->format('Y-m-d');
+        
+        // $thsDate =now()->format('Y-m-d');
+        $thsDate = now()->format('Y-m-d');
 //        $studentsCount = DB::table('subscribes')->where('course_id', $request->course_id)->count();
 //        for ($i = 0; $i < $studentsCount; $i++) {
             if ($subscribe) {
                 $state = true;
                 $attendReq = new Request([
-                    'card_id' => $cardId,
-                    'course_id' => $request->course_id,
-                    'date_id' => $thsDate,
+                    'card_id' => $cardId->id,
+                    'course_id' => $request->query('course_id'),
+                    'date' => $thsDate,
                     'state' => $state,
                 ]);
                 $attend = (new AttendController())->store($attendReq);
@@ -210,7 +214,7 @@ class AttendController extends Controller
         $validation = Validator::make($request->all(), [
             'card_id'=>'required|integer',
             'course_id'=>'required|integer',
-            'date_id'=>'required|integer',
+            //'date_id'=>'required|integer',
             'state'=> 'required',
 
 
