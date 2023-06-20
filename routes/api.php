@@ -279,6 +279,15 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
             Route::Post('/approve/{id}', 'approve');
         });
     })->middleware('receptionist');
+    Route::controller(CourseController::class)->group(function () {
+        Route::Post('/store',  'store');
+        Route::get('/index',  'index');
+        Route::get('/show/{id}',  'show');
+        Route::get('/search/{filter}','search');
+        Route::Post('/update/{id}', 'update');
+        Route::Post('/destroy/{id}', 'destroy');
+        Route::Post('/approve/{id}', 'approve');
+    });
     //COURSE END
 
     //PAYMENT ROUTES
@@ -474,7 +483,7 @@ Route::controller(HistoryController::class)->group(function () {
     Route::controller(PollController::class)->group(function () {
         Route::Post('/store', 'store');
         Route::get('/index',  'index');
-        Route::get('poll/serach/{filter}',  'search');
+        Route::get('/poll/serach/{filter}',  'search');
         Route::get('/show/{id}',  'show');
         Route::Post('/update/{id}', 'update');
         Route::Post('/destroy/{id}',  'destroy');
@@ -512,6 +521,10 @@ Route::controller(ExportController::class)->group(function () {
 
 Route::controller(TopCourseController::class)->group(function () {
     Route::get('/top_courses', 'getTopCoursesReport');
+    Route::get('/branch_topCourses/{branch}', 'getBranchTopCoursesReport');
+    Route::get('/monthly_topCourses/{month}', 'getMonthlyTopCoursesReport');
+    Route::get('/yearly_topCourses/{year}', 'getYearlyTopCoursesReport');
+    Route::get('/branch_yearly_topCourses/{month}/{branch}', 'getMonth_Branch_TopCourse');
 });
 
 

@@ -27,6 +27,7 @@ return new class extends Migration
                 ->constrained('branches')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+            $table->date('date');
             $table->integer('state')->default(1); // 1approve  0don't approve 2pending
             $table->timestamps();
         });

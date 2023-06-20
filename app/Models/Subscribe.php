@@ -12,12 +12,13 @@ class Subscribe extends Model
         'course_id',
         'card_id',
         'branch_id',
+        'date',
         'state',
 
     ];
 
 
-    
+
     public function payments()
     {
         return $this->hasMany(Payment::class, 'payment_id','id');
@@ -53,7 +54,7 @@ class Subscribe extends Model
     protected static function boot()
     {
         parent::boot();
-    
+
         static::updated(function ($subscription) {
             Payment::where('subscribe_id', $subscription->id)->update(['branch_id' => $subscription->branch_id]);
         });
