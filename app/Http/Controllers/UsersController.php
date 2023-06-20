@@ -127,7 +127,7 @@ class UsersController extends Controller
 
         $trainerReq = new Request([
             'user_id' => $user->id,
-            'rating' => $request->rating,
+            'rating' => 10,//$request->rating,
         ]);
 
         $trainer = (new TrainerProfileController)->store($trainerReq);

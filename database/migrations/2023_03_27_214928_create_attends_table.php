@@ -27,7 +27,7 @@ return new class extends Migration
                 ->constrained('courses')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->date('date_id');
+            $table->date('date');
             $table->boolean('state');
             $table->timestamps();
         });

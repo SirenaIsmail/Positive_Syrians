@@ -11,7 +11,7 @@ class Attend extends Model
     protected $fillable = [
         'card_id',
         'course_id',
-        'date_id',
+        'date',
         'state',
     ];
 
