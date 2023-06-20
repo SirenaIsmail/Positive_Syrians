@@ -385,3 +385,4 @@ class SubscribeController extends Controller
             return $this->traitResponse(null, 'User not authenticated', 401);
         }
 }
+}

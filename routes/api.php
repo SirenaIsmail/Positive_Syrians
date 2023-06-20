@@ -305,7 +305,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
 
     Route::controller(ReceiptStudentController::class)->group(function () {
         Route::Post('/receipt/store', 'store');
-        Route::get('/receipt/index','index');
+        Route::get('/receipt/indexing/{id}','indexing');
         Route::get('/receipt/show/{id}','show');
         Route::get('/receipt/view/{payment_id}/{user_id}','view');
         Route::Post('/receipt/update/{id}', 'update');

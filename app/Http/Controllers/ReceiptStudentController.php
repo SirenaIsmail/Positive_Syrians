@@ -23,7 +23,7 @@ class ReceiptStudentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function indexing($id)
     {
         $Result = DB::table('receipt_students')
         ->join('users', 'users.id', '=', 'receipt_students.user_id')
@@ -31,6 +31,7 @@ class ReceiptStudentController extends Controller
         ->join('payments', 'payments.id', '=', 'student_accounts.payment_id')
         ->select('users.first_name','users.last_name','users.phone_number',
         'payments.ammount','receipt_students.Debit','receipt_students.date')
+        ->where('payments.id','=', $id)
         ->paginate(10);
         if ($Result->count() > 0) {
             return $this->traitResponse($Result, 'تم الحصول على البيانات بنجاح', 200);

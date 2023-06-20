@@ -250,8 +250,8 @@ class PaymentController extends Controller
             ->join('branches', 'branches.id', '=', 'users.branch_id')
             ->join('courses', 'courses.id', '=', 'subscribes.course_id')
             ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
-            ->select('users.first_name','users.last_name'
-            ,'subjects.subjectName','payments.ammount','users.phone_number'
+            ->select('payments.id','users.id as userId','users.first_name','users.last_name'
+            ,'subjects.subjectName','payments.ammount'
             ,'payments.date')
                 ->where('branches.id', '=', $branchId) 
                 ->paginate(10);
