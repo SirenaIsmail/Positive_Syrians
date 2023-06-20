@@ -200,7 +200,93 @@ class TopCourseController extends Controller
 
 
 
-    public function getBranchTopCoursesReport(){
+    public function getBranchTopCoursesReport($branch){
+        $top_courses = DB::table('top_courses')
+            ->join('subscribes', 'top_courses.subscribe_id', '=', 'subscribes.id')
+            ->join('courses', 'subscribes.course_id', '=', 'courses.id')
+            ->join('branches', 'top_courses.branch_id', '=', 'branches.id')
+            ->join('dates', 'top_courses.date_id', '=', 'dates.id')
+            ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+            ->select('branches.name as branch', 'subjects.subjectName as course',
+                'dates.date', DB::raw('count(top_courses.id) as enrollments_count'))
+            ->where('branches.id', '=', $branch) // اختيار الدورات التي تنتمي للفرع المحدد
+            ->groupBy('branches.name', 'subjects.subjectName', 'dates.date')
+            ->orderBy('enrollments_count', 'desc')
+            ->get();
 
+        if($top_courses)
+        {
+            return $this->traitResponse($top_courses, 'Successful', 200);
+        }
+        return $this->traitResponse(null, 'Failed', 404);
     }
+
+
+
+
+    public function getMonthlyTopCoursesReport($month){
+        $top_courses = DB::table('top_courses')
+            ->join('subscribes', 'top_courses.subscribe_id', '=', 'subscribes.id')
+            ->join('courses', 'subscribes.course_id', '=', 'courses.id')
+            ->join('branches', 'top_courses.branch_id', '=', 'branches.id')
+            ->join('dates', 'top_courses.date_id', '=', 'dates.id')
+            ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+            ->select('branches.name as branch', 'subjects.subjectName as course',
+                'dates.date', DB::raw('count(top_courses.id) as enrollments_count'))
+            ->where('dates.date', 'like', $month.'%') // اختيار الدورات التي تنطبق عليها الشهر المحدد
+            ->groupBy('branches.name', 'subjects.subjectName', 'dates.date')
+            ->orderBy('enrollments_count', 'desc')
+            ->get();
+        if($top_courses)
+        {
+            return $this->traitResponse($top_courses, 'Successful', 200);
+        }
+        return $this->traitResponse(null, 'Failed', 404);
+    }
+
+    public function getYearlyTopCoursesReport($year){
+        $top_courses = DB::table('top_courses')
+            ->join('subscribes', 'top_courses.subscribe_id', '=', 'subscribes.id')
+            ->join('courses', 'subscribes.course_id', '=', 'courses.id')
+            ->join('branches', 'top_courses.branch_id', '=', 'branches.id')
+            ->join('dates', 'top_courses.date_id', '=', 'dates.id')
+            ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+            ->select('branches.name as branch', 'subjects.subjectName as course',
+                DB::raw('YEAR(dates.date) as year'), DB::raw('count(top_courses.id) as enrollments_count'))
+            ->where(DB::raw('YEAR(dates.date)'), '=', $year) // اختيار الدورات التي تنطبق عليها السنة المحددة
+            ->groupBy('branches.name', 'subjects.subjectName', DB::raw('YEAR(dates.date)'))
+            ->orderBy('enrollments_count', 'desc')
+            ->get();
+
+        if($top_courses)
+        {
+            return $this->traitResponse($top_courses, 'Successful', 200);
+        }
+        return $this->traitResponse(null, 'Failed', 404);
+    }
+
+
+    public function getMonth_Branch_TopCourse($month, $branch){
+        $top_courses = DB::table('top_courses')
+            ->join('subscribes', 'top_courses.subscribe_id', '=', 'subscribes.id')
+            ->join('courses', 'subscribes.course_id', '=', 'courses.id')
+            ->join('branches', 'top_courses.branch_id', '=', 'branches.id')
+            ->join('dates', 'top_courses.date_id', '=', 'dates.id')
+            ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+            ->select('branches.name as branch', 'subjects.subjectName as course',
+                'dates.date', DB::raw('count(top_courses.id) as enrollments_count'))
+            ->where('branches.id', '=', $branch) // اختيار الدورات التي تنتمي للاسم المحدد للفرع
+            ->where('dates.date', 'like', $month.'%') // اختيار الدورات التي تنطبق عليها الشهر المحدد
+            ->groupBy('branches.name', 'subjects.subjectName', 'dates.date')
+            ->orderBy('enrollments_count', 'desc')
+            ->get();
+
+        if($top_courses)
+        {
+            return $this->traitResponse($top_courses, 'Successful', 200);
+        }
+        return $this->traitResponse(null, 'Failed', 404);
+    }
+
+
 }
