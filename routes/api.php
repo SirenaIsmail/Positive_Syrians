@@ -13,6 +13,7 @@ use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReceiptStudentController;
 use App\Http\Controllers\ProcessingFeeController;
+use App\Http\Controllers\TopCourseController;
 use App\Http\Controllers\WithdrawController;
 use App\Http\Controllers\PollController;
 use App\Http\Controllers\ProceedController;
@@ -46,9 +47,9 @@ use App\Http\Controllers\AuthController;
 //    return $request->user();
 //});
 
-<<<<<<< Updated upstream
+//<<<<<<< Updated upstream
 //define('PAGINATION_COUNT',10);
-=======
+//=======
 Route::controller(BranchController::class)->group(function () {
     Route::Post('/branch/store','store');
     Route::get('/branch/index','index');
@@ -56,7 +57,7 @@ Route::controller(BranchController::class)->group(function () {
     Route::Post('/branch/update/{id}','update');
     Route::Post('/branch/destroy/{id}','destroy');
 });
->>>>>>> Stashed changes
+//>>>>>>> Stashed changes
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
@@ -81,12 +82,11 @@ Route::controller(SubjectController::class)->group(function (){
     Route::Post('/subject/store','store');
     Route::get('/subject/index','index');
     Route::get('/subject/show/{id}','show');
-    Route::get('/subject/view/','view');  
+    Route::get('/subject/view/','view');
     Route::Post('/subject/update/{id}','update');
     Route::Post('/subject/destroy/{id}','destroy');
     Route::get('/subject/search/{filter}','search');
-
- Route::get('/subject/download/{filename}','download');
+    Route::get('/downloadFile','downloadFile');
 });
 
 Route::controller(BranchController::class)->group(function () {
@@ -130,7 +130,7 @@ Route::controller(UsersController::class)->group(function () {
 // Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth']],function () {
 
     //BRANCH ROUTES  START
-<<<<<<< Updated upstream
+//<<<<<<< Updated upstream
 
     Route::controller(BranchController::class)->group(function () {
         Route::Post('/branch/store','store');
@@ -143,7 +143,7 @@ Route::controller(UsersController::class)->group(function () {
 
 
 
-=======
+//=======
     // Route::controller(BranchController::class)->group(function () {
     //     Route::Post('/branch/store','store');
     //     Route::get('/branch/index','index');
@@ -151,7 +151,7 @@ Route::controller(UsersController::class)->group(function () {
     //     Route::Post('/branch/update/{id}','update');
     //     Route::Post('/branch/destroy/{id}','destroy');
     // });
->>>>>>> Stashed changes
+//>>>>>>> Stashed changes
     // BRANCH END
 
     //PROCEED ROUTES
@@ -192,14 +192,14 @@ Route::group(['prefix' => '/scientific_affairs' , 'middleware' => ['auth']],func
         //     Route::get('/show/{id}', 'show');
         //     Route::Post('/update/{id}', 'update');
         //     Route::Post('/destroy/{id}', 'destroy');
-           
+
         // });
     // })->middleware('scientific_affairs');
     //QUESTION BANK END
 
     Route::controller(ExportController::class)->group(function () {
-        Route::get('/encrypt_excel/{key}', 'encryptExcel');
-        Route::get('/decrypt_excel/{key}', 'decryptExcel');
+        Route::get('/encrypt_excel', 'encryptExcel');
+        Route::get('/decrypt_excel', 'decryptExcel');
     })->middleware('scientific_affairs');
 
 });
@@ -217,7 +217,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
             Route::Post('/store','store');
             Route::get('/index','index');
             Route::get('/show/{id}','show');
-            Route::get('/search/{filter}','show');    
+            Route::get('/search/{filter}','show');
             Route::Post('/update/{id}','update');
             Route::Post('/destroy/{id}','destroy');
         });
@@ -341,14 +341,14 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
 
 
 
-
     });
     //End Student State
 
-    //لمسح الحضور
+
+//لمسح الحضور
     Route::controller(AttendController::class)->group(function (){
-       Route::Post('/scan_attend/{barcode}','scanAttend');
-    })->middleware('receptionist');
+        Route::Post('/scan_attend/{barcode}','scanAttend');
+    });
 
  });
 //End Receptionist Role
@@ -507,4 +507,10 @@ Route::controller(TrainerProfileController::class)->group(function () {
 Route::controller(ExportController::class)->group(function () {
     Route::get('/export', 'exportToPDF');
 });
+
+
+Route::controller(TopCourseController::class)->group(function () {
+    Route::get('/top_courses', 'getTopCoursesReport');
+});
+
 

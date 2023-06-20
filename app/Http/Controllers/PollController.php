@@ -32,7 +32,7 @@ class PollController extends Controller
                 ->select('polls.full_name_ar','polls.full_name_en', 'polls.mother_name', 'polls.address', 'polls.poll_date','polls.phone_numb','polls.whatsapp_numb', 'subject1.subjectName', 'polls.first_time', 'subject2.subjectName  As subjectName2'
                 , 'polls.secound_time', 'subject3.subjectName  As subjectName3', 'polls.third_time','polls.notice')
                 ->where('branches.id', '=', $branchId)
-                 ->paginate(PAGINATION_COUNT);
+                 ->paginate(5);
 
 
 
@@ -241,7 +241,7 @@ class PollController extends Controller
                 $query->where("subject1.subjectName", "like","%".$filter."%")
                 ->orWhere("subject2.subjectName", "like","%".$filter."%")
                 ->orWhere("subject3.subjectName", "like","%".$filter."%");
-               }) ->paginate(10);
+               }) ->paginate(5);
 
 
 
