@@ -14,6 +14,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReceiptStudentController;
 use App\Http\Controllers\ProcessingFeeController;
 use App\Http\Controllers\TopCourseController;
+use App\Http\Controllers\WeeklyScheduleController;
 use App\Http\Controllers\WithdrawController;
 use App\Http\Controllers\PollController;
 use App\Http\Controllers\ProceedController;
@@ -207,10 +208,6 @@ Route::group(['prefix' => '/scientific_affairs' , 'middleware' => ['auth']],func
     // })->middleware('scientific_affairs');
     //QUESTION BANK END
 
-    Route::controller(ExportController::class)->group(function () {
-        Route::get('/encrypt_excel', 'encryptExcel');
-        Route::get('/decrypt_excel', 'decryptExcel');
-    })->middleware('scientific_affairs');
 
 });
 //End Scientific Affairs Role
@@ -299,7 +296,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
             Route::Post('/approve/{id}', 'approve');
         });
     })->middleware('receptionist');
-   
+
     });
     //COURSE END
 
@@ -313,7 +310,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
         Route::Post('/payment/destroy/{id}','destroy');
         Route::get('/payment/createPayment/{id}', 'createPayment');
     });
-    
+
 
     Route::controller(ReceiptStudentController::class)->group(function () {
         Route::Post('/receipt/store', 'store');
@@ -492,7 +489,7 @@ Route::controller(HistoryController::class)->group(function () {
 
 //POLL ROUTES
 // Route::prefix('/poll')->group(function (){
-  
+
 // });
 //POLL END
 
@@ -533,3 +530,13 @@ Route::controller(TopCourseController::class)->group(function () {
 });
 
 
+Route::controller(ExportController::class)->group(function () {
+    Route::get('/encrypt_excel', 'encryptExcel');
+    Route::get('/decrypt_excel', 'decryptExcel');
+    Route::get('/export_excel', 'exportExcel');
+});//->middleware('scientific_affairs');
+
+
+//Route::controller(WeeklyScheduleController::class)->group(function () {
+//    Route::get('/generate_schedule', 'generateWeeklySchedule');
+//});

@@ -83,7 +83,7 @@ class SubscribeController extends Controller
             'branch_id'=> $branchId,
             'date'=>$date,
             'state'=>  $state,
-        
+
         ]);
 
 
@@ -304,7 +304,7 @@ class SubscribeController extends Controller
 
 
     public function search($filter)
-    
+
     {
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
@@ -338,7 +338,7 @@ class SubscribeController extends Controller
                     // 'subjects.subjectName',
                     ->select('subscribes.id','subscribes.state','subjects.subjectName','subjects.price' ,'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number')
                     ->where('user_branch.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
-                    
+
                     ->paginate(10);
             }
             if ($filterResult->count() > 0) {
@@ -352,21 +352,21 @@ class SubscribeController extends Controller
 
     }
 
-    
+
 
     public function searchDate($filter)
-    
+
     {
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
-    
+
             $filterResult = DB::table('subscribes')
             ->join('courses', 'subscribes.course_id', '=', 'courses.id')
             ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
             ->join('cards', 'subscribes.card_id', '=', 'cards.id')
             ->join('branches as card_branch', 'cards.branch_id', '=', 'card_branch.id')
             ->join('users', 'cards.user_id', '=', 'users.id')
-            ->join('branches as user_branch', 'users.branch_id', '=', 'user_branch.id') 
+            ->join('branches as user_branch', 'users.branch_id', '=', 'user_branch.id')
                 ->select('subscribes.state','subjects.subjectName','subjects.content', 'subjects.price' ,'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number')
                 ->where('user_branch.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
                 ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
@@ -374,7 +374,7 @@ class SubscribeController extends Controller
                            ->orWhere('users.first_name', 'like', "%$filter%");
                 })
                    ->paginate(10);
-            
+
 
             if ($filterResult->count() > 0) {
                 return $this->traitResponse($filterResult, 'Search Successfully', 200);
@@ -385,4 +385,5 @@ class SubscribeController extends Controller
             return $this->traitResponse(null, 'User not authenticated', 401);
         }
 }
+
 }
