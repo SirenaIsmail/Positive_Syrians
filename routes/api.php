@@ -279,6 +279,15 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
             Route::Post('/approve/{id}', 'approve');
         });
     })->middleware('receptionist');
+    Route::controller(CourseController::class)->group(function () {
+        Route::Post('/store',  'store');
+        Route::get('/index',  'index');
+        Route::get('/show/{id}',  'show');
+        Route::get('/search/{filter}','search');
+        Route::Post('/update/{id}', 'update');
+        Route::Post('/destroy/{id}', 'destroy');
+        Route::Post('/approve/{id}', 'approve');
+    });
     //COURSE END
 
     //PAYMENT ROUTES
