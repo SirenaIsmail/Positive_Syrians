@@ -453,7 +453,7 @@ Route::controller(HistoryController::class)->group(function () {
     Route::controller(PollController::class)->group(function () {
         Route::Post('/store', 'store');
         Route::get('/index',  'index');
-        Route::get('poll/serach/{filter}',  'search');
+        Route::get('/poll/serach/{filter}',  'search');
         Route::get('/show/{id}',  'show');
         Route::Post('/update/{id}', 'update');
         Route::Post('/destroy/{id}',  'destroy');
