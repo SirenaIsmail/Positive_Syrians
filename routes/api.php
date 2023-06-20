@@ -50,6 +50,15 @@ use App\Http\Controllers\AuthController;
 //<<<<<<< Updated upstream
 //define('PAGINATION_COUNT',10);
 //=======
+  Route::controller(PollController::class)->group(function () {
+        Route::Post('/store', 'store');
+        Route::get('/index',  'index');
+        Route::get('/poll/serach/{filter}',  'search');
+        Route::get('/poll/search_by_branch/{filter}','search_by_branch');
+        Route::get('/show/{id}',  'show');
+        Route::Post('/update/{id}', 'update');
+        Route::Post('/destroy/{id}',  'destroy');
+    });
 Route::controller(BranchController::class)->group(function () {
     Route::Post('/branch/store','store');
     Route::get('/branch/index','index');
@@ -115,7 +124,7 @@ Route::controller(QuestionBankController::class)->group(function () {
     Route::Post('/qbank/update/{id}', 'update');
     Route::Post('/qbank/destroy/{id}', 'destroy');
     Route::get('/qbank/search/{filter}','search');
-    Route::get('/qbank/search_by_branch','search_by_branch');
+    Route::get('/qbank/search_by_branch/{filter}','search_by_branch');
 });
 
 Route::controller(UsersController::class)->group(function () {
@@ -483,14 +492,7 @@ Route::controller(HistoryController::class)->group(function () {
 
 //POLL ROUTES
 // Route::prefix('/poll')->group(function (){
-    Route::controller(PollController::class)->group(function () {
-        Route::Post('/store', 'store');
-        Route::get('/index',  'index');
-        Route::get('/poll/serach/{filter}',  'search');
-        Route::get('/show/{id}',  'show');
-        Route::Post('/update/{id}', 'update');
-        Route::Post('/destroy/{id}',  'destroy');
-    });
+  
 // });
 //POLL END
 
