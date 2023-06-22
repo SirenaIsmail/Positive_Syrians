@@ -12,6 +12,8 @@ class Course extends Model
         'branch_id',
         'subject_id',
         'trainer_id',
+        'min_students',
+        'max_students',
        // 'approved',
         'start',
         'end',
