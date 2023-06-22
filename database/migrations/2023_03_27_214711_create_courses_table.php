@@ -29,7 +29,7 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->integer('min_students');
             $table->integer('max_students');
-            $table->integer('approved')->default(0);   // approved or not
+            $table->integer('approved')->default(0);   // 0-متاحة  1-قيد الإعطاء   2-منتهية  3-ملغاة
             $table->date('start');
             $table->date('end');
             $table->timestamps();
