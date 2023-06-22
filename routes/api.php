@@ -378,7 +378,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
 
 ////////////////////////////////////////////////////////////////////////////////
 //Trainer Role Start
-Route::group(['prefix' => '/trainer' , 'middleware' => ['auth']],function () {
+//Route::group(['prefix' => '/trainer' , 'middleware' => ['auth']],function () {
     //REFERANCE ROUTES
     Route::prefix('/referance')->group(function (){
         Route::controller(ReferanceController::class)->group(function () {
@@ -388,7 +388,7 @@ Route::group(['prefix' => '/trainer' , 'middleware' => ['auth']],function () {
             Route::Post('/update/{id}',  'update');
             Route::Post('/destroy/{id}',  'destroy');
         });
-    })->middleware('trainer');
+    });//->middleware('trainer');
     //REFERANCE END
 
     //TASK ROUTES
@@ -400,10 +400,10 @@ Route::group(['prefix' => '/trainer' , 'middleware' => ['auth']],function () {
             Route::Post('/update/{id}',  'update');
             Route::Post('/destroy/{id}',  'destroy');
         });
-    })->middleware('trainer');
+    });//->middleware('trainer');
     //TASK END
 
-});
+//});
 //End Trainer Role
 
 
@@ -425,7 +425,7 @@ Route::group(['prefix' => '/student' , 'middleware' => ['auth']],function () {
     })->middleware('Student');
     //SUBSCRIBE END
 
-
+});
     //TASK ANSWER ROUTES
     Route::prefix('/task_answer')->group(function (){
         Route::controller(TaskAnswerController::class)->group(function () {
@@ -438,7 +438,7 @@ Route::group(['prefix' => '/student' , 'middleware' => ['auth']],function () {
     })->middleware('Student');
     //TASK ANSWER END
 
-});
+
 //End Student Role
 /////////////////////////////////////////////////////////////////////
 

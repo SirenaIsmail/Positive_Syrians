@@ -24,6 +24,7 @@ return new class extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->integer('lesson_number');
+            $table->text('the_question');
             $table->json('options');
             $table->integer('answer');
             $table->timestamps();

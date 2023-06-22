@@ -27,7 +27,9 @@ return new class extends Migration
                 ->constrained('trainer_profiles')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->boolean('approved')->default(false);   // approved or not
+            $table->integer('min_students');
+            $table->integer('max_students');
+            $table->integer('approved')->default(0);   // approved or not
             $table->date('start');
             $table->date('end');
             $table->timestamps();
