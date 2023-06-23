@@ -42,7 +42,7 @@ class CourseController extends Controller
             return $this->traitResponse(null, 'User not authenticated', 401);
         }
     }
-    public function indexa()
+    public function indexa($id)
     {
         if (auth()->check()) {
           //  $branchId = Auth::user()->branch_id;
@@ -54,7 +54,7 @@ class CourseController extends Controller
                 ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
                 // 'subjects.subjectName',
                 ->select('courses.*','subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','users.first_name','users.last_name')
-                //->where('branches.id', '=', $branchId)
+                ->where('branches.id', '=', $id)
                 ->get();
                 
 
@@ -241,22 +241,82 @@ class CourseController extends Controller
 
     }
 
-    public function search(){
-        $filterResult = DB::table('courses')
-        ->join('branches', 'courses.branch_id', '=', 'branches.id')
-        ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-        ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
-        ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
-        ->select('subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','courses.start','courses.end','branches.name','branches.No','users.first_name','users.last_name')
-        // ->where('branches.id', '=', $branchId) // تحديد فقط الدورات في فرع المستخدم
-        ->paginate(10);
-        
-        if ($filterResult->count() > 0) {
-            return $this->traitResponse($filterResult, 'Search Successfully', 200);
+
+    public function search($filter)
+    {
+        if (auth()->check()) {
+            $branchId = Auth::user()->branch_id;
+
+            if($filter != "null"){
+            $filterResult = DB::table('courses')
+                ->join('branches', 'courses.branch_id', '=', 'branches.id')
+                ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+                ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
+                ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
+                ->select('courses.id','subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','courses.approved','courses.start','courses.end','branches.name','branches.No','users.first_name','users.last_name')
+                ->where('branches.id', '=', $branchId) // تحديد فقط الدورات في فرع المستخدم
+                ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
+                    $query->where('courses.start', 'like', "%$filter%")
+                        ->orWhere('courses.end', 'like', "%$filter%");
+                })
+                ->paginate(5);
+            }
+            else{
+
+                $filterResult = DB::table('courses')
+                ->join('branches', 'courses.branch_id', '=', 'branches.id')
+                ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+                ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
+                ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
+                ->select('courses.id','subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','courses.start','courses.approved','courses.end','branches.name','branches.No','users.first_name','users.last_name')
+                ->where('branches.id', '=', $branchId) // تحديد فقط الدورات في فرع المستخدم
+                
+                ->paginate(5);
+            }
+            if ($filterResult->count() > 0) {
+                return $this->traitResponse($filterResult, 'Search Successfully', 200);
+            } else {
+                return $this->traitResponse(null, 'No matching results found', 200);
+            }
         } else {
-            return $this->traitResponse(null, 'No matching results found', 200);
+            return $this->traitResponse(null, 'User not authenticated', 401);
         }
-    } 
+    }
+
+
+    public function approve($id){
+        $course = Course::find($id);
+        if(!$course)
+        {
+            return $this->traitResponse(null,'Not Found ' , 404);
+        }
+        $approved = true;
+        $course->update([
+           'approved'  => $approved,
+        ]);
+
+        return response()->json([
+           'course' => $course,
+        ]);
+
+    }
+
+    // public function search(){
+    //     $filterResult = DB::table('courses')
+    //     ->join('branches', 'courses.branch_id', '=', 'branches.id')
+    //     ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+    //     ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
+    //     ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
+    //     ->select('subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','courses.start','courses.end','branches.name','branches.No','users.first_name','users.last_name')
+    //     // ->where('branches.id', '=', $branchId) // تحديد فقط الدورات في فرع المستخدم
+    //     ->paginate(10);
+        
+    //     if ($filterResult->count() > 0) {
+    //         return $this->traitResponse($filterResult, 'Search Successfully', 200);
+    //     } else {
+    //         return $this->traitResponse(null, 'No matching results found', 200);
+    //     }
+    // } 
     
 
     public function searchbybranch($filter)
@@ -270,7 +330,7 @@ class CourseController extends Controller
                 ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
                 ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
                 ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
-                ->select('subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','courses.start','courses.end','branches.name','branches.No','users.first_name','users.last_name')
+                ->select('subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','courses.approved','courses.start','courses.end','branches.name','branches.No','users.first_name','users.last_name')
                 ->where('branches.id', '=', $branchId) // تحديد فقط الدورات في فرع المستخدم
                 ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
                     $query->where('courses.start', 'like', "%$filter%")
@@ -302,22 +362,6 @@ class CourseController extends Controller
     
 
 
-    public function approve($id){
-        $course = Course::find($id);
-        if(!$course)
-        {
-            return $this->traitResponse(null,'Not Found ' , 404);
-        }
-        $approved = true;
-        $course->update([
-           'approved'  => $approved,
-        ]);
-
-        return response()->json([
-           'course' => $course,
-        ]);
-
-    }
 }
 
 

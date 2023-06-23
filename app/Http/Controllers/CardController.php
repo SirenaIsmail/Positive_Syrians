@@ -24,7 +24,7 @@ class CardController extends Controller
             $Result = DB::table('cards')
                 ->join('users', 'users.id', '=', 'cards.user_id')
                 ->join('branches', 'branches.id', '=', 'cards.branch_id')
-                ->select('cards.id', 'cards.user_id', 'users.*', 'branches.*')
+                ->select('cards.id', 'cards.user_id','cards.id as CardId', 'users.*', 'branches.*')
                 ->where('branches.id', '=', $branchId) // تحديد فقط الفصول في فرع المستخدم
                 ->get();
     
