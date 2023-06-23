@@ -59,9 +59,10 @@ class TaskController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'trainer_id'=>'required|integer',
+  //          'trainer_id'=>'required|integer',
             'course_id'=>'required|integer',
             'lesson_number'=>'required|integer',
+            'the_question'=>'required',
             'options'=>'required|json',
             'answer'=>'required|integer',
         ]);
@@ -71,6 +72,7 @@ class TaskController extends Controller
             'trainer_id'=>$trainer_id,
             'course_id'=>$request->course_id,
             'lesson_number'=>$request->lesson_number,
+            'the_question'=>$request->the_question,
             'options'=>$options = json_encode($request->options),
             'answer'=>$request->answer,
         ]);
@@ -138,6 +140,7 @@ class TaskController extends Controller
 //            'trainer_id'=>'required|integer',
             'course_id'=>'required|integer',
             'lesson_number'=>'required|integer',
+            'the_question'=>'required',
             'options'=>'required|json',
             'answer'=>'required|integer',
         ]);
@@ -146,6 +149,7 @@ class TaskController extends Controller
             'trainer_id'=>$trainer_id,
             'course_id'=>$request->course_id,
             'lesson_number'=>$request->lesson_number,
+            'the_question'=>$request->the_question,
             'options'=>$request->options,
             'answer'=>$request->answer,
         ]);

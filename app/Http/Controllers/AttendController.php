@@ -28,6 +28,7 @@ class AttendController extends Controller
                 ->join('cards', 'cards.id', '=', 'attends.card_id')
                 ->join('users', 'users.id', '=', 'cards.user_id')
                 ->join('branches', 'branches.id', '=', 'users.branch_id')
+                ->select('attends.*', 'dates.date', 'subscribes.course_id'
                 ->select('attends.*'
                 , 'subjects.subjectName','cards.id','cards.barcode','users.id','users.first_name'
                 ,'users.last_name','users.phone_number')
@@ -80,10 +81,11 @@ class AttendController extends Controller
 
         }
         $state=false;
+        $date = date('Y-m-d');
         $dataAttend = Attend::create([
             'card_id' =>$request->card_id,
             'course_id' =>$request->course_id,
-            'date' => $request->date,
+            'date' => $date,
             'state' =>$state,
         ]);
 
@@ -118,7 +120,7 @@ class AttendController extends Controller
                 ->join('cards', 'cards.id', '=', 'histories.card_id')
                 ->join('users', 'users.id', '=', 'cards.user_id')
                 ->join('branches', 'branches.id', '=', 'users.branch_id')
-                ->select('attends.*', 'dates.date', 'histories.course_id'
+                ->select('attends.*', 'dates.date', 'subscribes.course_id'
                 , 'subjects.subjectName','cards.id','cards.barcode','users.id','users.first_name'
                 ,'users.last_name','users.phone_number')
                 ->where('branches.id', '=', $branchId)
@@ -143,18 +145,16 @@ class AttendController extends Controller
 
 
     public function scanAttend($barcode,Request $request){
-        
+
         $cardId= DB::table('cards')->where('barcode','=', $barcode)->first();
-        
+
         $subscribe = DB::table('subscribes')
             ->where('card_id','=', $cardId->id)
             ->where('course_id','=', $request->query('course_id'))
             ->exists();
-        
-        // $thsDate =now()->format('Y-m-d');
+
+
         $thsDate = now()->format('Y-m-d');
-//        $studentsCount = DB::table('subscribes')->where('course_id', $request->course_id)->count();
-//        for ($i = 0; $i < $studentsCount; $i++) {
             if ($subscribe) {
                 $state = true;
                 $attendReq = new Request([
@@ -163,6 +163,11 @@ class AttendController extends Controller
                     'date' => $thsDate,
                     'state' => $state,
                 ]);
+                $rows = DB::table('table_name')
+                    ->where('card_id', '<>', $cardId->id)
+                    ->where('course_id', '<>', $request->query('course_id'))
+                    ->where('date', '<>', $thsDate)
+                    ->get();
                 $attend = (new AttendController())->store($attendReq);
                 return response()->json([
                     'status' => 'success',

@@ -84,6 +84,7 @@ class SubscribeController extends Controller
             'date'=>$date,
             'state'=>  $state,
 
+
         ]);
 
 
@@ -305,6 +306,7 @@ class SubscribeController extends Controller
 
     public function search($filter)
 
+
     {
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
@@ -338,6 +340,7 @@ class SubscribeController extends Controller
                     // 'subjects.subjectName',
                     ->select('subscribes.id','subscribes.state','subjects.subjectName','subjects.price' ,'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number')
                     ->where('user_branch.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
+
 
                     ->paginate(10);
             }
@@ -383,79 +386,9 @@ class SubscribeController extends Controller
         }
     }
 
-    public function searchDate($filter)
-
-    {
-        if (auth()->check()) {
-            $branchId = Auth::user()->branch_id;
-
-            $filterResult = DB::table('subscribes')
-            ->join('courses', 'subscribes.course_id', '=', 'courses.id')
-            ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-            ->join('cards', 'subscribes.card_id', '=', 'cards.id')
-            ->join('branches as card_branch', 'cards.branch_id', '=', 'card_branch.id')
-            ->join('users', 'cards.user_id', '=', 'users.id')
-            ->join('branches as user_branch', 'users.branch_id', '=', 'user_branch.id')
-                ->select('subscribes.state','subjects.subjectName','subjects.content', 'subjects.price' ,'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number')
-                ->where('user_branch.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
-                ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
-                    $query->where('subscribes.state', 'like', "%$filter%")
-                           ->orWhere('users.first_name', 'like', "%$filter%");
-                })
-                   ->paginate(10);
-
-            if ($filterResult->count() > 0) {
-                return $this->traitResponse($filterResult, 'Search Successfully', 200);
-            } else {
-                return $this->traitResponse(null, 'No matching results found', 200);
-            }
-        } else {
-            return $this->traitResponse(null, 'User not authenticated', 401);
-        }
-
-    }
-
-
-// البحث عن الكورسات المشترك بها الطالب حسب الاي دي
-    public function searchStudentCourse(Request $request, $filter = null)
-    {
-        //  if (auth()->check()) {
-        //    $branchId = Auth::user()->branch_id;
-    
-            $UserId =$request->input('user_id');
-    
-            $filterResult = DB::table('subscribes')
-                ->join('courses', 'subscribes.course_id', '=', 'courses.id')
-                ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-                ->join('cards', 'subscribes.card_id', '=', 'cards.id')
-                ->join('branches as card_branch', 'cards.branch_id', '=', 'card_branch.id')
-                ->join('users', 'cards.user_id', '=', 'users.id')
-                ->join('branches as user_branch', 'users.branch_id', '=', 'user_branch.id')
-                ->select( 'users.first_name', 'users.last_name', 'users.phone_number', 'subjects.subjectName', 'subjects.content','subscribes.state','subscribes.date')
-                 ->where('users.id', '=', $UserId); // تحديد فقط الاشتراكات في فرع المستخدم
-           
-    
-            // if ($filter) {
-            //     $filterResult->where(function ($query) use ($filter) {
-            //         $query->where('subscribes.state', 'like', "%$filter%")
-            //             ->orWhere('subjects.subjectName', 'like', "%$filter%");
-                       
-            //     });
-            // }
-    
-            $filterResult = $filterResult->paginate(10);
-    
-            if ($filterResult->count() > 0) {
-                return $this->traitResponse($filterResult, 'Search Successfully', 200);
-            } else {
-                return $this->traitResponse(null, 'No matching results found', 200);
-            }
-        // } else {
-        //     return $this->traitResponse(null, 'User not authenticated', 401);
-        // }
-    }
 
 }
+
 
 
 

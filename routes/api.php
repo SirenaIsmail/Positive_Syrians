@@ -14,6 +14,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReceiptStudentController;
 use App\Http\Controllers\ProcessingFeeController;
 use App\Http\Controllers\TopCourseController;
+use App\Http\Controllers\WeeklyScheduleController;
 use App\Http\Controllers\WithdrawController;
 use App\Http\Controllers\PollController;
 use App\Http\Controllers\ProceedController;
@@ -50,14 +51,22 @@ use App\Http\Controllers\AuthController;
 //<<<<<<< Updated upstream
 //define('PAGINATION_COUNT',10);
 //=======
-  
-Route::controller(BranchController::class)->group(function () {
-    Route::Post('/branch/store','store');
-    Route::get('/branch/index','index');
-    Route::get('/branch/show/{id}','show');
-    Route::Post('/branch/update/{id}','update');
-    Route::Post('/branch/destroy/{id}','destroy');
-});
+  Route::controller(PollController::class)->group(function () {
+      Route::Post('/store', 'store');
+      Route::get('/index',  'index');
+      Route::get('/poll/serach/{filter}',  'search');
+      Route::get('/poll/search_by_branch/{filter}','search_by_branch');
+      Route::get('/show/{id}',  'show');
+      Route::Post('/update/{id}', 'update');
+      Route::Post('/destroy/{id}',  'destroy');
+    });
+Route::resource('branch',BranchController::class);//->group(function () {
+//    Route::Post('/branch/store','store');
+//    Route::get('/branch/index','index');
+//    Route::get('/branch/show/{id}','show');
+//    Route::Post('/branch/update/{id}','update');
+//    Route::Post('/branch/destroy/{id}','destroy');
+//});
 //>>>>>>> Stashed changes
 
 Route::controller(AuthController::class)->group(function () {
@@ -209,10 +218,6 @@ Route::group(['prefix' => '/scientific_affairs' , 'middleware' => ['auth']],func
     // })->middleware('scientific_affairs');
     //QUESTION BANK END
 
-    Route::controller(ExportController::class)->group(function () {
-        Route::get('/encrypt_excel', 'encryptExcel');
-        Route::get('/decrypt_excel', 'decryptExcel');
-    })->middleware('scientific_affairs');
 
 });
 //End Scientific Affairs Role
@@ -303,7 +308,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
             Route::Post('/approve/{id}', 'approve');
         });
     })->middleware('receptionist');
-   
+
     });
     //COURSE END
 
@@ -392,7 +397,7 @@ Route::controller(AttendController::class)->group(function (){
 
 ////////////////////////////////////////////////////////////////////////////////
 //Trainer Role Start
-Route::group(['prefix' => '/trainer' , 'middleware' => ['auth']],function () {
+//Route::group(['prefix' => '/trainer' , 'middleware' => ['auth']],function () {
     //REFERANCE ROUTES
     Route::prefix('/referance')->group(function (){
         Route::controller(ReferanceController::class)->group(function () {
@@ -402,7 +407,7 @@ Route::group(['prefix' => '/trainer' , 'middleware' => ['auth']],function () {
             Route::Post('/update/{id}',  'update');
             Route::Post('/destroy/{id}',  'destroy');
         });
-    })->middleware('trainer');
+    });//->middleware('trainer');
     //REFERANCE END
 
     //TASK ROUTES
@@ -414,10 +419,10 @@ Route::group(['prefix' => '/trainer' , 'middleware' => ['auth']],function () {
             Route::Post('/update/{id}',  'update');
             Route::Post('/destroy/{id}',  'destroy');
         });
-    })->middleware('trainer');
+    });//->middleware('trainer');
     //TASK END
 
-});
+//});
 //End Trainer Role
 
 
@@ -439,7 +444,7 @@ Route::group(['prefix' => '/student' , 'middleware' => ['auth']],function () {
     })->middleware('Student');
     //SUBSCRIBE END
 
-
+});
     //TASK ANSWER ROUTES
     Route::prefix('/task_answer')->group(function (){
         Route::controller(TaskAnswerController::class)->group(function () {
@@ -452,7 +457,7 @@ Route::group(['prefix' => '/student' , 'middleware' => ['auth']],function () {
     })->middleware('Student');
     //TASK ANSWER END
 
-});
+
 //End Student Role
 /////////////////////////////////////////////////////////////////////
 
@@ -503,7 +508,7 @@ Route::controller(HistoryController::class)->group(function () {
 
 //POLL ROUTES
 // Route::prefix('/poll')->group(function (){
-  
+
 // });
 //POLL END
 
@@ -544,3 +549,13 @@ Route::controller(TopCourseController::class)->group(function () {
 });
 
 
+Route::controller(ExportController::class)->group(function () {
+    Route::get('/encrypt_excel', 'encryptExcel');
+    Route::get('/decrypt_excel', 'decryptExcel');
+    Route::get('/export_excel', 'exportExcel');
+});//->middleware('scientific_affairs');
+
+
+//Route::controller(WeeklyScheduleController::class)->group(function () {
+//    Route::get('/generate_schedule', 'generateWeeklySchedule');
+//});
