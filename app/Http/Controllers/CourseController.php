@@ -42,7 +42,7 @@ class CourseController extends Controller
             return $this->traitResponse(null, 'User not authenticated', 401);
         }
     }
-    public function indexa($id$id)
+    public function indexa($id)
     {
         if (auth()->check()) {
           //  $branchId = Auth::user()->branch_id;
@@ -87,10 +87,8 @@ class CourseController extends Controller
     public function store(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            //'branch_id'=> 'required|integer',
             'subject_id'=> 'required|integer',
             'trainer_id'=> 'required|integer',
-//            'approved'=> 'required',
             'start'=> 'required',
             'end'=> 'required',
 
@@ -186,7 +184,6 @@ class CourseController extends Controller
             'branch_id'=> 'required|integer',
             'subject_id'=> 'required|integer',
             'trainer_id'=> 'required|integer',
-//            'approved'=> 'required',
             'start'=> 'required',
             'end'=> 'required',
 
@@ -319,26 +316,26 @@ class CourseController extends Controller
     // } 
     
 
-    public function searchbybranch($filter)
-    {   
-        if (auth()->check()) {
-            $branchId = Auth::user()->branch_id;
-            if($filter != "null"){
+    // public function searchbybranch($filter)
+    // {   
+    //     if (auth()->check()) {
+    //         $branchId = Auth::user()->branch_id;
+    //         if($filter != "null"){
 
-            $filterResult = DB::table('courses')
-                ->join('branches', 'courses.branch_id', '=', 'branches.id')
-                ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-                ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
-                ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
-                ->select('subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','courses.approved','courses.start','courses.end','branches.name','branches.No','users.first_name','users.last_name')
-                ->where('branches.id', '=', $branchId) // تحديد فقط الدورات في فرع المستخدم
-                ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
-                    $query->where('courses.start', 'like', "%$filter%")
-                        ->orWhere('courses.end', 'like', "%$filter%");
-                })
-                ->paginate(10);
-            }
-            else{
+    //         $filterResult = DB::table('courses')
+    //             ->join('branches', 'courses.branch_id', '=', 'branches.id')
+    //             ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+    //             ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
+    //             ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
+    //             ->select('subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','courses.approved','courses.start','courses.end','branches.name','branches.No','users.first_name','users.last_name')
+    //             ->where('branches.id', '=', $branchId) // تحديد فقط الدورات في فرع المستخدم
+    //             ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
+    //                 $query->where('courses.start', 'like', "%$filter%")
+    //                     ->orWhere('courses.end', 'like', "%$filter%");
+    //             })
+    //             ->paginate(10);
+    //         }
+    //         else{
 
                 
             // $filterResult = DB::table('courses')
@@ -356,10 +353,10 @@ class CourseController extends Controller
             //     return $this->traitResponse(null, 'No matching results found', 200);
             // }
         // } else {
-            return $this->traitResponse(null, 'User not authenticated', 401);
-        }}
-    }
-    
+    //         return $this->traitResponse(null, 'User not authenticated', 401);
+    //     }}
+    // }
+        
 
 
 }
