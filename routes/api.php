@@ -211,6 +211,13 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
     //Route::controller(WeeklyScheduleController::class)->group(function () {
     //    Route::get('/generate_schedule', 'generateWeeklySchedule');
     //});
+
+    Route::controller(PollController::class)->group(function () {
+        Route::get('/polls_counting', 'pollsCounting');
+        Route::get('/polls_counting_byBranch', 'pollsCountingByBranch');
+        Route::get('/polls_counting_byDate', 'pollsCountingByDate');
+        Route::get('/polls_counting_byBranch&Date', 'pollsCountingByBranchAndDate');
+    });
 });
 //End Branch Admin Role
 
