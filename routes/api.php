@@ -14,6 +14,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReceiptStudentController;
 use App\Http\Controllers\ProcessingFeeController;
 use App\Http\Controllers\TopCourseController;
+use App\Http\Controllers\WeeklyScheduleController;
 use App\Http\Controllers\WithdrawController;
 use App\Http\Controllers\PollController;
 use App\Http\Controllers\ProceedController;
@@ -51,21 +52,21 @@ use App\Http\Controllers\AuthController;
 //define('PAGINATION_COUNT',10);
 //=======
   Route::controller(PollController::class)->group(function () {
-        Route::Post('/store', 'store');
-        Route::get('/index',  'index');
-        Route::get('/poll/serach/{filter}',  'search');
-        Route::get('/poll/search_by_branch/{filter}','search_by_branch');
-        Route::get('/show/{id}',  'show');
-        Route::Post('/update/{id}', 'update');
-        Route::Post('/destroy/{id}',  'destroy');
+      Route::Post('/store', 'store');
+      Route::get('/index',  'index');
+      Route::get('/poll/serach/{filter}',  'search');
+      Route::get('/poll/search_by_branch/{filter}','search_by_branch');
+      Route::get('/show/{id}',  'show');
+      Route::Post('/update/{id}', 'update');
+      Route::Post('/destroy/{id}',  'destroy');
     });
-Route::controller(BranchController::class)->group(function () {
-    Route::Post('/branch/store','store');
-    Route::get('/branch/index','index');
-    Route::get('/branch/show/{id}','show');
-    Route::Post('/branch/update/{id}','update');
-    Route::Post('/branch/destroy/{id}','destroy');
-});
+Route::resource('branch',BranchController::class);//->group(function () {
+//    Route::Post('/branch/store','store');
+//    Route::get('/branch/index','index');
+//    Route::get('/branch/show/{id}','show');
+//    Route::Post('/branch/update/{id}','update');
+//    Route::Post('/branch/destroy/{id}','destroy');
+//});
 //>>>>>>> Stashed changes
 
 Route::controller(AuthController::class)->group(function () {
@@ -130,11 +131,21 @@ Route::controller(QuestionBankController::class)->group(function () {
 Route::controller(UsersController::class)->group(function () {
     Route::post('/add_employee', 'addEmployee');
     Route::post('/add_trainer', 'addTrainer');
+    Route::post('/add_admin', 'addAdmin');
     Route::get('/user/search/{filter}','search');
+    Route::get('/user/search/{filter}', 'searchForGenToBrn');
     Route::get('/user/show/{id}','show');
 });
 
-
+Route::controller(PollController::class)->group(function () {
+    Route::Post('poll/store', 'store');
+    Route::get('/index',  'index');
+    Route::get('/poll/serach/{filter}',  'search');
+    Route::get('/poll/search_by_branch/{filter}','search_by_branch');
+    Route::get('/show/{id}',  'show');
+    Route::Post('/update/{id}', 'update');
+    Route::Post('/destroy/{id}',  'destroy');
+});
 
 //General Admin Role Start
 // Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth']],function () {
@@ -178,10 +189,10 @@ Route::controller(UsersController::class)->group(function () {
 
 
     //Add admin user
-    Route::controller(UsersController::class)->group(function () {
-        Route::post('/add_admin', 'addAdmin');
-        Route::get('/user/search/{filter}', 'searchForGenToBrn');
-    })->middleware('general_admin');
+    // Route::controller(UsersController::class)->group(function () {
+    //     Route::post('/add_admin', 'addAdmin');
+    //     Route::get('/user/search/{filter}', 'searchForGenToBrn');
+    // })->middleware('general_admin');
     //End add admin user
 
 });
@@ -207,10 +218,6 @@ Route::group(['prefix' => '/scientific_affairs' , 'middleware' => ['auth']],func
     // })->middleware('scientific_affairs');
     //QUESTION BANK END
 
-    Route::controller(ExportController::class)->group(function () {
-        Route::get('/encrypt_excel', 'encryptExcel');
-        Route::get('/decrypt_excel', 'decryptExcel');
-    })->middleware('scientific_affairs');
 
 });
 //End Scientific Affairs Role
@@ -261,8 +268,9 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
 
 Route::controller(CourseController::class)->group(function () {
     Route::Post('/course/store',  'store');
-    Route::get('/course/indexa',  'indexa');
-    Route::get('/course/show/{id}',  'show');
+    Route::get('/course1/indexa/{id}','indexa');
+    Route::get('/course/index',  'index');
+    Route::get('/course/show/{id}', 'show');
     Route::get('/course/search','search');
     Route::get('/course/searchbybranch/{filter}','searchbybranch');
     Route::Post('/course/update/{id}', 'update');
@@ -289,6 +297,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
 
     //COURSE ROUTES
     Route::prefix('/course')->group(function (){
+
         Route::controller(CourseController::class)->group(function () {
             Route::Post('/store',  'store');
             Route::get('/index',  'index');
@@ -299,21 +308,17 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
             Route::Post('/approve/{id}', 'approve');
         });
     })->middleware('receptionist');
-   
+
     });
     //COURSE END
 
     //PAYMENT ROUTES
-    Route::controller(PaymentController::class)->group(function () {
-        Route::Post('/payment/store/{subscriptionId}', 'store');
-        Route::get('/payment/index','index');
-        Route::get('/payment/show/{id}', 'show');
-        Route::get('/payment/search/{filter}', 'search');
-        Route::Post('/payment/update/{id}', 'update');
-        Route::Post('/payment/destroy/{id}','destroy');
-        Route::get('/payment/createPayment/{id}', 'createPayment');
+
+
+
     });
-    
+
+
 
     Route::controller(ReceiptStudentController::class)->group(function () {
         Route::Post('/receipt/store', 'store');
@@ -324,6 +329,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
         Route::Post('/receipt/destroy/{id}','destroy');
 
     });
+
 
 
 
@@ -338,6 +344,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
 
 
 
+
     Route::controller(WithdrawController::class)->group(function () {
         Route::Post('/withdraw/store', 'store');
         Route::get('/withdraw/index','index');
@@ -345,10 +352,18 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
         Route::Post('/withdraw/update/{id}', 'update');
         Route::Post('/withdraw/destroy/{id}','destroy');
 
+        
+
+    Route::controller(PaymentController::class)->group(function () {
+        Route::get('/payment/index','index');
+        Route::get('/payment/show/{id}', 'show');
+        Route::Post('/payment/store/{subscriptionId}', 'store');
+        Route::get('/payment/search/{filter}', 'search');
+        Route::Post('/payment/update/{id}', 'update');
+        Route::Post('/payment/destroy/{id}','destroy');
+        Route::get('/payment/createPayment/{id}', 'createPayment');
     });
-
-
-
+    
 
     //Student State
     Route::controller(SubscribeController::class)->group(function () {
@@ -367,21 +382,22 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
     //End Student State
 
 
-//لمسح الحضور
-    Route::controller(AttendController::class)->group(function (){
-        Route::Post('/scan_attend/{barcode}','scanAttend');
-    });
 
  });
 //End Receptionist Role
 
 
 
+//لمسح الحضور
+Route::controller(AttendController::class)->group(function (){
+    Route::Post('/scan_attend/{barcode}','scanAttend');
+    Route::get('/attend/index','index');
+});
 
 
 ////////////////////////////////////////////////////////////////////////////////
 //Trainer Role Start
-Route::group(['prefix' => '/trainer' , 'middleware' => ['auth']],function () {
+//Route::group(['prefix' => '/trainer' , 'middleware' => ['auth']],function () {
     //REFERANCE ROUTES
     Route::prefix('/referance')->group(function (){
         Route::controller(ReferanceController::class)->group(function () {
@@ -391,7 +407,7 @@ Route::group(['prefix' => '/trainer' , 'middleware' => ['auth']],function () {
             Route::Post('/update/{id}',  'update');
             Route::Post('/destroy/{id}',  'destroy');
         });
-    })->middleware('trainer');
+    });//->middleware('trainer');
     //REFERANCE END
 
     //TASK ROUTES
@@ -403,10 +419,10 @@ Route::group(['prefix' => '/trainer' , 'middleware' => ['auth']],function () {
             Route::Post('/update/{id}',  'update');
             Route::Post('/destroy/{id}',  'destroy');
         });
-    })->middleware('trainer');
+    });//->middleware('trainer');
     //TASK END
 
-});
+//});
 //End Trainer Role
 
 
@@ -428,7 +444,7 @@ Route::group(['prefix' => '/student' , 'middleware' => ['auth']],function () {
     })->middleware('Student');
     //SUBSCRIBE END
 
-
+});
     //TASK ANSWER ROUTES
     Route::prefix('/task_answer')->group(function (){
         Route::controller(TaskAnswerController::class)->group(function () {
@@ -441,7 +457,7 @@ Route::group(['prefix' => '/student' , 'middleware' => ['auth']],function () {
     })->middleware('Student');
     //TASK ANSWER END
 
-});
+
 //End Student Role
 /////////////////////////////////////////////////////////////////////
 
@@ -492,7 +508,7 @@ Route::controller(HistoryController::class)->group(function () {
 
 //POLL ROUTES
 // Route::prefix('/poll')->group(function (){
-  
+
 // });
 //POLL END
 
@@ -533,3 +549,13 @@ Route::controller(TopCourseController::class)->group(function () {
 });
 
 
+Route::controller(ExportController::class)->group(function () {
+    Route::get('/encrypt_excel', 'encryptExcel');
+    Route::get('/decrypt_excel', 'decryptExcel');
+    Route::get('/export_excel', 'exportExcel');
+});//->middleware('scientific_affairs');
+
+
+//Route::controller(WeeklyScheduleController::class)->group(function () {
+//    Route::get('/generate_schedule', 'generateWeeklySchedule');
+//});

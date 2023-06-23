@@ -42,7 +42,7 @@ class CourseController extends Controller
             return $this->traitResponse(null, 'User not authenticated', 401);
         }
     }
-    public function indexa($id)
+    public function indexa($id$id)
     {
         if (auth()->check()) {
           //  $branchId = Auth::user()->branch_id;

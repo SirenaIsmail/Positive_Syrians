@@ -83,7 +83,8 @@ class SubscribeController extends Controller
             'branch_id'=> $branchId,
             'date'=>$date,
             'state'=>  $state,
-        
+
+
         ]);
 
 
@@ -304,7 +305,8 @@ class SubscribeController extends Controller
 
 
     public function search($filter)
-    
+
+
     {
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
@@ -338,7 +340,8 @@ class SubscribeController extends Controller
                     // 'subjects.subjectName',
                     ->select('subscribes.id','subscribes.state','subjects.subjectName','subjects.price' ,'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number')
                     ->where('user_branch.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
-                    
+
+
                     ->paginate(10);
             }
             if ($filterResult->count() > 0) {
@@ -352,37 +355,40 @@ class SubscribeController extends Controller
 
     }
 
-    
-
-    public function searchDate($filter)
-    
+    public function searchDate(Request $request, $filter = null)
     {
-        if (auth()->check()) {
-            $branchId = Auth::user()->branch_id;
+         if (auth()->check()) {
+           $branchId = Auth::user()->branch_id;
+    
+            $startDate =$request->input('start_date');
+            $endDate = $request->input('end_date');
     
             $filterResult = DB::table('subscribes')
-            ->join('courses', 'subscribes.course_id', '=', 'courses.id')
-            ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-            ->join('cards', 'subscribes.card_id', '=', 'cards.id')
-            ->join('branches as card_branch', 'cards.branch_id', '=', 'card_branch.id')
-            ->join('users', 'cards.user_id', '=', 'users.id')
-            ->join('branches as user_branch', 'users.branch_id', '=', 'user_branch.id') 
-                ->select('subscribes.state','subjects.subjectName','subjects.content', 'subjects.price' ,'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number')
-                ->where('user_branch.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
-                ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
+                ->join('courses', 'subscribes.course_id', '=', 'courses.id')
+                ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+                ->join('cards', 'subscribes.card_id', '=', 'cards.id')
+                ->join('branches as card_branch', 'cards.branch_id', '=', 'card_branch.id')
+                ->join('users', 'cards.user_id', '=', 'users.id')
+                ->join('branches as user_branch', 'users.branch_id', '=', 'user_branch.id')
+                ->select('subscribes.state', 'subjects.subjectName', 'subjects.content', 'subjects.price', 'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number')
+                 ->where('user_branch.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
+                ->whereBetween('subscribes.date', [$startDate, $endDate]); // تحديد الفترة التي تريد البحث فيها
+    
+            if ($filter) {
+                $filterResult->where(function ($query) use ($filter) {
                     $query->where('subscribes.state', 'like', "%$filter%")
-                           ->orWhere('users.first_name', 'like', "%$filter%");
-                })
-                   ->paginate(10);
-            
-
-            if ($filterResult->count() > 0) {
-                return $this->traitResponse($filterResult, 'Search Successfully', 200);
-            } else {
-                return $this->traitResponse(null, 'No matching results found', 200);
+                        ->orWhere('subjects.subjectName', 'like', "%$filter%");
+                       
+                });
             }
-         } else {
-            return $this->traitResponse(null, 'User not authenticated', 401);
+    
+            $filterResult = $filterResult->paginate(10);
         }
+    }
+
+
 }
-}
+
+
+
+
