@@ -28,7 +28,7 @@ class UsersController extends Controller
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'birth_day' => 'required',
-            //'branch_id' => 'required|integer',
+            'branch_id' => 'required|integer',
             'phone_number' => 'required|string',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
@@ -40,7 +40,7 @@ class UsersController extends Controller
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'birth_day' => $request->birth_day,
-            'branch_id' => $branchId,
+            'branch_id' => $request->branch_id,
             'phone_number' => $request->phone_number,
             'email' => $request->email,
             'password' => Hash::make($request->password),
@@ -172,7 +172,7 @@ class UsersController extends Controller
                         ->orWhere('users.first_name', 'like', "%$filter%")
                         ->orWhere('users.last_name', 'like', "%$filter%");
                 })
-                ->paginate(1);
+                ->paginate(5);
     
             }
 
@@ -184,7 +184,7 @@ class UsersController extends Controller
                 ->select('users.first_name', 'users.last_name', 'users.birth_day', 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name')
                 ->where('users.roll_number', '=', $request->query('roll_number')) // تحديد فقط المستخدمين في فرع المستخدم
                 ->where('users.branch_id', '=', $branchId) // تحديد فقط المستخدمين في فرع المستخدم
-                ->paginate(1);
+                ->paginate(5);
 
             }
             
@@ -208,7 +208,7 @@ class UsersController extends Controller
                 ->join('branches', 'users.branch_id', '=', 'branches.id')
                 ->select('users.first_name', 'users.last_name', 'users.birth_day', 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name')
                 ->where('users.roll_number', '=', $request->query('roll_number')) // تحديد فقط المستخدمين في فرع المستخدم
-                ->select('users.roll_number', 'users.first_name', 'users.last_name', 'users.birth_day'
+                ->select('users.roll_number', 'users.first_name','users.created_at', 'users.last_name', 'users.birth_day'
                 , 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name')
                 ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
                     $query->where('users.roll_number', 'like', "%$filter%")

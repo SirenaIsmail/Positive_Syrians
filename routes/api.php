@@ -50,15 +50,7 @@ use App\Http\Controllers\AuthController;
 //<<<<<<< Updated upstream
 //define('PAGINATION_COUNT',10);
 //=======
-  Route::controller(PollController::class)->group(function () {
-        Route::Post('/store', 'store');
-        Route::get('/index',  'index');
-        Route::get('/poll/serach/{filter}',  'search');
-        Route::get('/poll/search_by_branch/{filter}','search_by_branch');
-        Route::get('/show/{id}',  'show');
-        Route::Post('/update/{id}', 'update');
-        Route::Post('/destroy/{id}',  'destroy');
-    });
+  
 Route::controller(BranchController::class)->group(function () {
     Route::Post('/branch/store','store');
     Route::get('/branch/index','index');
@@ -130,11 +122,21 @@ Route::controller(QuestionBankController::class)->group(function () {
 Route::controller(UsersController::class)->group(function () {
     Route::post('/add_employee', 'addEmployee');
     Route::post('/add_trainer', 'addTrainer');
+    Route::post('/add_admin', 'addAdmin');
     Route::get('/user/search/{filter}','search');
+    Route::get('/user/search/{filter}', 'searchForGenToBrn');
     Route::get('/user/show/{id}','show');
 });
 
-
+Route::controller(PollController::class)->group(function () {
+    Route::Post('poll/store', 'store');
+    Route::get('/index',  'index');
+    Route::get('/poll/serach/{filter}',  'search');
+    Route::get('/poll/search_by_branch/{filter}','search_by_branch');
+    Route::get('/show/{id}',  'show');
+    Route::Post('/update/{id}', 'update');
+    Route::Post('/destroy/{id}',  'destroy');
+});
 
 //General Admin Role Start
 // Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth']],function () {
@@ -178,10 +180,10 @@ Route::controller(UsersController::class)->group(function () {
 
 
     //Add admin user
-    Route::controller(UsersController::class)->group(function () {
-        Route::post('/add_admin', 'addAdmin');
-        Route::get('/user/search/{filter}', 'searchForGenToBrn');
-    })->middleware('general_admin');
+    // Route::controller(UsersController::class)->group(function () {
+    //     Route::post('/add_admin', 'addAdmin');
+    //     Route::get('/user/search/{filter}', 'searchForGenToBrn');
+    // })->middleware('general_admin');
     //End add admin user
 
 });
@@ -261,8 +263,9 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth']],function (
 
 Route::controller(CourseController::class)->group(function () {
     Route::Post('/course/store',  'store');
-    Route::get('/course/indexa',  'indexa');
-    Route::get('/course/show/{id}',  'show');
+    Route::get('/course1/indexa/{id}','indexa');
+    Route::get('/course/index',  'index');
+    Route::get('/course/show/{id}', 'show');
     Route::get('/course/search','search');
     Route::get('/course/searchbybranch/{filter}','searchbybranch');
     Route::Post('/course/update/{id}', 'update');
@@ -289,6 +292,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
 
     //COURSE ROUTES
     Route::prefix('/course')->group(function (){
+
         Route::controller(CourseController::class)->group(function () {
             Route::Post('/store',  'store');
             Route::get('/index',  'index');
@@ -304,16 +308,12 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
     //COURSE END
 
     //PAYMENT ROUTES
-    Route::controller(PaymentController::class)->group(function () {
-        Route::Post('/payment/store/{subscriptionId}', 'store');
-        Route::get('/payment/index','index');
-        Route::get('/payment/show/{id}', 'show');
-        Route::get('/payment/search/{filter}', 'search');
-        Route::Post('/payment/update/{id}', 'update');
-        Route::Post('/payment/destroy/{id}','destroy');
-        Route::get('/payment/createPayment/{id}', 'createPayment');
+
+
+
     });
-    
+
+
 
     Route::controller(ReceiptStudentController::class)->group(function () {
         Route::Post('/receipt/store', 'store');
@@ -324,6 +324,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
         Route::Post('/receipt/destroy/{id}','destroy');
 
     });
+
 
 
 
@@ -338,6 +339,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
 
 
 
+
     Route::controller(WithdrawController::class)->group(function () {
         Route::Post('/withdraw/store', 'store');
         Route::get('/withdraw/index','index');
@@ -345,10 +347,18 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
         Route::Post('/withdraw/update/{id}', 'update');
         Route::Post('/withdraw/destroy/{id}','destroy');
 
+        
+
+    Route::controller(PaymentController::class)->group(function () {
+        Route::get('/payment/index','index');
+        Route::get('/payment/show/{id}', 'show');
+        Route::Post('/payment/store/{subscriptionId}', 'store');
+        Route::get('/payment/search/{filter}', 'search');
+        Route::Post('/payment/update/{id}', 'update');
+        Route::Post('/payment/destroy/{id}','destroy');
+        Route::get('/payment/createPayment/{id}', 'createPayment');
     });
-
-
-
+    
 
     //Student State
     Route::controller(SubscribeController::class)->group(function () {
@@ -367,16 +377,17 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth']],function (
     //End Student State
 
 
-//لمسح الحضور
-    Route::controller(AttendController::class)->group(function (){
-        Route::Post('/scan_attend/{barcode}','scanAttend');
-    });
 
  });
 //End Receptionist Role
 
 
 
+//لمسح الحضور
+Route::controller(AttendController::class)->group(function (){
+    Route::Post('/scan_attend/{barcode}','scanAttend');
+    Route::get('/attend/index','index');
+});
 
 
 ////////////////////////////////////////////////////////////////////////////////

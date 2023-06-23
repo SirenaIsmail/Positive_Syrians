@@ -23,19 +23,16 @@ class AttendController extends Controller
             $branchId = Auth::user()->branch_id;
 
             $Result = DB::table('attends')
-                ->join('class_rooms', 'class_rooms.id', '=', 'attends.classroom_id')
-                ->join('dates', 'dates.id', '=', 'attends.date')
-                ->join('histories', 'histories.id', '=', 'attends.history_id')
-                ->join('courses', 'courses.id', '=', 'histories.course_id')
+                ->join('courses', 'courses.id', '=', 'attends.course_id')
                 ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
-                ->join('cards', 'cards.id', '=', 'histories.card_id')
+                ->join('cards', 'cards.id', '=', 'attends.card_id')
                 ->join('users', 'users.id', '=', 'cards.user_id')
                 ->join('branches', 'branches.id', '=', 'users.branch_id')
-                ->select('attends.*', 'dates.date', 'histories.course_id'
+                ->select('attends.*'
                 , 'subjects.subjectName','cards.id','cards.barcode','users.id','users.first_name'
                 ,'users.last_name','users.phone_number')
                 ->where('branches.id', '=', $branchId)
-                ->paginate(PAGINATION_COUNT);
+                ->get();
 
             if ($Result->count() > 0) {
                 return $this->traitResponse($Result, 'Index Successfully', 200);

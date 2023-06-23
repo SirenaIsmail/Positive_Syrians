@@ -71,8 +71,20 @@ class ClassRoomController extends Controller
 
         }
 
-
-        $dataClass = ClassRoom::create($request->all());
+        $branchId = Auth::user()->branch_id;
+        
+        // $dataClass = ClassRoom::create([
+        //     'size' => $request->size,
+        //     'Number'=> $request->Number,
+        //     'className'=> $request->className,
+        //     'branch_id'=> $branchId,
+        // ]);
+        $dataClass = ClassRoom::create([
+            'size' => $request->size,
+            'Number'=> $request->Number,
+            'className'=> $request->className,
+            'branch_id'=> $branchId,
+        ]);
 
         if ($dataClass) {
             return $this->traitResponse($dataClass, 'Saved Successfully', 200);

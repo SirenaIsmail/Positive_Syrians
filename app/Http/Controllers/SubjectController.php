@@ -256,11 +256,11 @@ class SubjectController extends Controller
         if($filter != "null"){
 
         $filterResult = Subject::where("subjectName", "like","%$filter%")
-        ->paginate(2)
+        ->paginate(5)
         ->get();
         }
         else{
-            $filterResult = Subject::paginate(2);
+            $filterResult = Subject::paginate(5);
         }
         if($filterResult)
         {
