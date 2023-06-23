@@ -177,10 +177,12 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
     Route::prefix('/course')->group(function () {
         Route::controller(CourseController::class)->group(function () {
             Route::Post('/store',  'store');
-            Route::get('/indexa',  'indexa');
+            Route::get('/index',  'index');
+            Route::get('/indexa/{id}',  'indexa');
+            Route::get('/indexAvailable',  'indexAvailable');
             Route::get('/show/{id}',  'show');
             Route::get('/search','search');
-            Route::get('/searchbybranch/{filter}','searchbybranch');
+            Route::get('/searchBybranch','searchBybranch');
             Route::Post('/update/{id}', 'update');
             Route::Post('/destroy/{id}', 'destroy');
             Route::Post('/approve/{id}', 'approve');

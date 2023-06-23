@@ -22,30 +22,33 @@ class SubscribeController extends Controller
      */
     public function index()
     {
+        $threeMonthsAgo = \Carbon\Carbon::now()->subMonths(3)->format('Y-m-d');
 
-        if (auth()->check())
-        {
-            $branchId = Auth::user()->branch_id;
+        // if (auth()->check())
+        // {
+        //     $branchId = Auth::user()->branch_id;
 
             $Result = DB::table('subscribes')
-                ->join('subjects', 'subscribes.subject_id', '=', 'subjects.id')
+                 ->join('courses', 'subscribes.course_id', '=', 'courses.id')
+                ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
                 ->join('cards', 'subscribes.card_id', '=', 'cards.id')
-                ->join('branches as card_branch', 'cards.branch_id', '=', 'card_branch.id')
+                ->join('branches', 'subscribes.branch_id', '=', 'branches.id')
                 ->join('users', 'cards.user_id', '=', 'users.id')
-                ->join('branches as user_branch', 'users.branch_id', '=', 'user_branch.id')
-                ->join('dates', 'subscribes.date_id', '=', 'dates.id')
-                ->select('subscribes.state', 'subjects.subjectName', 'subjects.content', 'subjects.price' ,'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number','dates.date')
-                ->where('user_branch.id', '=', $branchId)
-                ->paginate(PAGINATION_COUNT);
+                ->select('subjects.subjectName','subscribes.state', 'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number','subscribes.date')
+                // ->where('branches.id', '=', $branchId)
+                ->whereBetween('subscribes.date', [$threeMonthsAgo, date('Y-m-d')])
+                ->orderBy('subscribes.date', 'desc')
+                ->paginate(10);
+               
 
             if ($Result->count() > 0) {
-                return $this->traitResponse($Result, 'Index Successfully', 200);
+                return $this->traitResponse($Result, 'تم عرض البيانات بنجاخ', 200);
             } else {
-                return $this->traitResponse(null, 'No  results found', 200);
+                return $this->traitResponse(null, 'لا يوجد نتائج', 200);
             }
-        } else {
-            return $this->traitResponse(null, 'User not authenticated', 401);
-        }
+        // } else {
+        //     return $this->traitResponse(null, 'User not authenticated', 401);
+        // }
     }
 
 
@@ -199,28 +202,27 @@ class SubscribeController extends Controller
      */
     public function show($id)
     {
-       // return $this->traitResponse( null ,'Show Successfully', 200);
 
-        if (auth()->check()) {
+        if (auth()->check())
+        {
             $branchId = Auth::user()->branch_id;
 
             $Result = DB::table('subscribes')
-                ->join('courses', 'subscribes.course_id', '=', 'courses.id')
+                 ->join('courses', 'subscribes.course_id', '=', 'courses.id')
                 ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
                 ->join('cards', 'subscribes.card_id', '=', 'cards.id')
-                ->join('branches as card_branch', 'cards.branch_id', '=', 'card_branch.id')
+                ->join('branches', 'subscribes.branch_id', '=', 'branches.id')
                 ->join('users', 'cards.user_id', '=', 'users.id')
-                ->join('branches as user_branch', 'users.branch_id', '=', 'user_branch.id')
-                ->join('dates', 'subscribes.date_id', '=', 'dates.id')
-                ->select('subscribes.state', 'subjects.subjectName', 'subjects.content', 'subjects.price' ,'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number','dates.date')
-                ->where('user_branch.id', '=', $branchId)
+                ->select('subjects.subjectName','subscribes.state', 'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number','subscribes.date')
+                // ->where('branches.id', '=', $branchId)
                 ->where('subscribes.id', '=', $id)
-                ->get();
+                ->get(10);
+               
 
             if ($Result->count() > 0) {
-                return $this->traitResponse($Result, 'Show Successfully', 200);
+                return $this->traitResponse($Result, 'تم العرض  بنجاح', 200);
             } else {
-                return $this->traitResponse(null, 'No  results found', 200);
+                return $this->traitResponse(null, 'لا يوجد نتيحة', 200);
             }
         } else {
             return $this->traitResponse(null, 'User not authenticated', 401);
