@@ -29,7 +29,6 @@ class AttendController extends Controller
                 ->join('users', 'users.id', '=', 'cards.user_id')
                 ->join('branches', 'branches.id', '=', 'users.branch_id')
                 ->select('attends.*', 'dates.date', 'subscribes.course_id'
-                ->select('attends.*'
                 , 'subjects.subjectName','cards.id','cards.barcode','users.id','users.first_name'
                 ,'users.last_name','users.phone_number')
                 ->where('branches.id', '=', $branchId)
