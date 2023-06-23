@@ -70,16 +70,11 @@ class PollController extends Controller
 
 
         $validation = Validator::make($request->all(), [
-            'full_name_ar'=>'required',
-            'poll_date'=>'required',
+            'full_name'=>'required',
+            'poll_date'=>'required|date',
             'phone_numb'=>'required',
-            'whatsapp_numb'=>'required',
-            'first_subj'=>'required',
-            'secound_subj' => 'required',
-            'third_subj'=>'required',
-            'first_time'=>'required',
-            'secound_time'=>'required',
-            'third_time'=>'required',
+            'first'=>'required|integer',
+            'branch_id'=>'required|integer',
 
         ]);
         if($validation->fails())
@@ -174,7 +169,7 @@ class PollController extends Controller
 
         $validation = Validator::make($request->all(), [
             'full_name'=>'required',
-            'first_subj'=>'required',
+            'first'=>'required|integer',
 
         ]);
         if($validation->fails())
@@ -256,9 +251,9 @@ class PollController extends Controller
                 ,'polls.secound_time', 'subject3.subjectName  As subjectName3', 'polls.third_time','polls.notice')
                 ->where('branches.id', '=', $branchId)
                 ->paginate(1);
-                   } 
+                   }
 
-            
+
             if ($filterResult->count() > 0) {
                 return $this->traitResponse($filterResult, 'Search Successfully', 200);
             } else {
@@ -267,7 +262,7 @@ class PollController extends Controller
         } else {
             return $this->traitResponse(null, 'User not authenticated', 401);
         }
-        }
+    }
 
 
 
@@ -293,14 +288,78 @@ class PollController extends Controller
         // } else {
         //     return $this->traitResponse(null, 'User not authenticated', 401);
         // }
-    
+
         // if ($filterResult->count() > 0) {
         //     return $this->traitResponse($filterResult, 'Show Successfully', 200);
         // } else {
         //     return $this->traitResponse(null, 'No matching results found', 200);
         // }
-        
+
+
+    public function pollsCounting(){
+        $count = DB::table('polls')
+            ->join('subjects', 'polls.first', '=', 'subjects.id')
+            ->join('branches', 'polls.branch_id', '=', 'branches.id')
+            ->select('subjects.subjectName', 'branches.name', DB::raw('DATE_FORMAT(poll_date, "%Y-%m") as month'), DB::raw('COUNT(*) as count'))
+            ->groupBy('first', 'branch_id', 'month')
+            ->get();
+
+        if ($count->count() > 0) {
+            return $this->traitResponse($count, 'Counting Successfully', 200);
+        } else {
+            return $this->traitResponse(null, 'No matching results found', 200);
+        }
+
     }
+    public function pollsCountingByBranch(Request $request){
+        $count = DB::table('polls')
+            ->join('subjects', 'polls.first', '=', 'subjects.id')
+            ->join('branches', 'polls.branch_id', '=', 'branches.id')
+            ->select('subjects.subjectName', 'branches.name', DB::raw('DATE_FORMAT(poll_date, "%Y-%m") as month'), DB::raw('COUNT(*) as count'))
+            ->where('polls.branch_id', '=', $request->branch)
+            ->groupBy('first', 'branch_id', 'month')
+            ->get();
+
+        if ($count->count() > 0) {
+            return $this->traitResponse($count, 'Counting Successfully', 200);
+        } else {
+            return $this->traitResponse(null, 'No matching results found', 200);
+        }
+
+    }
+    public function pollsCountingByDate(Request $request){
+        $count = DB::table('polls')
+            ->join('subjects', 'polls.first', '=', 'subjects.id')
+            ->join('branches', 'polls.branch_id', '=', 'branches.id')
+            ->select('subjects.subjectName', 'branches.name', DB::raw('DATE_FORMAT(poll_date, "%Y-%m") as month'), DB::raw('COUNT(*) as count'))
+            ->where(DB::raw('DATE_FORMAT(poll_date, "%Y-%m")'), '=', $request->date)
+            ->groupBy('subjects.subjectName', 'branches.name', 'month')
+            ->get();
+
+        if ($count->count() > 0) {
+            return $this->traitResponse($count, 'Counting Successfully', 200);
+        } else {
+            return $this->traitResponse(null, 'No matching results found', 200);
+        }
+
+    }
+    public function pollsCountingByBranchAndDate(Request $request){
+        $count = DB::table('polls')
+            ->join('subjects', 'polls.first', '=', 'subjects.id')
+            ->join('branches', 'polls.branch_id', '=', 'branches.id')
+            ->select('subjects.subjectName', 'branches.name', DB::raw('DATE_FORMAT(poll_date, "%Y-%m") as month'), DB::raw('COUNT(*) as count'))
+            ->where('polls.branch_id', '=', $request->branch)
+            ->where(DB::raw('DATE_FORMAT(poll_date, "%Y-%m")'), '=', $request->date)
+            ->groupBy('subjects.subjectName', 'branches.name', 'month')
+            ->get();
+
+        if ($count->count() > 0) {
+            return $this->traitResponse($count, 'Counting Successfully', 200);
+        } else {
+            return $this->traitResponse(null, 'No matching results found', 200);
+        }
+    }
+}
 
 
 
