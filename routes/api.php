@@ -24,6 +24,7 @@ use App\Http\Controllers\TaskAnswerController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TopCourseController;
 use App\Http\Controllers\TrainerProfileController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\WithdrawController;
 use Illuminate\Http\Request;
@@ -49,6 +50,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('register', 'register');
     Route::post('logout', 'logout');
     Route::post('refresh', 'refresh');
+    Route::post('resetPassword', 'resetPassword');
 
 });
 
@@ -187,6 +189,11 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
         });
     });
     //COURSE END
+
+    Route::controller(UserController::class)->group(function (){
+        Route::get('/search/{filter}','search');
+        Route::get('/search_without_paginate/{filter}','searchWithoutPaginate');
+    });
 
 //    Route::controller(ExportController::class)->group(function () {
 //        Route::get('/export', 'exportToPDF');

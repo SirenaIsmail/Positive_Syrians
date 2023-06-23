@@ -83,20 +83,17 @@ class TrainerProfileController extends Controller
             return $this->traitResponse(null,$validation->errors(),400);
 
         }
+            $dataTrainerProfile = TrainerProfile::create([
+                'user_id' => $request->user_id,
+                'rating' => $request->rating,
+            ]);
 
-        $dataTrainerProfile = TrainerProfile::create([
-            'user_id'=> $request->user_id,
-            'rating'=> $request->rating,
-        ]);
+            if ($dataTrainerProfile) {
 
-        if($dataTrainerProfile)
-        {
+                return $this->traitResponse($dataTrainerProfile, 'Saved Successfully', 200);
+            }
 
-            return  $this ->traitResponse( $dataTrainerProfile ,'Saved Successfully' , 200 );
-        }
-
-        return  $this->traitResponse(null,'Saved Failed ' , 400);
-
+            return $this->traitResponse(null, 'Saved Failed ', 400);
 
     }
 
@@ -150,7 +147,6 @@ class TrainerProfileController extends Controller
         }
 
         $validation = Validator::make($request->all(), [
-            'user_id'=> 'required|integer',
             'rating'=> 'required',
 
 
