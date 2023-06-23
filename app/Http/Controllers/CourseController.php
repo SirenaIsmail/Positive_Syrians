@@ -19,6 +19,7 @@ class CourseController extends Controller
      */
     public function index()
     {
+        $threeMonthsAgo = \Carbon\Carbon::now()->subMonths(3)->format('Y-m-d');
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
 
@@ -28,23 +29,27 @@ class CourseController extends Controller
                 ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
                 ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
                 // 'subjects.subjectName',
-                ->select('courses.*','subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','users.first_name','users.last_name')
+                ->select('courses.*','subjects.subjectName','users.first_name','users.last_name')
                 ->where('branches.id', '=', $branchId)
-                ->get();
+                ->whereDate('courses.start', '>=', $threeMonthsAgo)
+                ->orderBy('courses.id', 'desc')
+                ->paginate(10);
                 
 
             if ($Result->count() > 0) {
-                return $this->traitResponse($Result, 'Index Successfully', 200);
+                return $this->traitResponse($Result, 'تم العرض بنجاح', 200);
             } else {
-                return $this->traitResponse(null, 'No  results found', 200);
+                return $this->traitResponse(null, 'لا يوجد نتائج', 200);
             }
         } else {
             return $this->traitResponse(null, 'User not authenticated', 401);
         }
     }
+
     public function indexa($id)
     {
-        if (auth()->check()) {
+        $threeMonthsAgo = \Carbon\Carbon::now()->subMonths(3)->format('Y-m-d');
+         if (auth()->check()) {
           //  $branchId = Auth::user()->branch_id;
 
             $Result = DB::table('courses')
@@ -53,9 +58,41 @@ class CourseController extends Controller
                 ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
                 ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
                 // 'subjects.subjectName',
-                ->select('courses.*','subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','users.first_name','users.last_name')
+                ->select('courses.*','subjects.subjectName','users.first_name','users.last_name')
+                ->whereDate('courses.start', '>=', $threeMonthsAgo)
                 ->where('branches.id', '=', $id)
-                ->get();
+                ->orderBy('courses.id', 'desc')
+                ->paginate(10);
+                
+
+            if ($Result->count() > 0) {
+                return $this->traitResponse($Result, 'تم العرض بنجاح', 200);
+            } else {
+                return $this->traitResponse(null, 'لا يوجد نتائج', 200);
+            }
+        } else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
+        }
+    }
+
+
+    public function indexAvailable()
+    {
+        if (auth()->check()) {
+            $branchId = Auth::user()->branch_id;
+
+              $Result = DB::table('courses') 
+                ->join('branches', 'courses.branch_id', '=', 'branches.id')
+                ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+                ->join('subscribes', 'courses.id', '=', 'subscribes.course_id')
+                ->select('courses.*','subjects.subjectName','subjects.price' )
+                ->where('branches.id', '=', $branchId)
+                ->where('courses.start', '>=', date('Y-m-d'))
+                ->whereIn('courses.approved', [0, 1, 2])
+                ->groupBy('courses.id')
+                ->havingRaw('SUM(CASE WHEN subscribes.state IN (1, 2) THEN 1 ELSE 0 END) <= courses.max_students')
+                ->paginate(10);
+
                 
 
             if ($Result->count() > 0) {
@@ -67,6 +104,9 @@ class CourseController extends Controller
             return $this->traitResponse(null, 'User not authenticated', 401);
         }
     }
+
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -86,27 +126,53 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-        $validation = Validator::make($request->all(), [
-            'subject_id'=> 'required|integer',
-            'trainer_id'=> 'required|integer',
-            'start'=> 'required',
-            'end'=> 'required',
+        if (date('N', strtotime($request->start)) === '5') {
+            // يتم إلقاء استثناء بسبب تاريخ البدء يوم الجمعة
+        }
+        if (date('N', strtotime($request->end)) === '5') {
+            // يتم إلقاء استثناء بسبب تاريخ الانتهاء يوم الجمعة
+        }
 
-        ]);
+        $validation = Validator::make($request->all(), [
+            'min_students' => 'integer|min:10|max:80|lt:max_students',
+            'max_students' => 'integer|min:11|max:82|gt:min_students',
+            'start' => [
+        'date',
+        'after:now',
+        function ($attribute, $value, $fail) {
+            if (date('N', strtotime($value)) === '5') {
+                $fail('The '.$attribute.' cannot fall on a Friday.');
+            }
+        },
+    ],
+    'end' => [
+        'date',
+        'after:start',
+        'after:'.date('Y-m-d', strtotime('+5 days', strtotime($request->start))),
+        'before:'.date('Y-m-d', strtotime('+4 months', strtotime($request->start))),
+        function ($attribute, $value, $fail) use ($request) {
+            if (date('N', strtotime($value)) === '5') {
+                $fail('The '.$attribute.' cannot fall on a Friday.');
+            }
+        },
+    ],
+]);
         if($validation->fails())
 
         {
             return $this->traitResponse(null,$validation->errors(),400);
 
         }
-        $approve = false;
+        
 
-        $branchId = Auth::user()->branch_id;
+        // $branchId = Auth::user()->branch_id;
         $dataCourse = Course::create([
-            'branch_id'=> $branchId,
+            'branch_id'=> $request->branch_id,
             'subject_id'=> $request->subject_id,
             'trainer_id'=> $request->trainer_id,
-            'approved'=> $approve,
+            'min_students'=>$request->min_students,
+            'max_students'=>$request->max_students,
+            'approved'=>  $request->approved,
             'start'=> $request->start,
             'end'=> $request->end,
         ]);
@@ -114,10 +180,10 @@ class CourseController extends Controller
         if($dataCourse)
         {
 
-            return  $this ->traitResponse( $dataCourse ,'Saved Successfully' , 200 );
+            return  $this ->traitResponse( $dataCourse ,'تم الحفظ بنجاح' , 200 );
         }
 
-        return  $this->traitResponse(null,'The Branch Not Saved ' , 400);
+        return  $this->traitResponse(null,'عذراً لم يتم حفظ البيانات' , 400);
     }
 
     /**
@@ -136,7 +202,7 @@ class CourseController extends Controller
                 ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
                 ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
                 ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
-                ->select('subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','courses.start','courses.end','users.first_name','users.last_name')
+                ->select('courses.*','subjects.subjectName','users.first_name','users.last_name')
                 ->where('branches.id', '=', $branchId)
                 ->where('courses.id', '=', $id)
                 ->get();
@@ -170,45 +236,75 @@ class CourseController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
+
     {
 
         $dataCourse = Course::find($id);
 
         if(!$dataCourse)
         {
-            return $this->traitResponse(null,' Sorry Not Found',404);
+            return $this->traitResponse(null,' عذرا غير موجود',404);
 
         }
 
+        if (date('N', strtotime($request->start)) === '5') {
+            // يتم إلقاء استثناء بسبب تاريخ البدء يوم الجمعة
+        }
+        if (date('N', strtotime($request->end)) === '5') {
+            // يتم إلقاء استثناء بسبب تاريخ الانتهاء يوم الجمعة
+        }
+
         $validation = Validator::make($request->all(), [
-            'branch_id'=> 'required|integer',
-            'subject_id'=> 'required|integer',
-            'trainer_id'=> 'required|integer',
-            'start'=> 'required',
-            'end'=> 'required',
-
-        ]);
-
+            'min_students' => 'integer|min:10|max:80|lt:max_students',
+            'max_students' => 'integer|min:11|max:82|gt:min_students',
+            'start' => [
+        'date',
+        'after:now',
+        function ($attribute, $value, $fail) {
+            if (date('N', strtotime($value)) === '5') {
+                $fail('The '.$attribute.' cannot fall on a Friday.');
+            }
+        },
+    ],
+    'end' => [
+        'date',
+        'after:start',
+        'after:'.date('Y-m-d', strtotime('+5 days', strtotime($request->start))),
+        'before:'.date('Y-m-d', strtotime('+4 months', strtotime($request->start))),
+        function ($attribute, $value, $fail) use ($request) {
+            if (date('N', strtotime($value)) === '5') {
+                $fail('The '.$attribute.' cannot fall on a Friday.');
+            }
+        },
+    ],
+]);
         if($validation->fails())
 
         {
             return $this->traitResponse(null,$validation->errors(),400);
 
         }
+        
+
+        // $branchId = Auth::user()->branch_id;
         $dataCourse->update([
             'branch_id'=> $request->branch_id,
             'subject_id'=> $request->subject_id,
             'trainer_id'=> $request->trainer_id,
+            'min_students'=>$request->min_students,
+            'max_students'=>$request->max_students,
+            'approved'=>  $request->approved,
             'start'=> $request->start,
             'end'=> $request->end,
         ]);
-//        $dataCourse->save();
+
         if($dataCourse)
         {
-            return $this->traitResponse($dataCourse , 'Updated Successfully',200);
 
+            return  $this ->traitResponse( $dataCourse ,'تم التعديل بنجاح' , 200 );
         }
-        return $this->traitResponse(null,'Failed Updated',400);
+
+        return  $this->traitResponse(null,'عذراً فشل التعديل' , 400);
 
     }
 
@@ -224,61 +320,59 @@ class CourseController extends Controller
 
         if(!$dataCourse)
         {
-            return $this->traitResponse(null,'Not Found ' , 404);
+            return $this->traitResponse(null,'عذراً غير موجود' , 404);
         }
 
         $dataCourse->delete($id);
 
         if($dataCourse)
         {
-            return  $this->traitResponse(null , 'Deleted Successfully ' , 200);
+            return  $this->traitResponse(null , 'تم الحذف بنجاح ' , 200);
 
         }
-        return  $this->traitResponse(null , 'Deleted Failed ' , 404);
+        return  $this->traitResponse(null , 'فشل الحذف' , 404);
 
     }
 
 
-    public function search($filter)
-    {
-        if (auth()->check()) {
-            $branchId = Auth::user()->branch_id;
+    public function search(Request $request)
+{
+    // if (auth()->check()) {
+    //     $branchId = Auth::user()->branch_id;
 
-            if($filter != "null"){
-            $filterResult = DB::table('courses')
-                ->join('branches', 'courses.branch_id', '=', 'branches.id')
-                ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-                ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
-                ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
-                ->select('courses.id','subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','courses.approved','courses.start','courses.end','branches.name','branches.No','users.first_name','users.last_name')
-                ->where('branches.id', '=', $branchId) // تحديد فقط الدورات في فرع المستخدم
-                ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
-                    $query->where('courses.start', 'like', "%$filter%")
-                        ->orWhere('courses.end', 'like', "%$filter%");
-                })
-                ->paginate(5);
-            }
-            else{
+        $validation = Validator::make($request->all(), [
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+            'approved' => 'nullable|integer',
+        ]);
 
-                $filterResult = DB::table('courses')
-                ->join('branches', 'courses.branch_id', '=', 'branches.id')
-                ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-                ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
-                ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
-                ->select('courses.id','subjects.subjectName','subjects.content','subjects.price','subjects.houers','subjects.number_of_lessons','courses.start','courses.approved','courses.end','branches.name','branches.No','users.first_name','users.last_name')
-                ->where('branches.id', '=', $branchId) // تحديد فقط الدورات في فرع المستخدم
-                
-                ->paginate(5);
-            }
-            if ($filterResult->count() > 0) {
-                return $this->traitResponse($filterResult, 'Search Successfully', 200);
-            } else {
-                return $this->traitResponse(null, 'No matching results found', 200);
-            }
+        if ($validation->fails()) {
+            return $this->traitResponse(null, $validation->errors()->first(), 422);
+        }
+
+        $filterResult = DB::table('courses')
+            ->join('branches', 'courses.branch_id', '=', 'branches.id')
+            ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+            ->select('courses.id','subjects.subjectName','subjects.price','courses.start','courses.end','courses.min_students','courses.max_students')
+            // ->where('branches.id', '=', $branchId) // تحديد فقط الدورات في فرع المستخدم
+            ->where(function ($query) use ($request) {
+                $query->where('courses.start', '>=', $request->start_date)
+                    ->where('courses.start', '<=', $request->end_date);
+                if (isset($request->approved)) {
+                    $query->where('courses.approved', '=', $request->approved);
+                }
+            })
+            ->paginate(5);
+
+        if ($filterResult->count() > 0) {
+            return $this->traitResponse($filterResult, 'Search Successfully', 200);
         } else {
-            return $this->traitResponse(null, 'User not authenticated', 401);
+            return $this->traitResponse(null, 'No matching results found', 200);
         }
-    }
+    // } else {
+    //     return $this->traitResponse(null, 'User not authenticated', 401);
+    // }
+}
 
 
     public function approve($id){
@@ -357,6 +451,50 @@ class CourseController extends Controller
     //     }}
     // }
         
+    public function searchBybranch(Request $request)
+    {
+    
+            $validation = Validator::make($request->all(), [
+                'start_date' => 'required|date',
+                'end_date' => 'required|date|after:start_date',
+                'approved' => 'nullable|integer',
+                'branchId' => 'required',
+            ]);
+    
+            if ($validation->fails()) {
+                return $this->traitResponse(null, $validation->errors()->first(), 422);
+            }
+    
+            $filterResult = DB::table('courses')
+                ->join('branches', 'courses.branch_id', '=', 'branches.id')
+                ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+                ->select('courses.id','subjects.subjectName','subjects.price','courses.start','courses.end','courses.min_students','courses.max_students')
+                ->where(function ($query) use ($request) {
+                    $query->where('courses.start', '>=', $request->start_date)
+                        ->where('courses.start', '<=', $request->end_date)
+                        ->where('courses.branch_id', '=', $request->branchId);
+
+                    if (isset($request->approved)) {
+                        $query->where('courses.approved', '=', $request->approved);
+                    }
+                })
+                ->paginate(5);
+    
+            if ($filterResult->count() > 0) {
+                return $this->traitResponse($filterResult, 'Search Successfully', 200);
+            } else {
+                return $this->traitResponse(null, 'No matching results found', 200);
+            }
+
+    }
+
+
+
+
+
+
+
+
 
 
 }
