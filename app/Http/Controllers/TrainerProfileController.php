@@ -19,12 +19,13 @@ class TrainerProfileController extends Controller
      */
     public function index()
     {
-        $dataTrainerProfile = TrainerProfile::paginate(PAGINATION_COUNT);
+        $dataTrainerProfile = TrainerProfile::join('users', 'users.id', '=', 'trainer_profiles.user_id')
+            ->join('branches', 'branches.id' , '=','users.branch_id')
+            ->select('users.first_name', 'users.last_name','branches.name', 'users.email', 'trainer_profiles.rating')
+            ->get();
 
-        if($dataTrainerProfile)
-        {
-            return $this->traitResponse($dataTrainerProfile,'SUCCESS', 200);
-
+        if ($dataTrainerProfile) {
+            return $this->traitResponse($dataTrainerProfile, 'SUCCESS', 200);
         }
 
 
@@ -198,6 +199,7 @@ class TrainerProfileController extends Controller
 
         }
         return  $this->traitResponse(null , 'Deleted Failed ' , 404);
+
 
 
     } public function search($filter)
