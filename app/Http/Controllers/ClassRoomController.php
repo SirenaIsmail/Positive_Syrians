@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 class ClassRoomController extends Controller
 {
     use apiResponse;
- 
+
 
     /**
      * Display a listing of the resource.
@@ -23,13 +23,13 @@ class ClassRoomController extends Controller
     {
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
-    
+
             $Result = DB::table('branches')
                 ->join('class_rooms', 'class_rooms.branch_id', '=', 'branches.id')
                 ->select('class_rooms.className', 'class_rooms.Number', 'class_rooms.size', 'branches.No', 'branches.name')
-                ->where('branches.id', '=', $branchId) 
+                ->where('branches.id', '=', $branchId)
                 ->paginate(1);
-    
+
             if ($Result->count() > 0) {
                 return $this->traitResponse($Result, 'Index Successfully', 200);
             }
@@ -72,13 +72,7 @@ class ClassRoomController extends Controller
         }
 
         $branchId = Auth::user()->branch_id;
-        
-        // $dataClass = ClassRoom::create([
-        //     'size' => $request->size,
-        //     'Number'=> $request->Number,
-        //     'className'=> $request->className,
-        //     'branch_id'=> $branchId,
-        // ]);
+        $Number= mt_rand(0,999999999) ;
         $dataClass = ClassRoom::create([
             'size' => $request->size,
             'Number'=> $request->Number,
@@ -105,14 +99,14 @@ class ClassRoomController extends Controller
     {
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
-    
+
             $Result = DB::table('branches')
                 ->join('class_rooms', 'class_rooms.branch_id', '=', 'branches.id')
                 ->select('class_rooms.*','branches.No', 'branches.name')
                 ->where('branches.id', '=', $branchId) // تحديد فقط الفصول في فرع المستخدم
                 ->where('class_rooms.id', '=', $id)
                 ->get();
-    
+
             if ($Result->count() > 0) {
                 return $this->traitResponse($Result, 'Show Successfully', 200);
             }
@@ -198,13 +192,13 @@ class ClassRoomController extends Controller
     }
 
 
-    
+
     public function search($filter)
     {
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
            if($filter != "null"){
-    
+
             $filterResult = DB::table('branches')
                 ->join('class_rooms', 'class_rooms.branch_id', '=', 'branches.id')
                 ->select('class_rooms.className', 'class_rooms.Number', 'class_rooms.size', 'branches.No', 'branches.name')
@@ -217,16 +211,16 @@ class ClassRoomController extends Controller
 
             }
             else{
-                
+
             $filterResult = DB::table('branches')
             ->join('class_rooms', 'class_rooms.branch_id', '=', 'branches.id')
             ->select('class_rooms.className', 'class_rooms.Number', 'class_rooms.size', 'branches.No', 'branches.name')
             ->where('branches.id', '=', $branchId) // تحديد فقط الفصول في فرع المستخدم
-            
+
             ->paginate(10);
 
             }
-        
+
             if ($filterResult->count() > 0) {
                 return $this->traitResponse($filterResult, 'Search Successfully', 200);
             }

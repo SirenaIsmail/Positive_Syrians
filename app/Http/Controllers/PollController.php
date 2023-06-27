@@ -71,7 +71,7 @@ class PollController extends Controller
 
         $validation = Validator::make($request->all(), [
             'full_name'=>'required',
-            'poll_date'=>'required|date',
+//            'poll_date'=>'required|date',
             'phone_numb'=>'required',
             'first'=>'required|integer',
             'branch_id'=>'required|integer',
@@ -83,8 +83,15 @@ class PollController extends Controller
             return $this->traitResponse(null,$validation->errors(),400);
 
         }
+        $poll_date = date('d-m-Y');
+        $dataPoll = Poll::create([
+            'full_name'=> $request->full_name,
+            'poll_date'=> $poll_date,
+            'phone_numb'=> $request->phone_numb,
+            'first'=> $request->first,
+            'branch_id'=> $request->branch_id,
 
-        $dataPoll = Poll::create($request -> all());
+        ]);
 
         if($dataPoll)
         {

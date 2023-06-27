@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 use App\Models\Card;
+use App\Models\TrainerProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+
+    use apiResponse;
 
     public function __construct()
     {
@@ -56,7 +60,6 @@ class AuthController extends Controller
             'password' => 'required|string|min:6',
         ]);
 //        $branchId = Auth::user()->branch_id;
-
         $user = User::create([
             'roll_number' => $request->roll_number,
             'first_name' => $request->first_name,
@@ -67,6 +70,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
 
         $barcode = mt_rand(000000000,999999999);
         if ($this->barcodeExist($barcode)){
@@ -79,16 +83,16 @@ class AuthController extends Controller
         ]);
         $card = ( new CardController)->store($cardReq);
 
-     $token = Auth::login($user);
+        $token = Auth::login($user);
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',
             'user' => $user,
             'card' => $card,
-            // 'authorisation' => [
-            //     'token' => $token,
-            //     'type' => 'bearer',
-            // ]
+             'authorisation' => [
+                 'token' => $token,
+                 'type' => 'bearer',
+             ]
         ]);
     }
 
@@ -117,6 +121,35 @@ class AuthController extends Controller
         ]);
     }
 
+
+
+    public function resetPassword(Request $request){
+        $id = Auth::user()->id;
+        $myAccount = User::find($id);
+        if(!$myAccount)
+        {
+            return $this->traitResponse(null,' Sorry Not Found',404);
+        }
+
+        $validation = Validator::make($request->all(), [
+            'password' => 'required|string|min:6',
+        ]);
+        if($validation->fails())
+
+        {
+            return $this->traitResponse(null,$validation->errors(),400);
+        }
+
+        $myAccount->update([
+            'password' => Hash::make($request->password),
+        ]);
+        if($myAccount)
+        {
+            return $this->traitResponse($myAccount , 'Password is updated Successfully',200);
+
+        }
+        return $this->traitResponse(null,'Updated Failed',400);
+    }
 
 
 

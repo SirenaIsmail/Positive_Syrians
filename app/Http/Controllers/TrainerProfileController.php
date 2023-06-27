@@ -19,12 +19,13 @@ class TrainerProfileController extends Controller
      */
     public function index()
     {
-        $dataTrainerProfile = TrainerProfile::paginate(PAGINATION_COUNT);
+        $dataTrainerProfile = TrainerProfile::join('users', 'users.id', '=', 'trainer_profiles.user_id')
+            ->join('branches', 'branches.id' , '=','users.branch_id')
+            ->select('users.first_name', 'users.last_name','branches.name', 'users.email', 'trainer_profiles.rating')
+            ->get();
 
-        if($dataTrainerProfile)
-        {
-            return $this->traitResponse($dataTrainerProfile,'SUCCESS', 200);
-
+        if ($dataTrainerProfile) {
+            return $this->traitResponse($dataTrainerProfile, 'SUCCESS', 200);
         }
 
 
@@ -83,20 +84,17 @@ class TrainerProfileController extends Controller
             return $this->traitResponse(null,$validation->errors(),400);
 
         }
+            $dataTrainerProfile = TrainerProfile::create([
+                'user_id' => $request->user_id,
+                'rating' => $request->rating,
+            ]);
 
-        $dataTrainerProfile = TrainerProfile::create([
-            'user_id'=> $request->user_id,
-            'rating'=> $request->rating,
-        ]);
+            if ($dataTrainerProfile) {
 
-        if($dataTrainerProfile)
-        {
+                return $this->traitResponse($dataTrainerProfile, 'Saved Successfully', 200);
+            }
 
-            return  $this ->traitResponse( $dataTrainerProfile ,'Saved Successfully' , 200 );
-        }
-
-        return  $this->traitResponse(null,'Saved Failed ' , 400);
-
+            return $this->traitResponse(null, 'Saved Failed ', 400);
 
     }
 
@@ -150,7 +148,6 @@ class TrainerProfileController extends Controller
         }
 
         $validation = Validator::make($request->all(), [
-            'user_id'=> 'required|integer',
             'rating'=> 'required',
 
 
@@ -202,6 +199,7 @@ class TrainerProfileController extends Controller
 
         }
         return  $this->traitResponse(null , 'Deleted Failed ' , 404);
+
 
 
     } public function search($filter)
