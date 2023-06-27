@@ -36,7 +36,7 @@ class PaymentController extends Controller
             ->join('courses', 'courses.id', '=', 'subscribes.course_id')
             ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
             ->select('users.first_name','users.last_name'
-            ,'subjects.subjectName','payments.ammount','users.phone_number'
+            ,'subjects.subjectName','payments.ammount ','users.phone_number'
             ,'payments.date')
                 ->where('branches.id', '=', $branchId) 
                 ->paginate(10);
@@ -71,13 +71,26 @@ class PaymentController extends Controller
     public function store( $subscriptionId)
    
     {
-                        // Get subscription information
+
+          
+           // Get subscription information
               $subscription = Subscribe::find($subscriptionId);
               $card = Card::where('id', $subscription->card_id)->first();
               $course = Course::where('id', $subscription->course_id)->first();
               $subject = Subject::where('id', $course->subject_id)->first();
               $user = User::where('id', $card->user_id)->first();
 
+              if($subscription->state == 2 || $subscription->state == 3 || $subscription->state == 4 )
+
+              {
+                return response()->json(['message' => 'لقد تم إنشاء فاتورة سابقاً']);
+              }
+
+              if(date('Y-m-d') > $course-> start)
+              {
+                return response()->json(['message' => ' لقد انتهت فترة الاشتراك  ']);
+              }
+  
            DB::beginTransaction();
 
            try{
@@ -100,9 +113,12 @@ class PaymentController extends Controller
                $studentAccount->date = date('Y-m-d');
                $studentAccount->save();
            
-           
+               $subscription->state = 2;
+               $subscription->save();
 
-           DB::commit();
+            DB::commit();
+
+
            
               
         //    return [
@@ -123,6 +139,8 @@ class PaymentController extends Controller
     } 
 
     
+
+
     public function show($id)
     {
 
@@ -216,26 +234,28 @@ class PaymentController extends Controller
      * @param  \App\Models\Payment  $payment
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
+    // public function destroy($id)
+    // {
 
-        $dataPayment = Payment::find($id);
+    //     $dataPayment = Payment::find($id);
 
-        if(!$dataPayment)
-        {
-            return $this->traitResponse(null,'Not Found ' , 404);
-        }
+    //     if(!$dataPayment)
+    //     {
+    //         return $this->traitResponse(null,'Not Found ' , 404);
+    //     }
 
-        $dataPayment->delete($id);
+    //     $dataPayment->delete($id);
 
-        if($dataPayment)
-        {
-            return  $this->traitResponse(null , 'Deleted Successfully ' , 200);
+    //     if($dataPayment)
+    //     {
+    //         return  $this->traitResponse(null , 'Deleted Successfully ' , 200);
 
-        }
-        return  $this->traitResponse(null , 'Deleted Failed ' , 404);
+    //     }
+    //     return  $this->traitResponse(null , 'Deleted Failed ' , 404);
 
-    }
+    // }
+
+
 
 
     public function search(Request $request, $filter)

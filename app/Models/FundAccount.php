@@ -14,6 +14,7 @@ class FundAccount extends Model
        
         'receipt_id',
         'withdraw_id',
+        'branch_id',
         'Debit',
         'Credit',
         'description',
@@ -30,5 +31,11 @@ class FundAccount extends Model
     {
         return $this->belongsTo(Withdraw::class, 'withdraw_id');
     }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
     
 }

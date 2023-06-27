@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Card;
 use App\Models\History;
 use App\Models\Subscribe;
+use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Collection;
@@ -24,9 +25,9 @@ class SubscribeController extends Controller
     {
         $threeMonthsAgo = \Carbon\Carbon::now()->subMonths(3)->format('Y-m-d');
 
-        // if (auth()->check())
-        // {
-        //     $branchId = Auth::user()->branch_id;
+        if (auth()->check())
+        {
+            $branchId = Auth::user()->branch_id;
 
             $Result = DB::table('subscribes')
                  ->join('courses', 'subscribes.course_id', '=', 'courses.id')
@@ -35,7 +36,7 @@ class SubscribeController extends Controller
                 ->join('branches', 'subscribes.branch_id', '=', 'branches.id')
                 ->join('users', 'cards.user_id', '=', 'users.id')
                 ->select('subjects.subjectName','subscribes.state', 'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number','subscribes.date')
-                // ->where('branches.id', '=', $branchId)
+                ->where('branches.id', '=', $branchId)
                 ->whereBetween('subscribes.date', [$threeMonthsAgo, date('Y-m-d')])
                 ->orderBy('subscribes.date', 'desc')
                 ->paginate(10);
@@ -46,9 +47,9 @@ class SubscribeController extends Controller
             } else {
                 return $this->traitResponse(null, 'لا يوجد نتائج', 200);
             }
-        // } else {
-        //     return $this->traitResponse(null, 'User not authenticated', 401);
-        // }
+        } else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
+        }
     }
 
 
@@ -71,24 +72,42 @@ class SubscribeController extends Controller
     public function store(Request $request)
 
     {
-       // return $this->traitResponse(null,'sorrrrrrryyyyyy',400);
-       if (auth()->check()) {
+        if (auth()->check()) {
         $branchId = Auth::user()->branch_id;
+              
+        $existingSubscribe = Subscribe::where('course_id', $request->course_id)
+        ->where('card_id', $request->card_id)
+        ->exists();
+      if ($existingSubscribe) {
+       return $this->traitResponse(null, 'الطالب مشترك بالفعل في هذا الكورس', 400);
+        }
+   
+    
 
         $date = date('Y-m-d');
         $date_id = DB::table('dates')
-            ->where('date', $date)
-            ->value('id');
+        ->where('date', $date)
+        ->value('id');
         $state = 1;
         $dataSubscribe = Subscribe::create([
-            'course_id'=> $request->course_id,
-            'card_id'=>  $request->card_id,
-            'branch_id'=> $branchId,
-            'date'=>$date,
-            'state'=>  $state,
-
-
+        'course_id'=> $request->course_id,
+        'card_id'=>  $request->card_id,
+        'branch_id'=> $request->branch_id,
+        'date'=>$date,
+        'state'=>  $state,
         ]);
+
+            // جمع الاشتراكات التابعة لنفس الكورس
+       $course = Course::findOrFail($request->course_id);
+       $subscribesCount = $course->subscribes()
+             ->where('course_id', $request->course_id)
+            ->count();
+            // مقارنة عدد الاشتراكات مع min_students
+            if ($subscribesCount == $course->min_students) {
+                // تحديث حالة الكورس إلى الموافقة
+                $course->approved = 1;
+                $course->save();
+            }
 
 
         $topCoursesReq= new Request(
@@ -102,10 +121,10 @@ class SubscribeController extends Controller
         if($dataSubscribe)
         {
 
-            return  $this ->traitResponse( $dataSubscribe ,'Saved Successfully' , 200 );
+            return  $this ->traitResponse( $dataSubscribe ,'تم حفظ البيانات بنجاح' , 200 );
         }
 
-        return  $this->traitResponse(null,'Saved Failed ' , 400);
+        return  $this->traitResponse(null,'عذراً فشل الحفظ' , 400);
     }  else {
             return $this->traitResponse(null, 'User not authenticated', 401);
         }
@@ -214,7 +233,7 @@ class SubscribeController extends Controller
                 ->join('branches', 'subscribes.branch_id', '=', 'branches.id')
                 ->join('users', 'cards.user_id', '=', 'users.id')
                 ->select('subjects.subjectName','subscribes.state', 'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number','subscribes.date')
-                // ->where('branches.id', '=', $branchId)
+                ->where('branches.id', '=', $branchId)
                 ->where('subscribes.id', '=', $id)
                 ->get(10);
                
@@ -248,36 +267,13 @@ class SubscribeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request,$id)
+
     {
 
-        $dataSubscribe = Subscribe::find($id);
+     }
 
-        if(!$dataSubscribe)
-        {
-            return $this->traitResponse(null,' Sorry Not Found',404);
+    
 
-        }
-
-        $validation = Validator::make($request->all(), [
-            'state'=> 'required',
-
-        ]);
-
-        if($validation->fails())
-
-        {
-            return $this->traitResponse(null,$validation->errors(),400);
-
-        }
-
-        $dataSubscribe->update($request->all());
-        if($dataSubscribe)
-        {
-            return $this->traitResponse($dataSubscribe , 'Updated Successfully',200);
-
-        }
-        return $this->traitResponse(null,'Failed Updated',400);
-    }
 
     /**
      * Remove the specified resource from storage.
@@ -285,71 +281,78 @@ class SubscribeController extends Controller
      * @param  \App\Models\Subscribe  $subscribe
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-        $dataSubscribe = Subscribe::find($id);
 
-        if(!$dataSubscribe)
-        {
-            return $this->traitResponse(null,'Not Found ' , 404);
+     public function destroy($id)
+     {
+         $dataSubscribe = Subscribe::find($id);
+     
+         if (!$dataSubscribe) {
+            return $this->traitResponse(null, 'غير موجود', 404);
         }
+     
+       
+         $course = Course::find($dataSubscribe->course_id);
+         
+         if ($dataSubscribe->state != 1 || date('Y-m-d') > $course->start)
+         {
+             return $this->traitResponse(null, 'لا يمكن حذف الاشتراك', 400);
+         }
+     
+        
 
-        $dataSubscribe->delete($id);
+         $dataSubscribe->delete($id);
 
-        if($dataSubscribe)
-        {
-            return  $this->traitResponse(null , 'Deleted Successfully ' , 200);
 
-        }
-        return  $this->traitResponse(null , 'Deleted Failed ' , 404);
+         
+         $subscribesCount = $course->subscribes()
+              ->where('course_id', $dataSubscribe->course_id)
+                ->count();
+     
+                if ($course->approved == 1 && $subscribesCount < $course->min_students) {
+                    $course->approved = 0;
+                    $course->save();
+                }
+     
+         if ($dataSubscribe) {
+             return $this->traitResponse(null, 'تم الحذف بنجاح', 200);
+         }
+     
+         return $this->traitResponse(null, 'عذراً فشل الحذف', 404);
+     
+     }
 
-    }
+
+
 
 
     public function search($filter)
 
-
     {
+
+        $fiveMonthsAgo = \Carbon\Carbon::now()->subMonths(5)->format('Y-m-d');
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
-            if($filter != "null"){
-
-            $filterResult = DB::table('subscribes')
-            ->join('courses', 'subscribes.course_id', '=', 'courses.id')
-            ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-            ->join('cards', 'subscribes.card_id', '=', 'cards.id')
-            ->join('branches as card_branch', 'cards.branch_id', '=', 'card_branch.id')
-            ->join('users', 'cards.user_id', '=', 'users.id')
-            ->join('branches as user_branch', 'users.branch_id', '=', 'user_branch.id')
-                // 'subjects.subjectName',
-                ->select('subscribes.state','subjects.subjectName','subjects.content', 'subjects.price' ,'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number')
-                ->where('user_branch.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
-                ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
-                    $query->where('subscribes.state', 'like', "%$filter%")
-                           ->orWhere('users.first_name', 'like', "%$filter%");
-                })
-                   ->paginate(10);
-            }
-            else{
 
                 $filterResult = DB::table('subscribes')
-                ->join('courses', 'subscribes.course_id', '=', 'courses.id')
-                ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-                ->join('cards', 'subscribes.card_id', '=', 'cards.id')
-                ->join('branches as card_branch', 'cards.branch_id', '=', 'card_branch.id')
-                ->join('users', 'cards.user_id', '=', 'users.id')
-                ->join('branches as user_branch', 'users.branch_id', '=', 'user_branch.id')
-                    // 'subjects.subjectName',
-                    ->select('subscribes.id','subscribes.state','subjects.subjectName','subjects.price' ,'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number')
-                    ->where('user_branch.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
-
-
+            ->join('courses', 'subscribes.course_id', '=', 'courses.id')
+           ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+           ->join('cards', 'subscribes.card_id', '=', 'cards.id')
+           ->join('branches', 'subscribes.branch_id', '=', 'branches.id')
+           ->join('users', 'cards.user_id', '=', 'users.id')
+           ->select('subjects.subjectName','subscribes.state', 'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number','subscribes.date')
+           ->where('branches.id', '=', $branchId)
+           ->whereBetween('subscribes.date', [$fiveMonthsAgo, date('Y-m-d')])
+           ->orderBy('subscribes.date', 'desc')
+           ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
+            $query->where('users.first_name', 'like', "%$filter%");
+                
+                })
                     ->paginate(10);
-            }
+            
             if ($filterResult->count() > 0) {
-                return $this->traitResponse($filterResult, 'Search Successfully', 200);
+                return $this->traitResponse($filterResult, 'تم البحث بنجاح', 200);
             } else {
-                return $this->traitResponse(null, 'No matching results found', 200);
+                return $this->traitResponse(null, 'عذراً لا يوجد نتيجة ', 200);
             }
         } else {
             return $this->traitResponse(null, 'User not authenticated', 401);
@@ -357,35 +360,50 @@ class SubscribeController extends Controller
 
     }
 
-    public function searchDate(Request $request, $filter = null)
+    public function searchDate(Request $request, $filter =null)
     {
+
          if (auth()->check()) {
            $branchId = Auth::user()->branch_id;
     
             $startDate =$request->input('start_date');
             $endDate = $request->input('end_date');
-    
+            
+                if ($startDate <= $endDate) {
+            
             $filterResult = DB::table('subscribes')
-                ->join('courses', 'subscribes.course_id', '=', 'courses.id')
-                ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-                ->join('cards', 'subscribes.card_id', '=', 'cards.id')
-                ->join('branches as card_branch', 'cards.branch_id', '=', 'card_branch.id')
-                ->join('users', 'cards.user_id', '=', 'users.id')
-                ->join('branches as user_branch', 'users.branch_id', '=', 'user_branch.id')
-                ->select('subscribes.state', 'subjects.subjectName', 'subjects.content', 'subjects.price', 'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number')
-                 ->where('user_branch.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
-                ->whereBetween('subscribes.date', [$startDate, $endDate]); // تحديد الفترة التي تريد البحث فيها
-    
-            if ($filter) {
-                $filterResult->where(function ($query) use ($filter) {
-                    $query->where('subscribes.state', 'like', "%$filter%")
-                        ->orWhere('subjects.subjectName', 'like', "%$filter%");
-                       
-                });
+            ->join('courses', 'subscribes.course_id', '=', 'courses.id')
+           ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+           ->join('cards', 'subscribes.card_id', '=', 'cards.id')
+           ->join('branches', 'subscribes.branch_id', '=', 'branches.id')
+           ->join('users', 'cards.user_id', '=', 'users.id')
+           ->select('subjects.subjectName','subscribes.state', 'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number','subscribes.date')
+           ->where('branches.id', '=', $branchId)
+           ->whereBetween('subscribes.date', [$startDate, $endDate])
+           ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
+            $query->where('subscribes.state', 'like', "%$filter%")
+                   ->orWhere('subjects.subjectName', 'like', "%$filter%");
+        })
+           ->paginate(10);
+            } else {
+                
+                return "تاريخ البدء يجب أن يكون أصغر من تاريخ الانتهاء";
+            
+        
             }
-    
-            $filterResult = $filterResult->paginate(10);
+        
+
+        if ($filterResult->count() > 0) {
+            return $this->traitResponse($filterResult, 'تم البحث بنجاح', 200);
+        } else {
+            return $this->traitResponse(null, 'عذراً لا يوجد نتيجة', 200);
         }
+    } else {
+        return $this->traitResponse(null, 'User not authenticated', 401);
+    }
+
+
+
     }
 
 

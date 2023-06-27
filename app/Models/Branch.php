@@ -64,7 +64,10 @@ class Branch extends Model
         return $this->hasMany(Poll::class,'poll_id' , 'id');
     }
  
-   
+    public function FundAccount()
+    {
+        return $this->hasOne(FundAccount::class, 'fund_account_id','id');
+    }
 
 
 

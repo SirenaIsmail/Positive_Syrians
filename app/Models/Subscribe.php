@@ -49,6 +49,11 @@ class Subscribe extends Model
         return $this->belongsTo(Date::class, 'date_id');
     }
 
+    public function course()
+    {
+        return $this->belongsTo(Course::class,'course_id');
+    }
+
 
 
     protected static function boot()

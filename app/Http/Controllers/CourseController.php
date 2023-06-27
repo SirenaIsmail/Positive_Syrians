@@ -50,7 +50,7 @@ class CourseController extends Controller
     {
         $threeMonthsAgo = \Carbon\Carbon::now()->subMonths(3)->format('Y-m-d');
          if (auth()->check()) {
-          //  $branchId = Auth::user()->branch_id;
+        
 
             $Result = DB::table('courses')
                ->join('branches', 'courses.branch_id', '=', 'branches.id')
@@ -164,15 +164,15 @@ class CourseController extends Controller
 
         }
         
-
-        // $branchId = Auth::user()->branch_id;
+       $approve = 0 ;
+        $branchId = Auth::user()->branch_id;
         $dataCourse = Course::create([
-            'branch_id'=> $request->branch_id,
+            'branch_id'=> $branchId,
             'subject_id'=> $request->subject_id,
             'trainer_id'=> $request->trainer_id,
             'min_students'=>$request->min_students,
             'max_students'=>$request->max_students,
-            'approved'=>  $request->approved,
+            'approved'=> $approve,
             'start'=> $request->start,
             'end'=> $request->end,
         ]);
@@ -284,18 +284,105 @@ class CourseController extends Controller
             return $this->traitResponse(null,$validation->errors(),400);
 
         }
+
+
+        if($request->approved == 0 ) {
+            $approvedSubscriptions = $dataCourse->subscribes()->where('state', '=', 2)->orWhere('state', '=', 4)->count();
+            if (($dataCourse->approved == 0 || $dataCourse->approved == 1) && (date('Y-m-d') <= $dataCourse->start) && ($approvedSubscriptions < $dataCourse->min_students)) {
+                // Check if the current date is less than start date
+                    $dataCourse->update([
+                        'approved' => $request->approved,
+                    ]);
+                } 
+                else {
+                    return $this->traitResponse(null,'لا يمكن التعديل على حالة الكورس ',400);
+                }
+           
+        }
+
+        
+         if($request->approved == 1 ) {
+        // Check if the number of subscriptions is greater than or equal to min_students
+        $approvedSubscriptions = $dataCourse->subscribes()->where('state', 1)->orWhere('state', '=', 2)->orWhere('state', '=', 4)->count();
+        if($approvedSubscriptions >= $dataCourse->min_students && $dataCourse->approved == 0) {
+            // Check if the current date is less than start date
+            if(date('Y-m-d') <= $dataCourse->start) {
+                $dataCourse->update([
+                    'approved' => $request->approved,
+                ]);
+            } else {
+                return $this->traitResponse(null,'لا يمكن الموافقة على الكورس، حيث أن التاريخ الحالي تجاوز تاريخ البدء',400);
+            }
+        } else {
+            return $this->traitResponse(null,'لا يمكن الموافقة على الكورس، عدد الاشتراكات أقل من الحد الأدنى',400);
+        }
+    }
+
+  
+    elseif($request->approved == 2) {
+        // Check if the current date is between start and end date
+        if(date('Y-m-d') >= $dataCourse->start && date('Y-m-d') < $dataCourse->end && $dataCourse->approved == 1) {
+            $dataCourse->update([
+                'approved' => $request->approved,
+            ]);
+        } else {
+            return $this->traitResponse(null,'لا يمكن تغيير حالة الكورس إلى قيد الاعطاء ',400);
+        }
+    }
+
+    elseif($request->approved == 3 ) {
+        // Check if the current date is between start and end date
+        if(date('Y-m-d') >= $dataCourse->end && $dataCourse->approved == 2) {
+            $dataCourse->update([
+                'approved' => $request->approved,
+            ]);
+        } else {
+            return $this->traitResponse(null,'لا يمكن تغيير حالة الكورس إلى منتهي ',400);
+        }
+    }
+        elseif($request->approved == 4 ) {
+            if (($dataCourse->approved == 0 || $dataCourse->approved == 1)  && date('Y-m-d') <= $dataCourse->start ) {
+                $dataCourse->update([
+                    'approved' => $request->approved,
+                ]);
+            } else {
+                return $this->traitResponse(null,'لا يمكن تغيير حالة الكورس إلى مُلغى ',400);
+            }
+    }
+
+    elseif($request->start) {
+        // Check if the current date is between start and end date
+        if( $dataCourse->approved == 0 ||  $dataCourse->approved == 1) {
+            $dataCourse->update([
+                'start' => $request->start,
+            ]);
+        } else {
+            return $this->traitResponse(null,'لا يمكن تغيير تاريخ ابتداء الكورس  ',400);
+        }
+   }
+
+        elseif($request->end) {
+            // Check if the current date is between start and end date
+            if( $dataCourse->approved == 0 ||  $dataCourse->approved == 1 ||  $dataCourse->approved == 2) {
+                $dataCourse->update([
+                    'end' => $request->end,
+                ]);
+            } else {
+                return $this->traitResponse(null,'لا يمكن تغيير تاريخ انتهاء الكورس  ',400);
+            }
+        }
         
 
-        // $branchId = Auth::user()->branch_id;
+         $branchId = Auth::user()->branch_id;
         $dataCourse->update([
-            'branch_id'=> $request->branch_id,
-            'subject_id'=> $request->subject_id,
-            'trainer_id'=> $request->trainer_id,
+            'branch_id'=>$branchId,
+            'subject_id'=>$request->subject_id,
+            'trainer_id'=>$request->trainer_id,
             'min_students'=>$request->min_students,
             'max_students'=>$request->max_students,
-            'approved'=>  $request->approved,
+            'approved'=>$request->approved,
             'start'=> $request->start,
-            'end'=> $request->end,
+            'end'=>$request->end,
         ]);
 
         if($dataCourse)
@@ -323,7 +410,12 @@ class CourseController extends Controller
             return $this->traitResponse(null,'عذراً غير موجود' , 404);
         }
 
-        $dataCourse->delete($id);
+        $approvedSubscriptions = $dataCourse->subscribes()->whereIn('state', [1, 2])->count();
+      if(  $dataCourse->approved == 0 && $dataCourse->start > date('Y-m-d') && $approvedSubscriptions == 0  ){
+
+    
+
+      $dataCourse->delete($id);
 
         if($dataCourse)
         {
@@ -334,11 +426,15 @@ class CourseController extends Controller
 
     }
 
+    return  $this->traitResponse(null , 'لا يمكن حذف هذا الكورس ' , 404);
 
-    public function search(Request $request)
+    }
+
+
+    public function search(Request $request,$filter =null)
 {
-    // if (auth()->check()) {
-    //     $branchId = Auth::user()->branch_id;
+    if (auth()->check()) {
+        $branchId = Auth::user()->branch_id;
 
         $validation = Validator::make($request->all(), [
             'start_date' => 'required|date',
@@ -353,8 +449,11 @@ class CourseController extends Controller
         $filterResult = DB::table('courses')
             ->join('branches', 'courses.branch_id', '=', 'branches.id')
             ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-            ->select('courses.id','subjects.subjectName','subjects.price','courses.start','courses.end','courses.min_students','courses.max_students')
-            // ->where('branches.id', '=', $branchId) // تحديد فقط الدورات في فرع المستخدم
+            ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
+            ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
+            ->select('courses.id','users.first_name', 'users.last_name','subjects.subjectName','subjects.price','courses.start'
+            ,'courses.end','courses.min_students','courses.max_students')
+            ->where('branches.id', '=', $branchId) // تحديد فقط الدورات في فرع المستخدم
             ->where(function ($query) use ($request) {
                 $query->where('courses.start', '>=', $request->start_date)
                     ->where('courses.start', '<=', $request->end_date);
@@ -362,16 +461,19 @@ class CourseController extends Controller
                     $query->where('courses.approved', '=', $request->approved);
                 }
             })
+            ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
+                $query->where('subjects.subjectName', 'like', "%$filter%");
+            })
             ->paginate(5);
 
-        if ($filterResult->count() > 0) {
+            if ($filterResult->count() > 0) {
             return $this->traitResponse($filterResult, 'Search Successfully', 200);
         } else {
             return $this->traitResponse(null, 'No matching results found', 200);
         }
-    // } else {
-    //     return $this->traitResponse(null, 'User not authenticated', 401);
-    // }
+    } else {
+        return $this->traitResponse(null, 'User not authenticated', 401);
+    }
 }
 
 
@@ -381,7 +483,7 @@ class CourseController extends Controller
         {
             return $this->traitResponse(null,'Not Found ' , 404);
         }
-        $approved = true;
+        $approved = 1;
         $course->update([
            'approved'  => $approved,
         ]);
@@ -491,7 +593,26 @@ class CourseController extends Controller
 
 
 
+    public function changeApproved()
+    {
 
+        $today = date('Y-m-d');
+        $courses = DB::table('courses')->where('start', '>=', $today)->get();
+
+        foreach ($courses as $course) {
+            if ($course->start == $today && $course->approved == 1) {
+                $course->approved = 2;
+            } elseif ($course->approved == 2 && $course->end == $today) {
+                $course->approved = 3;
+            } elseif ($course->approved == 0 && $course->start < $today) {
+                $course->approved = 4;
+            }
+            $course->save();
+        }
+    
+    
+   
+}
 
 
 

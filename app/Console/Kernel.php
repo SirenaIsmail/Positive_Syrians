@@ -4,6 +4,8 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\DB;
+use App\Models\Course;
 
 class Kernel extends ConsoleKernel
 {
@@ -20,8 +22,24 @@ class Kernel extends ConsoleKernel
 
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
-    }
+ $schedule->call(function () {
+        $today = date('Y-m-d');
+        $courses = DB::table('courses')->where('start', '>=', $today)->get();
+
+        foreach ($courses as $course) {
+            if ($course->start == $today && $course->approved == 1) {
+                $course->approved = 2;
+            } elseif ($course->approved == 2 && $course->end == $today) {
+                $course->approved = 3;
+            } elseif ($course->approved == 0 && $course->start < $today) {
+                $course->approved = 4;
+            }
+            $course->save();
+        }
+    })->everyFiveMinutes();
+    // تحديث حالات الكورسات المحددة كل خمس دقائق
+   
+}
 
     /**
      * Register the commands for the application.

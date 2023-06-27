@@ -180,6 +180,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
             Route::get('/index',  'index');
             Route::get('/indexa/{id}',  'indexa');
             Route::get('/indexAvailable',  'indexAvailable');
+            Route::get('/changeApproved',  'changeApproved');
             Route::get('/show/{id}',  'show');
             Route::get('/search','search');
             Route::get('/searchBybranch','searchBybranch');
@@ -226,7 +227,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Receptionist Role Start
-Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth','receptionist']],function () {
+ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth','receptionist']],function () {
     //CARD ROUTES
     Route::prefix('/card')->group(function (){
         Route::controller(CardController::class)->group(function () {
@@ -261,7 +262,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth','receptionis
             Route::Post('/store',  'store');
             Route::get('/index',  'index');
             Route::get('/show/{id}',  'show');
-            Route::get('/search/{filter}','search');
+            Route::get('/search/{filter?}','search');
             Route::Post('/update/{id}', 'update');
             Route::Post('/destroy/{id}', 'destroy');
             Route::Post('/approve/{id}', 'approve');
@@ -274,11 +275,13 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth','receptionis
     Route::prefix('/receipt')->group(function () {
         Route::controller(ReceiptStudentController::class)->group(function () {
             Route::Post('/store', 'store');
+            Route::get('/index','index');
+            Route::get('/search/{barcode}','search');
             Route::get('/indexing/{id}','indexing');
-            Route::get('/show/{id}','show');
-            Route::get('/view/{payment_id}/{user_id}','view');
             Route::Post('/update/{id}', 'update');
             Route::Post('/destroy/{id}','destroy');
+            Route::get('/getImportByBranch','getImportByBranch');
+            Route::get('/getImportDaily','getImportDaily');
 
         });
 
@@ -302,8 +305,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth','receptionis
         Route::controller(WithdrawController::class)->group(function () {
             Route::Post('/store', 'store');
             Route::get('/index','index');
-            Route::get('/show/{id}', 'show');
-            Route::Post('/update/{id}', 'update');
+            Route::get('/indexing/{id}','indexing');
             Route::Post('/destroy/{id}','destroy');
         });
     });
@@ -317,7 +319,12 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth','receptionis
         //معلق الحضور
         Route::Post('/pending/{id}', 'pending');
 
-        Route::get('/subscribe/search/{filter}', 'search');
+        Route::get('/index','index');
+        Route::get('/searchDate/{filter?}', 'searchDate');
+        Route::get('/search/{filter}','search');
+        Route::Post('/store', 'store');
+        Route::Post('/update/{id}', 'update');
+    
     });
     //End Student State
 
@@ -327,7 +334,7 @@ Route::group(['prefix' => '/receptionist' , 'middleware' => ['auth','receptionis
     });
 
 
-});
+ });
 //End Receptionist Role
 
 
@@ -391,9 +398,8 @@ Route::group(['prefix' => '/student' , 'middleware' => ['auth','Student']],funct
     //SUBSCRIBE ROUTES
     Route::prefix('/subscribe')->group(function () {
         Route::controller( SubscribeController::class)->group(function () {
-            Route::get('/index','index');
             Route::get('/show/{id}','show');
-            Route::get('/search/{filter}','search');
+            
         });
     });
     //SUBSCRIBE END

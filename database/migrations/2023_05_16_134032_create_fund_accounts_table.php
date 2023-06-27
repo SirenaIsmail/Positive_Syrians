@@ -24,6 +24,9 @@ return new class extends Migration
             ->constrained('withdraws')
             ->onUpdate('cascade')
             ->onDelete('cascade');
+            $table->foreignId('branch_id')
+            ->constrained('branches')
+            ->onUpdate('cascade');
             $table->decimal('Debit')->nullable();
             $table->decimal('Credit')->nullable();
             $table->string('description')->nullable();
