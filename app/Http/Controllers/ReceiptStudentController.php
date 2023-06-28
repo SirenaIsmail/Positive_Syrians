@@ -101,7 +101,7 @@ class ReceiptStudentController extends Controller
         $subscription = Subscribe::where('id', $payment->subscribe_id)->first();
        $course = $subscription->course;
 
-       if ( $subscription->state != 3 || $subscription->state != 4 )
+       if ( $subscription->state != 3 && $subscription->state != 4 )
        {   
 
         DB::beginTransaction();
@@ -121,7 +121,7 @@ class ReceiptStudentController extends Controller
            return response()->json(['error' => 'لا يمكن إدخال قيمة أقل من 3000.'], 422);
          }
 
-         if ($requestedAmount > $availableBalance && $availableBalance > 0.00  ) {
+         if ($requestedAmount > $availableBalance ) {
             return response()->json([
                 'error' => 'المبلغ المراد دفعه يتجاوز المبلغ الواجب دفعه.',
                 'available_balance' => $availableBalance
