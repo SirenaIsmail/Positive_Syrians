@@ -90,7 +90,7 @@ class CourseController extends Controller
                 ->where('courses.start', '>=', date('Y-m-d'))
                 ->whereIn('courses.approved', [0, 1, 2])
                 ->groupBy('courses.id')
-                ->havingRaw('SUM(CASE WHEN subscribes.state IN (1, 2) THEN 1 ELSE 0 END) <= courses.max_students')
+                ->havingRaw('SUM(CASE WHEN subscribes.state IN (2 ,4) THEN 1 ELSE 0 END) <= courses.max_students')
                 ->paginate(10);
 
                 

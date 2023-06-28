@@ -92,7 +92,7 @@ class SubscribeController extends Controller
         $dataSubscribe = Subscribe::create([
         'course_id'=> $request->course_id,
         'card_id'=>  $request->card_id,
-        'branch_id'=> $request->branch_id,
+        'branch_id'=> $branchId,
         'date'=>$date,
         'state'=>  $state,
         ]);
@@ -100,6 +100,7 @@ class SubscribeController extends Controller
             // جمع الاشتراكات التابعة لنفس الكورس
        $course = Course::findOrFail($request->course_id);
        $subscribesCount = $course->subscribes()
+             ->whereIn('state', [1,2,4])
              ->where('course_id', $request->course_id)
             ->count();
             // مقارنة عدد الاشتراكات مع min_students
