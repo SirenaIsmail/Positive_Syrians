@@ -78,15 +78,15 @@ class CourseController extends Controller
 
     public function indexAvailable()
     {
-        if (auth()->check()) {
-            $branchId = Auth::user()->branch_id;
+        // if (auth()->check()) {
+        //     $branchId = Auth::user()->branch_id;
 
               $Result = DB::table('courses') 
                 ->join('branches', 'courses.branch_id', '=', 'branches.id')
                 ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-                ->join('subscribes', 'courses.id', '=', 'subscribes.course_id')
+                ->leftJoin('subscribes', 'courses.id', '=', 'subscribes.course_id')
                 ->select('courses.*','subjects.subjectName','subjects.price' )
-                ->where('branches.id', '=', $branchId)
+                // ->where('branches.id', '=', $branchId)
                 ->where('courses.start', '>=', date('Y-m-d'))
                 ->whereIn('courses.approved', [0, 1, 2])
                 ->groupBy('courses.id')
@@ -100,9 +100,9 @@ class CourseController extends Controller
             } else {
                 return $this->traitResponse(null, 'No  results found', 200);
             }
-        } else {
-            return $this->traitResponse(null, 'User not authenticated', 401);
-        }
+        // } else {
+        //     return $this->traitResponse(null, 'User not authenticated', 401);
+        // }
     }
 
 

@@ -376,7 +376,7 @@ class ReceiptStudentController extends Controller
 
     // }
 
-    public function search($barcode)
+    public function search($barcode = null)
     {
         $threeMonthsAgo = \Carbon\Carbon::now()->subMonths(3)->format('Y-m-d');
 
@@ -387,7 +387,7 @@ class ReceiptStudentController extends Controller
             ->join('subscribes', 'payments.subscribe_id', '=', 'subscribes.id')
             ->join('courses', 'subscribes.course_id', '=', 'courses.id')
             ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-            ->select('payments.id', DB::raw('SUM(student_accounts.Credit) as total_credit'), DB::raw('SUM(student_accounts.Debit) as total_debit'))
+            ->select('payments.id', 'users.id', 'subscribes.id',DB::raw('SUM(student_accounts.Credit) as total_credit'), DB::raw('SUM(student_accounts.Debit) as total_debit'))
             ->where('cards.barcode', '=', $barcode)
             ->whereBetween('payments.date', [$threeMonthsAgo, date('Y-m-d')])
             ->groupBy('payments.id');
