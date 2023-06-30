@@ -140,7 +140,7 @@ class ReceiptStudentController extends Controller
     
             $fund_account = new FundAccount();
             $fund_account->receipt_id = $receipt_student->id;
-             $fund_account->branch_id =$branchId;
+            $fund_account->branch_id =$branchId;
             $fund_account->Debit = $request->Debit;
             $fund_account->Credit = 0.00;
             $fund_account->description = $request->description;
@@ -376,7 +376,7 @@ class ReceiptStudentController extends Controller
 
     // }
 
-    public function search($barcode)
+    public function search($barcode = null)
     {
         $threeMonthsAgo = \Carbon\Carbon::now()->subMonths(3)->format('Y-m-d');
 
@@ -387,8 +387,11 @@ class ReceiptStudentController extends Controller
             ->join('subscribes', 'payments.subscribe_id', '=', 'subscribes.id')
             ->join('courses', 'subscribes.course_id', '=', 'courses.id')
             ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-            ->select('payments.id', DB::raw('SUM(student_accounts.Credit) as total_credit'), DB::raw('SUM(student_accounts.Debit) as total_debit'))
-            ->where('cards.barcode', '=', $barcode)
+            ->select('payments.id',DB::raw('SUM(student_accounts.Credit) as total_credit'), DB::raw('SUM(student_accounts.Debit) as total_debit'))
+            ->where(function ($query) use ($barcode) { // التحقق من وجود نتائج بعد تطبيق الفلتر
+                $query->where('cards.barcode', 'like', "%$barcode%");
+                       
+            })
             ->whereBetween('payments.date', [$threeMonthsAgo, date('Y-m-d')])
             ->groupBy('payments.id');
             
@@ -400,7 +403,7 @@ class ReceiptStudentController extends Controller
                 ->join('subscribes', 'payments.subscribe_id', '=', 'subscribes.id')
                 ->join('courses', 'subscribes.course_id', '=', 'courses.id')
                 ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-                ->select('payments.id', 'users.first_name', 'users.last_name', 'subjects.subjectName', 'payments.date', 'subscribes.state', 'payments.ammount', DB::raw('SUM(student_accounts.Credit) as total_credit'), DB::raw('SUM(student_accounts.Debit) as total_debit'))
+                ->select('payments.id', 'users.id as userId', 'subscribes.id as subscribeId', 'users.first_name', 'users.last_name', 'subjects.subjectName', 'payments.date', 'subscribes.state', 'payments.ammount', DB::raw('SUM(student_accounts.Credit) as total_credit'), DB::raw('SUM(student_accounts.Debit) as total_debit'))
                 ->joinSub($temp_table, 'temp', function ($join) {
                     $join->on('payments.id', '=', 'temp.id');
                 })
@@ -432,6 +435,8 @@ class ReceiptStudentController extends Controller
                 if (!$found) {
                     $response[] = [
                         'payment_id' => $account->id,
+                        'users.id'=>$account->userId,
+                        'subscribes.id'=>$account->subscribeId,
                         'students' => [
                             [
                                 'student_name' => $account->first_name . ' ' . $account->last_name,

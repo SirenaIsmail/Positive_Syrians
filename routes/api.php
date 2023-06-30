@@ -200,7 +200,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
 
 //    Route::controller(ExportController::class)->group(function () {
 //        Route::get('/export', 'exportToPDF');
-//    });
+   });
 
     Route::controller(TopCourseController::class)->group(function () {
         Route::get('/top_courses', 'getTopCoursesReport');
@@ -226,7 +226,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
         Route::get('/polls_counting_byDate', 'pollsCountingByDate');
         Route::get('/polls_counting_byBranch&Date', 'pollsCountingByBranchAndDate');
     });
-});
+//});
 //End Branch Admin Role
 
 
@@ -283,7 +283,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
         Route::controller(ReceiptStudentController::class)->group(function () {
             Route::Post('/store', 'store');
             Route::get('/index','index');
-            Route::get('/search/{barcode}','search');
+            Route::get('/search/{barcode?}','search');
             Route::get('/indexing/{id}','indexing');
             Route::Post('/update/{id}', 'update');
             Route::Post('/destroy/{id}','destroy');
