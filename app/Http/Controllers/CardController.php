@@ -19,13 +19,13 @@ class CardController extends Controller
     public function index()
     {
         if (auth()->check()) {
-            $branchId = Auth::user()->branch_id;
+            //$branchId = Auth::user()->branch_id;
     
             $Result = DB::table('cards')
                 ->join('users', 'users.id', '=', 'cards.user_id')
                 ->join('branches', 'branches.id', '=', 'cards.branch_id')
                 ->select('cards.id', 'cards.user_id','cards.id as CardId', 'users.*', 'branches.*')
-                ->where('branches.id', '=', $branchId) // تحديد فقط الفصول في فرع المستخدم
+                //->where('branches.id', '=', $branchId) // تحديد فقط الفصول في فرع المستخدم
                 ->get();
     
             if ($Result->count() > 0) {
