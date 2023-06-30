@@ -95,7 +95,7 @@ class ReceiptStudentController extends Controller
     public function store(Request $request)
 
     {
-       //  $branchId = Auth::user()->branch_id;
+         $branchId = Auth::user()->branch_id;
 
         $payment = Payment::where('id', $request->payment_id)->first();
         $subscription = Subscribe::where('id', $payment->subscribe_id)->first();
@@ -140,7 +140,7 @@ class ReceiptStudentController extends Controller
     
             $fund_account = new FundAccount();
             $fund_account->receipt_id = $receipt_student->id;
-        //     $fund_account->branch_id =$branchId;
+            $fund_account->branch_id =$branchId;
             $fund_account->Debit = $request->Debit;
             $fund_account->Credit = 0.00;
             $fund_account->description = $request->description;
