@@ -151,7 +151,7 @@ class UserController extends Controller
     {
         if (auth()->check() ) {
             $branchId = Auth::user()->branch_id;
-            if($filter != "null"){
+            if($filter != "null" && $barcode == "null"){
                 $filterResult = DB::table('users')
                 ->join('branches', 'users.branch_id', '=', 'branches.id')
                 ->select('users.first_name', 'users.last_name', 'users.birth_day', 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name')
@@ -168,7 +168,7 @@ class UserController extends Controller
                 ->paginate(1);
 
             }
-            elseif ($barcode != "null"){
+            elseif ($barcode != "null" && $filter == "null"){
 
                 $student = DB::table('users')
                     ->join('branches', 'users.branch_id', '=', 'branches.id')
