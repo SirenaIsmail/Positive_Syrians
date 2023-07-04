@@ -348,7 +348,7 @@ class SubscribeController extends Controller
             $query->where('users.first_name', 'like', "%$filter%");
                 
                 })
-                    ->paginate(10);
+                    ->paginate(5);
             
             if ($filterResult->count() > 0) {
                 return $this->traitResponse($filterResult, 'تم البحث بنجاح', 200);
@@ -378,14 +378,14 @@ class SubscribeController extends Controller
            ->join('cards', 'subscribes.card_id', '=', 'cards.id')
            ->join('branches', 'subscribes.branch_id', '=', 'branches.id')
            ->join('users', 'cards.user_id', '=', 'users.id')
-           ->select('subjects.subjectName','subscribes.state', 'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number','subscribes.date')
+           ->select('subscribes.id','subjects.subjectName','subscribes.state', 'cards.barcode', 'users.first_name', 'users.last_name', 'users.phone_number','subscribes.date')
            ->where('branches.id', '=', $branchId)
            ->whereBetween('subscribes.date', [$startDate, $endDate])
            ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
             $query->where('subscribes.state', 'like', "%$filter%")
                    ->orWhere('subjects.subjectName', 'like', "%$filter%");
         })
-           ->paginate(10);
+           ->paginate(5);
             } else {
                 
                 return "تاريخ البدء يجب أن يكون أصغر من تاريخ الانتهاء";
