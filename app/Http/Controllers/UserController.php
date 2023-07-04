@@ -245,5 +245,28 @@ class UserController extends Controller
         }
     }
 
+    public function studentSubscribes($id)
+    {
+        if (auth()->check()) {
+            $studentSubscriptions = DB::table('subscribes')
+                ->join('courses', 'subscribes.course_id', '=', 'courses.id')
+                ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+                ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
+                ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
+                ->join('payments', 'subscribes.id', '=', 'payments.subscribe_id')
+                ->select('subjects.subjectName', 'courses.start', 'courses.end', 'users.first_name', 'users.last_name', 'payments.amount')
+                ->where('subscribes.card_id', '=', $id)
+                ->get();
+            if ($studentSubscriptions->count() > 0) {
+                return $this->traitResponse($studentSubscriptions, 'Search Successfully', 200);
+
+            } else {
+                return $this->traitResponse(null, 'No matching results found', 200);
+            }
+        }else{
+            return $this->traitResponse(null, 'User not authenticated', 401);
+        }
+    }
+
 
 }

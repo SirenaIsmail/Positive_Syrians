@@ -87,7 +87,7 @@ Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth','general_ad
 
     Route::controller(UsersController::class)->group(function () {
         Route::post('/add_admin', 'addAdmin');
-        Route::get('/user/search/{filter}/{barcode}', 'searchForGenToBrn');
+        Route::get('/user/search/{filter}', 'searchForGenToBrn');
     });
 
 });
@@ -194,7 +194,8 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
     //COURSE END
 
     Route::controller(UserController::class)->group(function (){
-        Route::get('/search/{filter}','search');
+        Route::get('/search/{filter}/{barcode}','search');
+        Route::get('/student_subscribes/{id}','studentSubscribes');
         Route::get('/search_without_paginate/{filter}','searchWithoutPaginate');
     });
 
@@ -340,6 +341,12 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
         Route::Post('/scan_attend/{barcode}','scanAttend');
     });
 
+
+     Route::controller(UserController::class)->group(function (){
+         Route::get('/search/{filter}/{barcode}','search');
+         Route::get('/student_subscribes/{id}','studentSubscribes');
+         Route::get('/search_without_paginate/{filter}','searchWithoutPaginate');
+     });
 
  });
 //End Receptionist Role
