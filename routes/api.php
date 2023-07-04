@@ -87,7 +87,7 @@ Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth','general_ad
 
     Route::controller(UsersController::class)->group(function () {
         Route::post('/add_admin', 'addAdmin');
-        Route::get('/user/search/{filter}', 'searchForGenToBrn');
+        Route::get('/user/search/{filter}/{barcode}', 'searchForGenToBrn');
     });
 
 });
@@ -331,7 +331,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
         Route::get('/search/{filter}','search');
         Route::Post('/store', 'store');
         Route::Post('/update/{id}', 'update');
-    
+
     });
     //End Student State
 
@@ -406,7 +406,7 @@ Route::group(['prefix' => '/student' , 'middleware' => ['auth','Student']],funct
     Route::prefix('/subscribe')->group(function () {
         Route::controller( SubscribeController::class)->group(function () {
             Route::get('/show/{id}','show');
-            
+
         });
     });
     //SUBSCRIBE END

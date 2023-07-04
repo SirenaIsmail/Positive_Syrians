@@ -147,7 +147,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function search(Request $request, $filter)
+    public function search(Request $request, $filter ,$barcode)
     {
         if (auth()->check() ) {
             $branchId = Auth::user()->branch_id;
@@ -168,6 +168,18 @@ class UserController extends Controller
                 ->paginate(1);
 
             }
+            elseif ($barcode != "null"){
+
+                $student = DB::table('users')
+                    ->join('branches', 'users.branch_id', '=', 'branches.id')
+                    ->join('cards', 'cards.user_id', '=', 'users.id') // انضمام إلى جدول البطاقات
+                    ->select('users.first_name', 'users.last_name', 'users.birth_day', 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name', 'cards.barcode') // إضافة حقل الباركود للاستعلام
+                    ->where('users.branch_id', '=', 'cards.branch_id')
+                    ->where('branches.id', '=', 'cards.branch_id')
+                    ->where('cards.barcode', '=', $barcode)
+                    ->get();
+
+            }
             else{
                 $filterResult = DB::table('users')
                 ->join('branches', 'users.branch_id', '=', 'branches.id')
@@ -180,7 +192,10 @@ class UserController extends Controller
 
             if ($filterResult->count() > 0) {
                 return $this->traitResponse($filterResult, 'Search Successfully', 200);
-            } else {
+            }elseif ($student->exists()){
+                return $this->traitResponse($student, 'Search Successfully', 200);
+            }
+            else {
                 return $this->traitResponse(null, 'No matching results found', 200);
             }
         } else {
