@@ -147,7 +147,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function search(Request $request, $filter)
+    public function search(Request $request, $filter ,$barcode)
     {
         if (auth()->check() ) {
             $branchId = Auth::user()->branch_id;
@@ -168,6 +168,18 @@ class UserController extends Controller
                 ->paginate(1);
 
             }
+            elseif ($barcode != "null"){
+
+                $student = DB::table('users')
+                    ->join('branches', 'users.branch_id', '=', 'branches.id')
+                    ->join('cards', 'cards.user_id', '=', 'users.id') // انضمام إلى جدول البطاقات
+                    ->select('users.first_name', 'users.last_name', 'users.birth_day', 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name', 'cards.barcode') // إضافة حقل الباركود للاستعلام
+                    ->where('users.branch_id', '=', 'cards.branch_id')
+                    ->where('branches.id', '=', 'cards.branch_id')
+                    ->where('cards.barcode', '=', $barcode)
+                    ->get();
+
+            }
             else{
                 $filterResult = DB::table('users')
                 ->join('branches', 'users.branch_id', '=', 'branches.id')
@@ -180,7 +192,10 @@ class UserController extends Controller
 
             if ($filterResult->count() > 0) {
                 return $this->traitResponse($filterResult, 'Search Successfully', 200);
-            } else {
+            }elseif ($student->exists()){
+                return $this->traitResponse($student, 'Search Successfully', 200);
+            }
+            else {
                 return $this->traitResponse(null, 'No matching results found', 200);
             }
         } else {
@@ -226,6 +241,29 @@ class UserController extends Controller
                 return $this->traitResponse(null, 'No matching results found', 200);
             }
         } else {
+            return $this->traitResponse(null, 'User not authenticated', 401);
+        }
+    }
+
+    public function studentSubscribes($id)
+    {
+        if (auth()->check()) {
+            $studentSubscriptions = DB::table('subscribes')
+                ->join('courses', 'subscribes.course_id', '=', 'courses.id')
+                ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+                ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
+                ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
+                ->join('payments', 'subscribes.id', '=', 'payments.subscribe_id')
+                ->select('subjects.subjectName', 'courses.start', 'courses.end', 'users.first_name', 'users.last_name', 'payments.amount')
+                ->where('subscribes.card_id', '=', $id)
+                ->get();
+            if ($studentSubscriptions->count() > 0) {
+                return $this->traitResponse($studentSubscriptions, 'Search Successfully', 200);
+
+            } else {
+                return $this->traitResponse(null, 'No matching results found', 200);
+            }
+        }else{
             return $this->traitResponse(null, 'User not authenticated', 401);
         }
     }

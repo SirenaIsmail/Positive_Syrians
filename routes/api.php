@@ -194,7 +194,8 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
     //COURSE END
 
     Route::controller(UserController::class)->group(function (){
-        Route::get('/search/{filter}','search');
+        Route::get('/search/{filter}/{barcode}','search');
+        Route::get('/student_subscribes/{id}','studentSubscribes');
         Route::get('/search_without_paginate/{filter}','searchWithoutPaginate');
     });
 
@@ -331,7 +332,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
         Route::get('/search/{filter}','search');
         Route::Post('/store', 'store');
         Route::Post('/update/{id}', 'update');
-    
+
     });
     //End Student State
 
@@ -340,6 +341,12 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
         Route::Post('/scan_attend/{barcode}','scanAttend');
     });
 
+
+     Route::controller(UserController::class)->group(function (){
+         Route::get('/search/{filter}/{barcode}','search');
+         Route::get('/student_subscribes/{id}','studentSubscribes');
+         Route::get('/search_without_paginate/{filter}','searchWithoutPaginate');
+     });
 
  });
 //End Receptionist Role
@@ -406,7 +413,7 @@ Route::group(['prefix' => '/student' , 'middleware' => ['auth','Student']],funct
     Route::prefix('/subscribe')->group(function () {
         Route::controller( SubscribeController::class)->group(function () {
             Route::get('/show/{id}','show');
-            
+
         });
     });
     //SUBSCRIBE END
