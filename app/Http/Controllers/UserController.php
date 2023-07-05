@@ -147,11 +147,11 @@ class UserController extends Controller
         ]);
     }
 
-    public function search(Request $request, $filter ,$barcode)
+    public function search(Request $request, $filter = null ,$barcode =null)
     {
         if (auth()->check() ) {
             $branchId = Auth::user()->branch_id;
-            if($filter != "null" && $barcode == "null"){
+            if(isset($filter)){
                 $filterResult = DB::table('users')
                 ->join('branches', 'users.branch_id', '=', 'branches.id')
                 ->select('users.first_name', 'users.last_name', 'users.birth_day', 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name')
@@ -168,7 +168,7 @@ class UserController extends Controller
                 ->paginate(1);
 
             }
-            elseif ($barcode != "null" && $filter == "null"){
+            elseif (isset($barcode)){
 
                 $student = DB::table('users')
                     ->join('branches', 'users.branch_id', '=', 'branches.id')
@@ -178,9 +178,9 @@ class UserController extends Controller
                     ->where('branches.id', '=', 'cards.branch_id')
                     ->where('cards.barcode', '=', $barcode)
                     ->get();
+                $student_subscribes= $this->studentSubscribes($student->id);
 
-            }
-            else{
+            }else{
                 $filterResult = DB::table('users')
                 ->join('branches', 'users.branch_id', '=', 'branches.id')
                 ->select('users.first_name', 'users.last_name', 'users.birth_day', 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name')
@@ -193,7 +193,12 @@ class UserController extends Controller
             if ($filterResult->count() > 0) {
                 return $this->traitResponse($filterResult, 'Search Successfully', 200);
             }elseif ($student->exists()){
-                return $this->traitResponse($student, 'Search Successfully', 200);
+                return response()->json([
+                    'status'=>200,
+                    'message'=>'Search Successfully',
+                    'student'=>$student,
+                    'student_subscribes'=>$student_subscribes,
+                ]);//$this->traitResponse($student, 'Search Successfully', 200);
             }
             else {
                 return $this->traitResponse(null, 'No matching results found', 200);
@@ -255,6 +260,7 @@ class UserController extends Controller
                 ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
                 ->join('payments', 'subscribes.id', '=', 'payments.subscribe_id')
                 ->select('subjects.subjectName', 'courses.start', 'courses.end', 'users.first_name', 'users.last_name', 'payments.amount')
+                ->where('cards.user_id', '=', $id)
                 ->where('subscribes.card_id', '=', $id)
                 ->get();
             if ($studentSubscriptions->count() > 0) {

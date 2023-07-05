@@ -343,7 +343,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
 
 
      Route::controller(UserController::class)->group(function (){
-         Route::get('/search/{filter}/{barcode}','search');
+         Route::get('/search/{filter?}/{barcode?}','search');
          Route::get('/student_subscribes/{id}','studentSubscribes');
          Route::get('/search_without_paginate/{filter}','searchWithoutPaginate');
      });
