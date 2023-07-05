@@ -173,14 +173,13 @@ class UserController extends Controller
                 $student = DB::table('users')
                     ->join('branches', 'users.branch_id', '=', 'branches.id')
                     ->join('cards', 'cards.user_id', '=', 'users.id') // انضمام إلى جدول البطاقات
-                    ->select('users.first_name', 'users.last_name', 'users.birth_day', 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name', 'cards.barcode') // إضافة حقل الباركود للاستعلام
+                    ->select('users.id','users.first_name', 'users.last_name', 'users.birth_day', 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name', 'cards.barcode') // إضافة حقل الباركود للاستعلام
                     ->where('users.branch_id', '=', 'cards.branch_id')
                     ->where('branches.id', '=', 'cards.branch_id')
                     ->where('cards.barcode', '=', $barcode)
                     ->get();
-                $student_subscribes= $this->studentSubscribes($student->id);
-
-            }else{
+            }
+            else{
                 $filterResult = DB::table('users')
                 ->join('branches', 'users.branch_id', '=', 'branches.id')
                 ->select('users.first_name', 'users.last_name', 'users.birth_day', 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name')
@@ -193,12 +192,7 @@ class UserController extends Controller
             if ($filterResult->count() > 0) {
                 return $this->traitResponse($filterResult, 'Search Successfully', 200);
             }elseif ($student->exists()){
-                return response()->json([
-                    'status'=>200,
-                    'message'=>'Search Successfully',
-                    'student'=>$student,
-                    'student_subscribes'=>$student_subscribes,
-                ]);//$this->traitResponse($student, 'Search Successfully', 200);
+                return $this->traitResponse($student, 'Search Successfully', 200);
             }
             else {
                 return $this->traitResponse(null, 'No matching results found', 200);
@@ -259,9 +253,9 @@ class UserController extends Controller
                 ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
                 ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
                 ->join('payments', 'subscribes.id', '=', 'payments.subscribe_id')
+                ->join('cards', 'subscribes.card_id', '=', 'cards.id')
                 ->select('subjects.subjectName', 'courses.start', 'courses.end', 'users.first_name', 'users.last_name', 'payments.amount')
                 ->where('cards.user_id', '=', $id)
-                ->where('subscribes.card_id', '=', $id)
                 ->get();
             if ($studentSubscriptions->count() > 0) {
                 return $this->traitResponse($studentSubscriptions, 'Search Successfully', 200);
