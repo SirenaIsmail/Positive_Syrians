@@ -229,7 +229,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
     });
 
     Route::controller(TrainerRatingController::class)->group(function () {
-        Route::get('/trainer_ratings', 'trainerRatings');
+        Route::get('/trainer_ratings/{date?}/{subject?}', 'trainerRatings');
     });
 });
 //End Branch Admin Role

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Subscribe;
 use App\Models\TrainerRating;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -228,7 +229,43 @@ class TrainerRatingController extends Controller
     }
 
 
-    public function trainerRatings(){
-
+    public function trainerRatings($date = null , $subject =null){
+        if (auth()->check()){
+            $branch = Auth::user()->branch_id;
+            if(isset($date)){
+                $topTrainers =  DB::table('trainer_ratings')
+                    ->join('dates', 'trainer_ratings.date_id', '=', 'dates.id')
+                    ->join('branches', 'users.branch_id', '=', 'branches.id')
+                    ->join('trainer_profiles', 'trainer_ratings.trainer_id', '=', 'trainer_profiles.id')
+                    ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
+                    ->select('users.first_name', 'users.last_name', DB::raw('AVG(trainer_ratings.rating) as avg_rating'))
+                    ->where('branches.id', '=', $branch)
+                    ->where('dates.date', 'like', $date.'%')
+                    ->groupBy('trainer_id')
+                    ->orderBy('avg_rating', 'desc')
+                    ->get();
+            }elseif (isset($date) && isset($subject)){
+                $topTrainers =  DB::table('trainer_ratings')
+                    ->join('dates', 'trainer_ratings.date_id', '=', 'dates.id')
+                    ->join('branches', 'users.branch_id', '=', 'branches.id')
+                    ->join('trainer_profiles', 'trainer_ratings.trainer_id', '=', 'trainer_profiles.id')
+                    ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
+                    ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+                    ->select('users.first_name', 'users.last_name','subjects.subjectName', DB::raw('AVG(trainer_ratings.rating) as avg_rating'))
+                    ->where('branches.id', '=', $branch)
+                    ->where('dates.date', 'like', $date.'%')
+                    ->where('subjects.subjectName', '=', $subject)
+                    ->groupBy('trainer_id')
+                    ->orderBy('avg_rating', 'desc')
+                    ->get();
+            }
+            if($topTrainers->count() > 0){
+                return $this->traitResponse($topTrainers, 'Successful', 200);
+            }else{
+                return $this->traitResponse(null, 'No matching results', 200);
+            }
+        }else{
+            return $this->traitResponse(null, 'User not authenticated', 401);
+        }
     }
 }
