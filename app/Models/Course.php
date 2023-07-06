@@ -14,7 +14,7 @@ class Course extends Model
         'trainer_id',
         'min_students',
         'max_students',
-       'approved',
+        'approved',
         'start',
         'end',
     ];
@@ -57,5 +57,6 @@ class Course extends Model
     {
         return $this->hasMany(Subscribe::class ,'course_id','id');
     }
+
 
 }

@@ -24,6 +24,7 @@ use App\Http\Controllers\TaskAnswerController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TopCourseController;
 use App\Http\Controllers\TrainerProfileController;
+use App\Http\Controllers\TrainerRatingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\WithdrawController;
@@ -201,7 +202,6 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
 
 //    Route::controller(ExportController::class)->group(function () {
 //        Route::get('/export', 'exportToPDF');
-   });
 
     Route::controller(TopCourseController::class)->group(function () {
         Route::get('/top_courses', 'getTopCoursesReport');
@@ -227,7 +227,11 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
         Route::get('/polls_counting_byDate', 'pollsCountingByDate');
         Route::get('/polls_counting_byBranch&Date', 'pollsCountingByBranchAndDate');
     });
-//});
+
+    Route::controller(TrainerRatingController::class)->group(function () {
+        Route::get('/trainer_ratings', 'trainerRatings');
+    });
+});
 //End Branch Admin Role
 
 
@@ -417,17 +421,30 @@ Route::group(['prefix' => '/student' , 'middleware' => ['auth','Student']],funct
         });
     });
     //SUBSCRIBE END
-});
+    Route::prefix('/task_answer')->group(function (){
+        Route::controller(TaskAnswerController::class)->group(function () {
+            Route::Post('/store','store');
+            Route::get('/index',  'index');
+            Route::get('/show/{id}', 'show');
+            Route::Post('/update/{id}',  'update');
+            Route::Post('/destroy/{id}',  'destroy');
+        });
+    });
 
-Route::prefix('/task_answer')->group(function (){
-    Route::controller(TaskAnswerController::class)->group(function () {
-        Route::Post('/store','store');
-        Route::get('/index',  'index');
-        Route::get('/show/{id}', 'show');
-        Route::Post('/update/{id}',  'update');
-        Route::Post('/destroy/{id}',  'destroy');
+    Route::prefix('/rating')->group(function (){
+        Route::controller(TrainerRatingController::class)->group(function () {
+            Route::Post('/store','store');
+            Route::get('/index',  'index');
+            Route::get('/show/{id}', 'show');
+            Route::Post('/update/{id}',  'update');
+            Route::Post('/destroy/{id}',  'destroy');
+            Route::Post('/rate/{id}',  'rate');
+
+        });
     });
 });
+
+
 //End Student Role
 
 
