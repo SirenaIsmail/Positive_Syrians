@@ -10,7 +10,7 @@ class TrainerProfile extends Model
     use HasFactory;
     protected $fillable = [
         'user_id',
-        'rating',
+        'flag',
     ];
 
     public function users()

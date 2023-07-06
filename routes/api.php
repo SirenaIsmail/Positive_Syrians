@@ -129,6 +129,10 @@ Route::group(['prefix' => '/scientific_affairs' , 'middleware' => ['auth','scien
     });
 
     //SUBJECT END
+
+    Route::controller(TrainerProfileController::class)->group(function () {
+        Route::get('/trainer/update_flag/{id}', 'update');
+    });
 });
 //End Scientific Affairs Role
 
@@ -231,6 +235,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
     Route::controller(TrainerRatingController::class)->group(function () {
         Route::get('/trainer_ratings/{date?}/{subject?}', 'trainerRatings');
     });
+
 });
 //End Branch Admin Role
 
@@ -399,6 +404,16 @@ Route::group(['prefix' => '/trainer' , 'middleware' => ['auth','trainer']],funct
     Route::controller(TrainerProfileController::class)->group(function () {
         Route::get('/trainerProfile/search/{filter}','search');
         Route::get('/trainerProfile/view','view');
+    });
+
+    Route::controller(QuestionBankController::class)->group(function () {
+        Route::Post('/store', 'store');
+        Route::get('/index', 'index');
+        Route::get('/show/{id}', 'show');
+        Route::Post('/update/{id}', 'update');
+        Route::Post('/destroy/{id}', 'destroy');
+        Route::get('/search/{filter}','search');
+        Route::get('/search_by_branch/{filter}','search_by_branch');
     });
 });
 //End Trainer Role

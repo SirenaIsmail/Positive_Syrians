@@ -15,16 +15,17 @@ return new class extends Migration
     {
         Schema::create('question_banks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('course_id')
-                ->constrained('courses')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
-            $table->string('model');
-            $table->string('file');
             $table->foreignId('branch_id')
                 ->constrained('branches')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+            $table->integer('type');   //0 traditional  or  1 automated
+            $table->text('question');
+            $table->text('A')->nullable();
+            $table->text('B')->nullable();
+            $table->text('C')->nullable();
+            $table->text('D')->nullable();
+            $table->integer('check')->nullable(); //1checked
             $table->timestamps();
         });
     }

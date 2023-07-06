@@ -29,11 +29,6 @@ class Course extends Model
         return $this->hasMany(Task::class, 'task_id','id');
     }
 
-    public function questionBanks()
-    {
-        return $this->hasMany(QuestionBank::class, 'Question_bank_id','id');
-    }
-
     public function attends()
     {
         return $this->hasMany(Attend::class, 'attend_id','id');

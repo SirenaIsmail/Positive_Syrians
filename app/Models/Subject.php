@@ -31,4 +31,9 @@ class Subject extends Model
     public function course(){
         return $this->hasMany(Course::class,'course_id' , 'id');
     }
+
+    public function questionBanks()
+    {
+        return $this->hasMany(QuestionBank::class, 'question_bank_id','id');
+    }
 }

@@ -19,7 +19,7 @@ return new class extends Migration
                 ->constrained('users')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->integer('rating');
+            $table->integer('flag');
             $table->timestamps();
         });
     }

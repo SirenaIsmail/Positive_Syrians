@@ -57,12 +57,8 @@ class QuestionBankController extends Controller
     public function store(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'course_id'=> 'required|integer',
-            'model'=> 'required',
-            'file'=> 'required',
-            'branch_id'=> 'required|integer',
-
-
+            'type'=> 'required|min:0|max:1',
+            'question'=> 'required',
         ]);
         if($validation->fails())
 
@@ -80,12 +76,7 @@ class QuestionBankController extends Controller
 
         $path = Storage::disk('public')->put('uploads', $file);
 
-        $dataQb = QuestionBank::create([
-            'course_id'=> $request->course_id,
-            'model'=> $request->model,
-            'file'=> $path,
-            'branch_id'=> $request->branch_id,
-        ]);
+        $dataQb = QuestionBank::create($request->all());
 
         if($dataQb)
         {
@@ -147,7 +138,8 @@ class QuestionBankController extends Controller
         }
 
         $validation = Validator::make($request->all(), [
-            'model'=> 'required',
+            'type'=> 'required|min:0|max:1',
+            'question'=> 'required',
 
         ]);
         if($validation->fails())
@@ -191,11 +183,11 @@ class QuestionBankController extends Controller
 
         }
         return  $this->traitResponse(null , 'Deleted Failed ' , 404);
- 
+
    }
 
    public function search($filter)
-   
+
    {
 
        if (auth()->check()) {
@@ -203,12 +195,11 @@ class QuestionBankController extends Controller
             if($filter != "null"){
             $filterResult = DB::table('question_banks')
                 ->join('branches', 'branches.id', '=', 'question_banks.branch_id')
-                ->join('courses', 'courses.id', '=', 'question_banks.course_id')
-                ->join('trainer_profiles', 'trainer_profiles.id', '=', 'courses.trainer_id')
-                ->join('users', 'users.id', '=', 'trainer_profiles.user_id')
-                ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
-                ->select('question_banks.model', 'question_banks.file', 'subjects.subjectName', 'subjects.content')
-                ->where('branches.id', '=', $branchId) 
+                ->join('subjects', 'subjects.id', '=', 'question_banks.subject_id')
+             //   ->join('trainer_profiles', 'trainer_profiles.id', '=', 'courses.trainer_id')
+               // ->join('users', 'users.id', '=', 'trainer_profiles.user_id')
+                ->select('question_banks.type', 'question_banks.question', 'subjects.subjectName', 'subjects.content')
+                ->where('branches.id', '=', $branchId)
                 ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
                     $query->where('question_banks.model', 'like', "%$filter%");
                 })
@@ -219,11 +210,11 @@ class QuestionBankController extends Controller
                     $branchId = Auth::user()->branch_id;
                     $filterResult = DB::table('question_banks')
                     //  ->join('branches', 'branches.id', '=', 'question_banks.branch_id')
-                        ->join('courses', 'courses.id', '=', 'question_banks.course_id')
-                        ->join('trainer_profiles', 'trainer_profiles.id', '=', 'courses.trainer_id')
-                        ->join('users', 'users.id', '=', 'trainer_profiles.user_id')
-                        ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
-                        ->select('question_banks.model', 'question_banks.file', 'subjects.subjectName', 'subjects.content')
+                        ->join('subjects', 'subjects.id', '=', 'question_banks.subject_id')
+                      //  ->join('trainer_profiles', 'trainer_profiles.id', '=', 'courses.trainer_id')
+                      //  ->join('users', 'users.id', '=', 'trainer_profiles.user_id')
+//                        ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
+                        ->select('question_banks.type', 'question_banks.question', 'subjects.subjectName', 'subjects.content')
                         //->where('branches.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
                         ->paginate(1);
 
@@ -241,22 +232,25 @@ class QuestionBankController extends Controller
    public function search_by_branch($filter){
         $branchId = Auth::user()->branch_id;
         $filterResult = DB::table('question_banks')
-        ->join('branches', 'branches.id', '=', 'question_banks.branch_id')
-            ->join('courses', 'courses.id', '=', 'question_banks.course_id')
-            ->join('trainer_profiles', 'trainer_profiles.id', '=', 'courses.trainer_id')
-            ->join('users', 'users.id', '=', 'trainer_profiles.user_id')
-            ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
-            ->select('question_banks.model', 'question_banks.file', 'subjects.subjectName', 'subjects.content')
+            ->join('branches', 'branches.id', '=', 'question_banks.branch_id')
+            ->join('subjects', 'subjects.id', '=', 'question_banks.subject_id')
+//            ->join('trainer_profiles', 'trainer_profiles.id', '=', 'courses.trainer_id')
+//            ->join('users', 'users.id', '=', 'trainer_profiles.user_id')
+//            ->join('subjects', 'subjects.id', '=', 'courses.subject_id')
+            ->select('question_banks.type', 'question_banks.question', 'subjects.subjectName', 'subjects.content')
             ->where('branches.id', '=', $branchId) // تحديد فقط الاشتراكات في فرع المستخدم
             ->paginate(1);
 
-        
+
         if ($filterResult->count() > 0) {
         return $this->traitResponse($filterResult, 'Search Successfully', 200);
         }else{
             return $this->traitResponse(null, 'No matching results found', 200);
-       
+
    }
 
 }
+
+
+
 }
