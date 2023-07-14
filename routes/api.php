@@ -210,7 +210,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
 
 //    Route::controller(ExportController::class)->group(function () {
 //        Route::get('/export', 'exportToPDF');
-   });
+//   });
 
     Route::controller(TopCourseController::class)->group(function () {
         Route::get('/top_courses', 'getTopCoursesReport');
