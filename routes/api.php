@@ -24,6 +24,7 @@ use App\Http\Controllers\TaskAnswerController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TopCourseController;
 use App\Http\Controllers\TrainerProfileController;
+use App\Http\Controllers\TrainerRatingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\WithdrawController;
@@ -128,6 +129,10 @@ Route::group(['prefix' => '/scientific_affairs' , 'middleware' => ['auth','scien
     });
 
     //SUBJECT END
+
+    Route::controller(TrainerProfileController::class)->group(function () {
+        Route::get('/trainer/update_flag/{id}', 'update');
+    });
 });
 //End Scientific Affairs Role
 
@@ -205,7 +210,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
 
 //    Route::controller(ExportController::class)->group(function () {
 //        Route::get('/export', 'exportToPDF');
-  // });
+   });
 
     Route::controller(TopCourseController::class)->group(function () {
         Route::get('/top_courses', 'getTopCoursesReport');
@@ -231,6 +236,11 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
         Route::get('/polls_counting_byDate', 'pollsCountingByDate');
         Route::get('/polls_counting_byBranch&Date', 'pollsCountingByBranchAndDate');
     });
+
+    Route::controller(TrainerRatingController::class)->group(function () {
+        Route::get('/trainer_ratings/{date?}/{subject?}', 'trainerRatings');
+    });
+
 });
 //End Branch Admin Role
 
@@ -406,6 +416,16 @@ Route::group(['prefix' => '/trainer' , 'middleware' => ['auth','trainer']],funct
         Route::get('/Course/GetCoursesByTrainerId','GetCoursesByTrainerId');
     });
     
+
+    Route::controller(QuestionBankController::class)->group(function () {
+        Route::Post('/store', 'store');
+        Route::get('/index', 'index');
+        Route::get('/show/{id}', 'show');
+        Route::Post('/update/{id}', 'update');
+        Route::Post('/destroy/{id}', 'destroy');
+        Route::get('/search/{filter}','search');
+        Route::get('/search_by_branch/{filter}','search_by_branch');
+    });
 });
 //End Trainer Role
 
@@ -427,17 +447,30 @@ Route::group(['prefix' => '/student' , 'middleware' => ['auth','Student']],funct
         });
     });
     //SUBSCRIBE END
-});
+    Route::prefix('/task_answer')->group(function (){
+        Route::controller(TaskAnswerController::class)->group(function () {
+            Route::Post('/store','store');
+            Route::get('/index',  'index');
+            Route::get('/show/{id}', 'show');
+            Route::Post('/update/{id}',  'update');
+            Route::Post('/destroy/{id}',  'destroy');
+        });
+    });
 
-Route::prefix('/task_answer')->group(function (){
-    Route::controller(TaskAnswerController::class)->group(function () {
-        Route::Post('/store','store');
-        Route::get('/index',  'index');
-        Route::get('/show/{id}', 'show');
-        Route::Post('/update/{id}',  'update');
-        Route::Post('/destroy/{id}',  'destroy');
+    Route::prefix('/rating')->group(function (){
+        Route::controller(TrainerRatingController::class)->group(function () {
+            Route::Post('/store','store');
+            Route::get('/index',  'index');
+            Route::get('/show/{id}', 'show');
+            Route::Post('/update/{id}',  'update');
+            Route::Post('/destroy/{id}',  'destroy');
+            Route::Post('/rate/{id}',  'rate');
+
+        });
     });
 });
+
+
 //End Student Role
 
 

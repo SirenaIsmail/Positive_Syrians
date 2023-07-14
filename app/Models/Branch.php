@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Branch extends Model
 {
-    
+
     use HasFactory;
- 
+
 
     protected $table = 'branches';
     protected $fillable = [
@@ -55,15 +55,10 @@ class Branch extends Model
         return $this->hasMany(Proceed::class, 'proceed_id','id');
     }
 
-    public function trainerRatings()
-    {
-        return $this->hasMany(TrainerRating::class, 'rating_id','id');
-    }
-
     public function polls(){
         return $this->hasMany(Poll::class,'poll_id' , 'id');
     }
- 
+
     public function FundAccount()
     {
         return $this->hasOne(FundAccount::class, 'fund_account_id','id');

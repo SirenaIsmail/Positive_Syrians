@@ -29,6 +29,11 @@ class Subscribe extends Model
         return $this->hasMany(TopCourse::class, 'top_id','id');
     }
 
+    public function trainerRatings()
+    {
+        return $this->hasMany(TrainerRating::class, 'rating_id','id');
+    }
+
     public function subjects()
     {
         return $this->belongsTo(Subject::class, 'subject_id');

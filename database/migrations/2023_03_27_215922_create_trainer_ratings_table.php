@@ -19,14 +19,16 @@ return new class extends Migration
                 ->constrained('dates')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->foreignId('branch_id')
-                ->constrained('branches')
+            $table->foreignId('subscribe_id')
+                ->constrained('subscribes')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->foreignId('trainer_id')
                 ->constrained('trainer_profiles')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+            $table->integer('rating'); // 1 to 5
+            $table->text('note')->nullable();
             $table->timestamps();
         });
     }

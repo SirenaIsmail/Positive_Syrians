@@ -10,8 +10,10 @@ class TrainerRating extends Model
     use HasFactory;
     protected $fillable = [
         'date_id',
-        'branch_id',
-        'trainer_id'
+        'subscribe_id',
+        'trainer_id',
+        'rating',
+        'note',
     ];
 
     public function dates()
@@ -19,9 +21,9 @@ class TrainerRating extends Model
         return $this->belongsTo(Date::class, 'date_id');
     }
 
-    public function branches()
+    public function subscribes()
     {
-        return $this->belongsTo(Branch::class, 'branch_id');
+        return $this->belongsTo(Subscribe::class, 'subscribe_id');
     }
 
     public function trainerProfs()

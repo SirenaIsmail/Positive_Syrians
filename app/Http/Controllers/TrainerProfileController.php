@@ -21,7 +21,7 @@ class TrainerProfileController extends Controller
     {
         $dataTrainerProfile = TrainerProfile::join('users', 'users.id', '=', 'trainer_profiles.user_id')
             ->join('branches', 'branches.id' , '=','users.branch_id')
-            ->select('users.first_name', 'users.last_name','branches.name', 'users.email', 'trainer_profiles.rating')
+            ->select('users.first_name', 'users.last_name','branches.name', 'users.email', 'trainer_profiles.flag')
             ->get();
 
         if ($dataTrainerProfile) {
@@ -75,7 +75,7 @@ class TrainerProfileController extends Controller
     {
         $validation = Validator::make($request->all(), [
             'user_id'=> 'required|integer',
-            'rating'=> 'required|max:10',
+//            'flag'=> 'required|min:0|max:1',
 
         ]);
         if($validation->fails())
@@ -84,9 +84,10 @@ class TrainerProfileController extends Controller
             return $this->traitResponse(null,$validation->errors(),400);
 
         }
+        $flag = 0;
             $dataTrainerProfile = TrainerProfile::create([
                 'user_id' => $request->user_id,
-                'rating' => $request->rating,
+                'flag' => $flag,
             ]);
 
             if ($dataTrainerProfile) {
@@ -148,7 +149,7 @@ class TrainerProfileController extends Controller
         }
 
         $validation = Validator::make($request->all(), [
-            'rating'=> 'required',
+            'flag'=> 'required|min:0|max:1',
 
 
         ]);
@@ -161,7 +162,7 @@ class TrainerProfileController extends Controller
 
         $dataTrainerProfile->update([
             'user_id'=> $request->user_id,
-            'rating'=> $request->rating,
+            'flag'=> $request->flag,
         ]);
         if($dataTrainerProfile)
         {
@@ -209,7 +210,7 @@ class TrainerProfileController extends Controller
             $filterResult = DB::table('trainer_profiles')
                 ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
                 ->join('branches', 'users.branch_id', '=', 'branches.id')
-                ->select('users.roll_number', 'users.first_name', 'users.last_name', 'trainer_profiles.rating', 'users.birth_day', 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name')
+                ->select('users.roll_number', 'users.first_name', 'users.last_name', 'trainer_profiles.flag', 'users.birth_day', 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name')
                 ->where('branches.id', '=', $branchId) // تحديد فقط المدربين في فرع المستخدم
                 ->where('users.first_name', 'like', "%$filter%") // تحديد النتائج المطابقة للتقييم المدخل
                 ->paginate(PAGINATION_COUNT);

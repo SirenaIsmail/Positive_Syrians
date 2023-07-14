@@ -14,7 +14,7 @@ class Course extends Model
         'trainer_id',
         'min_students',
         'max_students',
-       'approved',
+        'approved',
         'start',
         'end',
     ];
@@ -27,11 +27,6 @@ class Course extends Model
     public function tasks()
     {
         return $this->hasMany(Task::class, 'task_id','id');
-    }
-
-    public function questionBanks()
-    {
-        return $this->hasMany(QuestionBank::class, 'Question_bank_id','id');
     }
 
     public function attends()
@@ -57,5 +52,6 @@ class Course extends Model
     {
         return $this->hasMany(Subscribe::class ,'course_id','id');
     }
+
 
 }
