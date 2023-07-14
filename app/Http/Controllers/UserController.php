@@ -191,8 +191,6 @@ class UserController extends Controller
 
             if ($filterResult->count() > 0) {
                 return $this->traitResponse($filterResult, 'Search Successfully', 200);
-            }elseif ($student->exists()){
-                return $this->traitResponse($student, 'Search Successfully', 200);
             }
             else {
                 return $this->traitResponse(null, 'No matching results found', 200);
@@ -249,14 +247,15 @@ class UserController extends Controller
         if (auth()->check()) {
             $studentSubscriptions = DB::table('subscribes')
                 ->join('courses', 'subscribes.course_id', '=', 'courses.id')
+                ->join('branches', 'courses.branch_id', '=', 'branches.id')
                 ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
                 ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
                 ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
                 ->join('payments', 'subscribes.id', '=', 'payments.subscribe_id')
                 ->join('cards', 'subscribes.card_id', '=', 'cards.id')
-                ->select('subjects.subjectName', 'courses.start', 'courses.end', 'users.first_name', 'users.last_name', 'payments.amount')
+                ->select('branches.name','subjects.subjectName', 'courses.start', 'courses.end', 'users.first_name', 'users.last_name')
                 ->where('cards.user_id', '=', $id)
-                ->get();
+                ->paginate();
             if ($studentSubscriptions->count() > 0) {
                 return $this->traitResponse($studentSubscriptions, 'Search Successfully', 200);
 

@@ -403,7 +403,7 @@ class ReceiptStudentController extends Controller
                 ->join('subscribes', 'payments.subscribe_id', '=', 'subscribes.id')
                 ->join('courses', 'subscribes.course_id', '=', 'courses.id')
                 ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-                ->select('payments.id', 'users.id as userId', 'subscribes.id as subscribeId', 'users.first_name', 'users.last_name', 'subjects.subjectName', 'payments.date', 'subscribes.state', 'payments.ammount', DB::raw('SUM(student_accounts.Credit) as total_credit'), DB::raw('SUM(student_accounts.Debit) as total_debit'))
+                ->select('payments.id', 'users.id as userId','users.phone_number as phone_number', 'subscribes.id as subscribeId', 'users.first_name', 'users.last_name', 'subjects.subjectName', 'payments.date', 'subscribes.state', 'payments.ammount', DB::raw('SUM(student_accounts.Credit) as total_credit'), DB::raw('SUM(student_accounts.Debit) as total_debit'))
                 ->joinSub($temp_table, 'temp', function ($join) {
                     $join->on('payments.id', '=', 'temp.id');
                 })
@@ -441,6 +441,7 @@ class ReceiptStudentController extends Controller
                             [
                                 'student_name' => $account->first_name . ' ' . $account->last_name,
                                 'subject_name' => $account->subjectName,
+                                'phone_number' => $account->phone_number,
                                 'subscribes_state' => $account->state,
                                 'payment_amount' => $account->ammount,
                                 'total_credit' => $account->total_credit,

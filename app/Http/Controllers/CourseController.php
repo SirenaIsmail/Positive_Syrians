@@ -619,6 +619,43 @@ class CourseController extends Controller
 
 
 
+
+
+
+
+// Add By Samar
+
+public function GetCoursesByTrainerId()
+{
+    $UserId = Auth::user()->id;
+    $threeMonthsAgo = \Carbon\Carbon::now()->subMonths(3)->format('Y-m-d');
+     if (auth()->check()) {
+    
+
+        $Result = DB::table('courses')
+            ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+            ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
+            ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
+            ->select('courses.*','subjects.subjectName','subjects.houers','subjects.price')
+            ->whereDate('courses.start', '>=', $threeMonthsAgo)
+            ->where('users.id','=',$UserId)
+           // ->where('branches.id', '=', $id)
+            ->orderBy('courses.id', 'desc')
+            ->paginate(10);
+            
+
+        if ($Result->count() > 0) {
+            return $this->traitResponse($Result, 'تم العرض بنجاح', 200);
+        } else {
+            return $this->traitResponse(null, 'لا يوجد نتائج', 200);
+        }
+    } else {
+        return $this->traitResponse(null, 'User not authenticated', 401);
+    }
+}
+
+
+
 }
 
 

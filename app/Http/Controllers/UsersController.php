@@ -265,5 +265,46 @@ class UsersController extends Controller
    }
 
 
+// سوف اضيف هذا للتجريب
+
+public function searchByFilterWithBarcode(Request $request, $filter = null)
+{
+    if (auth()->check() ) {
+        $branchId = Auth::user()->branch_id;
+        
+            $filterResult = DB::table('users')
+            ->join('branches', 'users.branch_id', '=', 'branches.id')
+            ->join('cards', 'cards.user_id', '=', 'users.id') // انضمام إلى جدول البطاقات
+            ->select('users.first_name', 'users.last_name', 'users.birth_day', 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name')
+            ->where('users.roll_number', '=', $request->query('roll_number')) // تحديد فقط المستخدمين في فرع المستخدم
+           // ->where('users.branch_id', '=', $branchId) // تحديد فقط المستخدمين في فرع المستخدم
+            ->select('users.id','users.roll_number', 'users.first_name', 'users.last_name', 'users.birth_day'
+            , 'users.phone_number','cards.barcode', 'users.email', 'users.password', 'branches.No', 'branches.name'
+            ,'cards.barcode')
+            ->where('branches.id', '=', $branchId) // تحديد فقط المستخدمين في فرع المستخدم
+           // ->where( 'cards.barcode', $barcode == null ? '!=' : '=', $barcode)
+           ->where( 'cards.barcode', $request->query('barcode') == null ? '!=' : '=',  $request->query('barcode'))
+            ->where(function ($query) use ($filter) { // التحقق من وجود نتائج بعد تطبيق الفلتر
+                $query->where('users.roll_number', 'like', "%$filter%")
+                    ->orWhere('users.first_name', 'like', "%$filter%")
+                    ->orWhere('users.last_name', 'like', "%$filter%");
+            })
+            ->paginate(5);
+
+        
+        if ($filterResult->count() > 0) {
+            return $this->traitResponse($filterResult, 'Search Successfully', 200);
+        } else {
+            return $this->traitResponse(null, 'No matching results found', 200);
+        }
+
+    } else {
+        return $this->traitResponse(null, 'User not authenticated', 401);
+    }
+}
+
+
+
+
 
 }

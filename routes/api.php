@@ -156,6 +156,10 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
         Route::post('/add_trainer', 'addTrainer');
         Route::get('/user/search/{filter}','search');
         Route::get('/user/show/{id}','show');
+
+
+        
+        Route::get('/user/searchByFilterWithBarcode/{filter?}','searchByFilterWithBarcode');
     });
 
     //SUBJECT ROUTES
@@ -201,7 +205,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
 
 //    Route::controller(ExportController::class)->group(function () {
 //        Route::get('/export', 'exportToPDF');
-   });
+  // });
 
     Route::controller(TopCourseController::class)->group(function () {
         Route::get('/top_courses', 'getTopCoursesReport');
@@ -227,7 +231,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
         Route::get('/polls_counting_byDate', 'pollsCountingByDate');
         Route::get('/polls_counting_byBranch&Date', 'pollsCountingByBranchAndDate');
     });
-//});
+});
 //End Branch Admin Role
 
 
@@ -396,6 +400,12 @@ Route::group(['prefix' => '/trainer' , 'middleware' => ['auth','trainer']],funct
         Route::get('/trainerProfile/search/{filter}','search');
         Route::get('/trainerProfile/view','view');
     });
+
+
+    Route::controller(CourseController::class)->group(function () {
+        Route::get('/Course/GetCoursesByTrainerId','GetCoursesByTrainerId');
+    });
+    
 });
 //End Trainer Role
 
