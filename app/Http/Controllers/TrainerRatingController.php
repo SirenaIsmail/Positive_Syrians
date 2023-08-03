@@ -74,8 +74,8 @@ class TrainerRatingController extends Controller
             ->first();
         $dataTrainerRating = TrainerRating::create([
             'date_id'=> $date_id,
-            'subscribe_id' => $currentSubscribe,
-            'trainer_id' => $trainer,
+            'subscribe_id' => $request->subscribe_id,
+            'trainer_id' => $trainer->id,
             'rating' => $request->rating,
             'note' => $request->note,
         ]);
@@ -83,7 +83,7 @@ class TrainerRatingController extends Controller
         if($dataTrainerRating)
         {
 
-            return  $this ->traitResponse( $dataTrainerRating ,'Saved Successfully' , 200 );
+            return  $this ->traitResponse( $dataTrainerRating ,'شكرا لك على هذا التقييم' , 200 );
         }
 
         return  $this->traitResponse(null,'Saved Failed ' , 400);

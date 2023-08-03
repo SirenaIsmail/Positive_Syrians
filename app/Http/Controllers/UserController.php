@@ -253,7 +253,7 @@ class UserController extends Controller
                 ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
                 ->join('payments', 'subscribes.id', '=', 'payments.subscribe_id')
                 ->join('cards', 'subscribes.card_id', '=', 'cards.id')
-                ->select('branches.name','subjects.subjectName', 'courses.start', 'courses.end', 'users.first_name', 'users.last_name')
+                ->select('subscribes.*','branches.name','subjects.subjectName', 'courses.start', 'courses.end', 'users.first_name', 'users.last_name')
                 ->where('cards.user_id', '=', $id)
                 ->paginate();
             if ($studentSubscriptions->count() > 0) {
