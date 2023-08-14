@@ -215,7 +215,6 @@ class TrainerRatingController extends Controller
                     ]);
                 $rate = ( new TrainerRatingController())->store($rateReq);
                 if($rate)
-                {
                     return $this->traitResponse($rate, 'rated Successfully', 200);
                 }else{
                     return $this->traitResponse(null,'The rate is Not Saved',400);
