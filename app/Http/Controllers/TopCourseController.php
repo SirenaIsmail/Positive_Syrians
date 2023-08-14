@@ -6,6 +6,7 @@ use App\Models\TopCourse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class TopCourseController extends Controller
 {
@@ -288,5 +289,32 @@ class TopCourseController extends Controller
         return $this->traitResponse(null, 'Failed', 404);
     }
 
+    
+    public function getBranch_TopCourse(Request $request){
+        if (auth()->check()){
+            $branch = Auth::user()->branch_id;
+            $top_courses = DB::table('subscribes')
+        ->join('courses', 'subscribes.course_id', '=', 'courses.id')
+        ->join('branches', 'courses.branch_id', '=', 'branches.id')
+        ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+        ->select('branches.name as branch', 'subjects.subjectName as course',
+            'subscribes.date',DB::raw('DATE_FORMAT(subscribes.date, "%Y-%m") as month'), DB::raw('count(courses.id) as enrollments_count'))
+        ->where('branches.id', '=', $branch)
+        ->whereBetween('subscribes.date', [$request->startDate, $request->endDate])
+        ->groupBy('branches.name', 'subjects.subjectName', 'subscribes.date')
+        ->orderBy('enrollments_count', 'desc')
+        ->get();
+
+        if($top_courses)
+        {
+            return $this->traitResponse($top_courses, 'Successful', 200);
+        }
+        return $this->traitResponse(null, 'Failed', 404);
+    
+        }
+        else{
+            return $this->traitResponse(null, 'User not authenticated', 401);
+        }
+        }
 
 }

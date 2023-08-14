@@ -239,9 +239,11 @@ class TrainerRatingController extends Controller
                     ->select('users.first_name', 'users.last_name',DB::raw('DATE_FORMAT(dates.date, "%Y-%m") as month'), DB::raw('AVG(trainer_ratings.rating) as avg_rating'))
                     ->whereBetween('dates.date', [$startDate, $endDate])
                     ->groupBy('trainer_id','month')
-                    ->orderBy('avg_rating', 'desc')
+                    ->orderBy('month')
                     ->get();
             }elseif (isset($startDate) && isset($endDate) && isset($subject)){
+               
+
                 $topTrainers =  DB::table('trainer_ratings')
                     ->join('trainer_profiles', 'trainer_ratings.trainer_id', '=', 'trainer_profiles.id')
                     ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
@@ -253,9 +255,48 @@ class TrainerRatingController extends Controller
                     ->whereBetween('dates.date', [$startDate, $endDate])
                     ->where('subjects.subjectName', '=', $subject)
                     ->groupBy('trainer_id','month')
-                    ->orderBy('avg_rating', 'desc')
+                    ->orderBy('month')
                     ->get();
             }
+            //    $topTrainers =  DB::table('trainer_ratings')
+            //         ->join('trainer_profiles', 'trainer_ratings.trainer_id', '=', 'trainer_profiles.id')
+            //         ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
+            //         ->join('dates', 'trainer_ratings.date_id', '=', 'dates.id')
+            //         ->join('branches', 'users.branch_id', '=', 'branches.id')
+            //         ->where('branches.id', '=', $branch)
+            //         ->where('trainer_profiles.id', '=', '1')
+            //         ->select('users.first_name', 'users.last_name',DB::raw('DATE_FORMAT(dates.date, "%Y-%m") as month'), DB::raw('AVG(trainer_ratings.rating) as avg_rating'))
+            //         ->whereBetween('dates.date', [$startDate, $endDate])
+            //         ->groupBy('trainer_id','month')
+            //         ->orderBy('avg_rating', 'desc')
+            //         ->get();
+            if($topTrainers->count() > 0){
+                return $this->traitResponse($topTrainers, 'Successful', 200);
+            }else{
+                return $this->traitResponse(null, 'No matching results', 200);
+            }
+        }else{
+            return $this->traitResponse(null, 'User not authenticated', 401);
+        }
+    }
+
+    
+    public function trainerRatingsLine(Request $request){
+        if (auth()->check()){
+            $branch = Auth::user()->branch_id;
+          
+               $topTrainers =  DB::table('trainer_ratings')
+                    ->join('trainer_profiles', 'trainer_ratings.trainer_id', '=', 'trainer_profiles.id')
+                    ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
+                    ->join('dates', 'trainer_ratings.date_id', '=', 'dates.id')
+                    ->join('branches', 'users.branch_id', '=', 'branches.id')
+                    ->where('branches.id', '=', $branch)
+                    ->where('trainer_profiles.id', '=', $request->id)
+                    ->select('users.first_name', 'users.last_name',DB::raw('DATE_FORMAT(dates.date, "%Y-%m") as month'), DB::raw('AVG(trainer_ratings.rating) as avg_rating'))
+                    ->whereBetween('dates.date', [$request->startDate, $request->endDate])
+                    ->groupBy('trainer_id','month')
+                    ->orderBy('month')
+                    ->get();
             if($topTrainers->count() > 0){
                 return $this->traitResponse($topTrainers, 'Successful', 200);
             }else{

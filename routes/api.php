@@ -232,6 +232,8 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
         Route::get('/monthly_topCourses/{month}', 'getMonthlyTopCoursesReport');
         Route::get('/yearly_topCourses/{year}', 'getYearlyTopCoursesReport');
         Route::get('/branch_yearly_topCourses/{month}/{branch}', 'getMonth_Branch_TopCourse');
+
+        Route::get('/getBranch_TopCourse', 'getBranch_TopCourse');
     });
 
     Route::controller(ExportController::class)->group(function () {
@@ -250,9 +252,10 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
         Route::get('/polls_counting_byDate', 'pollsCountingByDate');
         Route::get('/polls_counting_byBranch&Date', 'pollsCountingByBranchAndDate');
     });
-
+    
     Route::controller(TrainerRatingController::class)->group(function () {
         Route::get('/trainer_ratings/{startDate?}/{endDate?}/{subject?}', 'trainerRatings');
+        Route::get('/trainer_ratings_line', 'trainerRatingsLine');
     });
 
     Route::controller(TrainerProfileController::class)->group(function () {
