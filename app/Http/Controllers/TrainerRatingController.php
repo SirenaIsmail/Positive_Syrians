@@ -253,7 +253,7 @@ class TrainerRatingController extends Controller
                     ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
                     ->select('users.first_name', 'users.last_name','subjects.subjectName', DB::raw('AVG(trainer_ratings.rating) as avg_rating'))
                     ->where('branches.id', '=', $branch)
-                    ->where('dates.date', 'like', $date.'%')
+                    ->whereBetween('dates.date', [$startDate, $endDate])
                     ->where('subjects.subjectName', '=', $subject)
                     ->groupBy('trainer_id')
                     ->orderBy('avg_rating', 'desc')
