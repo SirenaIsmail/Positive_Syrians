@@ -177,7 +177,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
         Route::get('/user/show/{id}','show');
 
 
-        
+
         Route::get('/user/searchByFilterWithBarcode/{filter?}','searchByFilterWithBarcode');
     });
 
@@ -252,7 +252,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
     });
 
     Route::controller(TrainerRatingController::class)->group(function () {
-        Route::get('/trainer_ratings/{date?}/{subject?}', 'trainerRatings');
+        Route::get('/trainer_ratings/{startDate?}/{endDate?}/{subject?}', 'trainerRatings');
     });
 
     Route::controller(TrainerProfileController::class)->group(function () {
@@ -434,7 +434,7 @@ Route::group(['prefix' => '/trainer' , 'middleware' => ['auth','trainer']],funct
     Route::controller(CourseController::class)->group(function () {
         Route::get('/Course/GetCoursesByTrainerId','GetCoursesByTrainerId');
     });
-    
+
 
     Route::controller(QuestionBankController::class)->group(function () {
         Route::Post('/store', 'store');

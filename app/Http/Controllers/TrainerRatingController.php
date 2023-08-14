@@ -226,7 +226,7 @@ class TrainerRatingController extends Controller
     }
 
 
-    public function trainerRatings($date = null , $subject =null){
+    public function trainerRatings($startDate = null , $endDate = null , $subject =null){
         if (auth()->check()){
             $branch = Auth::user()->branch_id;
             if(isset($date)){
@@ -237,7 +237,7 @@ class TrainerRatingController extends Controller
                     ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
                     ->select('users.first_name', 'users.last_name', DB::raw('AVG(trainer_ratings.rating) as avg_rating'))
                     ->where('branches.id', '=', $branch)
-                    ->where('dates.date', 'like', $date.'%')
+                    ->whereBetween('dates.date', [$startDate, $endDate])
                     ->groupBy('trainer_id')
                     ->orderBy('avg_rating', 'desc')
                     ->get();
@@ -250,7 +250,7 @@ class TrainerRatingController extends Controller
                     ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
                     ->select('users.first_name', 'users.last_name','subjects.subjectName', DB::raw('AVG(trainer_ratings.rating) as avg_rating'))
                     ->where('branches.id', '=', $branch)
-                    ->where('dates.date', 'like', $date.'%')
+                    ->whereBetween('dates.date', [$startDate, $endDate])
                     ->where('subjects.subjectName', '=', $subject)
                     ->groupBy('trainer_id')
                     ->orderBy('avg_rating', 'desc')
