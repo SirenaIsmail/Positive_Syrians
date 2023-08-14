@@ -236,9 +236,9 @@ class TrainerRatingController extends Controller
                     ->join('dates', 'trainer_ratings.date_id', '=', 'dates.id')
                     ->join('branches', 'users.branch_id', '=', 'branches.id')
                     ->where('branches.id', '=', $branch)
-                    ->select('users.first_name', 'users.last_name', DB::raw('AVG(trainer_ratings.rating) as avg_rating'))
+                    ->select('users.first_name', 'users.last_name',DB::raw('DATE_FORMAT(dates.date, "%Y-%m") as month'), DB::raw('AVG(trainer_ratings.rating) as avg_rating'))
                     ->whereBetween('dates.date', [$startDate, $endDate])
-                    ->groupBy('trainer_id')
+                    ->groupBy('trainer_id','month')
                     ->orderBy('avg_rating', 'desc')
                     ->get();
             }elseif (isset($startDate) && isset($endDate) && isset($subject)){
@@ -248,11 +248,11 @@ class TrainerRatingController extends Controller
                     ->join('dates', 'trainer_ratings.date_id', '=', 'dates.id')
                     ->join('branches', 'users.branch_id', '=', 'branches.id')
                     ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
-                    ->select('users.first_name', 'users.last_name','subjects.subjectName', DB::raw('AVG(trainer_ratings.rating) as avg_rating'))
+                    ->select('users.first_name', 'users.last_name',DB::raw('DATE_FORMAT(dates.date, "%Y-%m") as month'), DB::raw('AVG(trainer_ratings.rating) as avg_rating'))
                     ->where('branches.id', '=', $branch)
                     ->whereBetween('dates.date', [$startDate, $endDate])
                     ->where('subjects.subjectName', '=', $subject)
-                    ->groupBy('trainer_id')
+                    ->groupBy('trainer_id','month')
                     ->orderBy('avg_rating', 'desc')
                     ->get();
             }
