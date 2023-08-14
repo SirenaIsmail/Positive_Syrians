@@ -229,24 +229,24 @@ class TrainerRatingController extends Controller
     public function trainerRatings($startDate = null , $endDate = null , $subject =null){
         if (auth()->check()){
             $branch = Auth::user()->branch_id;
-            if(isset($date)){
+            if(isset($startDate) && isset($endDate)){
                 $topTrainers =  DB::table('trainer_ratings')
-                    ->join('dates', 'trainer_ratings.date_id', '=', 'dates.id')
-                    ->join('branches', 'users.branch_id', '=', 'branches.id')
                     ->join('trainer_profiles', 'trainer_ratings.trainer_id', '=', 'trainer_profiles.id')
                     ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
-                    ->select('users.first_name', 'users.last_name', DB::raw('AVG(trainer_ratings.rating) as avg_rating'))
+                    ->join('dates', 'trainer_ratings.date_id', '=', 'dates.id')
+                    ->join('branches', 'users.branch_id', '=', 'branches.id')
                     ->where('branches.id', '=', $branch)
+                    ->select('users.first_name', 'users.last_name', DB::raw('AVG(trainer_ratings.rating) as avg_rating'))
                     ->whereBetween('dates.date', [$startDate, $endDate])
                     ->groupBy('trainer_id')
                     ->orderBy('avg_rating', 'desc')
                     ->get();
-            }elseif (isset($date) && isset($subject)){
+            }elseif (isset($startDate) && isset($endDate) && isset($subject)){
                 $topTrainers =  DB::table('trainer_ratings')
-                    ->join('dates', 'trainer_ratings.date_id', '=', 'dates.id')
-                    ->join('branches', 'users.branch_id', '=', 'branches.id')
                     ->join('trainer_profiles', 'trainer_ratings.trainer_id', '=', 'trainer_profiles.id')
                     ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
+                    ->join('dates', 'trainer_ratings.date_id', '=', 'dates.id')
+                    ->join('branches', 'users.branch_id', '=', 'branches.id')
                     ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
                     ->select('users.first_name', 'users.last_name','subjects.subjectName', DB::raw('AVG(trainer_ratings.rating) as avg_rating'))
                     ->where('branches.id', '=', $branch)
