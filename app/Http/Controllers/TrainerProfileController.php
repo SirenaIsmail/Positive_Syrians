@@ -203,17 +203,17 @@ class TrainerProfileController extends Controller
 
 
 
-    } public function search($filter)
+    } public function search($filter=null)
     {
         if (auth()->check()) {
             $branchId = Auth::user()->branch_id;
             $filterResult = DB::table('trainer_profiles')
                 ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
                 ->join('branches', 'users.branch_id', '=', 'branches.id')
-                ->select('users.roll_number', 'users.first_name', 'users.last_name', 'trainer_profiles.flag', 'users.birth_day', 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name')
+                ->select('users.roll_number', 'users.first_name', 'users.last_name', 'trainer_profiles.id','trainer_profiles.flag', 'users.birth_day', 'users.phone_number', 'users.email', 'users.password', 'branches.No', 'branches.name')
                 ->where('branches.id', '=', $branchId) // تحديد فقط المدربين في فرع المستخدم
                 ->where('users.first_name', 'like', "%$filter%") // تحديد النتائج المطابقة للتقييم المدخل
-                ->paginate(PAGINATION_COUNT);
+                ->paginate(10);
 
             if ($filterResult->count() > 0) {
                 return $this->traitResponse($filterResult, 'Search Successfully', 200);

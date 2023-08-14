@@ -74,6 +74,20 @@ Route::group(['prefix' => '/general_admin' , 'middleware' => ['auth','general_ad
     });
     // BRANCH END
 
+    Route::prefix('/subject')->group(function () {
+        Route::controller( SubjectController::class)->group(function () {
+            Route::Post('/store','store');
+            Route::get('/index','index');
+            Route::get('/show/{id}','show');
+            Route::get('/view/','view');
+            Route::Post('/update/{id}','update');
+            Route::Post('/destroy/{id}','destroy');
+            Route::get('/search/{filter}','search');
+            Route::get('/downloadFile','downloadFile');
+        });
+    });
+
+
     //PROCEED ROUTES
     Route::prefix('/proceed')->group(function () {
         Route::controller( ProceedController::class)->group(function () {
@@ -239,6 +253,11 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
 
     Route::controller(TrainerRatingController::class)->group(function () {
         Route::get('/trainer_ratings/{date?}/{subject?}', 'trainerRatings');
+    });
+
+    Route::controller(TrainerProfileController::class)->group(function () {
+        Route::get('/trainerProfile/search/{filter?}','search');
+        Route::get('/trainerProfile/view','view');
     });
 
 });
@@ -407,7 +426,7 @@ Route::group(['prefix' => '/trainer' , 'middleware' => ['auth','trainer']],funct
     });
 
     Route::controller(TrainerProfileController::class)->group(function () {
-        Route::get('/trainerProfile/search/{filter}','search');
+        Route::get('/trainerProfile/search/{filter?}','search');
         Route::get('/trainerProfile/view','view');
     });
 
@@ -547,6 +566,31 @@ Route::prefix('/strainer')->group(function (){
         Route::get('/subjectTrainer/view/{id}','view');
         Route::Post('/update/{id}','update');
         Route::Post('/destroy/{id}','destroy');
+    });
+});
+
+Route::prefix( '/branch' )->group( function (){
+    Route::controller(BranchController::class)->group(function () {
+        Route::Post('/store','store');
+        Route::get('/index','index');
+        Route::get('/show/{id}','show');
+        Route::Post('/update/{id}','update');
+        Route::Post('/destroy/{id}','destroy');
+        Route::get('/search/{filter}', 'search');
+    });
+});
+// BRANCH END
+
+Route::prefix('/subject')->group(function () {
+    Route::controller( SubjectController::class)->group(function () {
+        Route::Post('/store','store');
+        Route::get('/index','index');
+        Route::get('/show/{id}','show');
+        Route::get('/view/','view');
+        Route::Post('/update/{id}','update');
+        Route::Post('/destroy/{id}','destroy');
+        Route::get('/search/{filter}','search');
+        Route::get('/downloadFile','downloadFile');
     });
 });
 

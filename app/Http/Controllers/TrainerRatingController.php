@@ -222,9 +222,7 @@ class TrainerRatingController extends Controller
             }else {
                 return $this->traitResponse(null, 'No subscribe found', 200);
             }
-        }else {
-            return $this->traitResponse(null, 'User not authenticated', 401);
-        }
+       
     }
 
 
