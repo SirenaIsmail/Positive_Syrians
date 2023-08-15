@@ -453,7 +453,7 @@ class CourseController extends Controller
             ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
             ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
             ->select('courses.id','users.first_name', 'users.last_name','subjects.subjectName','subjects.price','courses.start'
-            ,'courses.end','courses.min_students','courses.max_students')
+            ,'courses.end','courses.min_students','courses.max_students','courses.approved')
             ->where('branches.id', '=', $branchId) // تحديد فقط الدورات في فرع المستخدم
             ->where(function ($query) use ($request) {
                 $query->where('courses.start', '>=', $request->start_date)

@@ -104,9 +104,9 @@ class SubjectTrainerController extends Controller
     ->join('subjects', 'subjects.id', '=', 'subject_trainers.subject_id')
     ->join('trainer_profiles', 'trainer_profiles.id', '=', 'subject_trainers.trainer_id')
     ->join('users', 'users.id', '=', 'trainer_profiles.user_id')
-    ->select( 'users.first_name', 'users.last_name', 'users.phone_number','subjects.subjectName', 'subjects.content')
-    ->where('users.id', '=', $id) 
-    ->paginate(10);
+    ->select( 'subjects.houers','subjects.price','subjects.subjectName', 'subjects.content')
+    ->where('trainer_profiles.id', '=', $id) 
+    ->get();
 
 if ($Result->count() > 0) {
     return $this->traitResponse($Result, 'Index Successfully', 200);

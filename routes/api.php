@@ -263,6 +263,19 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
         Route::get('/trainerProfile/view','view');
     });
 
+    //SUBJECT_TRAINER ROUTES
+
+Route::prefix('/strainer')->group(function (){
+    Route::controller(SubjectTrainerController::class)->group(function () {
+        Route::Post('/store','store');
+        Route::get('/index','index');
+        Route::get('/subjectTrainer/show/{id}','show');
+        Route::get('/subjectTrainer/view/{id}','view');
+        Route::Post('/update/{id}','update');
+        Route::Post('/destroy/{id}','destroy');
+    });
+});
+
 });
 //End Branch Admin Role
 

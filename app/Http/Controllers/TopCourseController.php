@@ -302,7 +302,8 @@ class TopCourseController extends Controller
         ->where('branches.id', '=', $branch)
         ->whereBetween('subscribes.date', [$request->startDate, $request->endDate])
         ->groupBy('branches.name', 'subjects.subjectName', 'subscribes.date')
-        ->orderBy('enrollments_count', 'desc')
+        ->orderBy('enrollments_count')
+        ->take(10)
         ->get();
 
         if($top_courses)
