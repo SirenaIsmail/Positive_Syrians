@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Time extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'day',
+        'time',
+    ];
+
+    public function courseTime()
+    {
+        return $this->hasMany(CourseTime::class, 'time_id','id');
+    }
 }

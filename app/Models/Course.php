@@ -53,5 +53,8 @@ class Course extends Model
         return $this->hasMany(Subscribe::class ,'course_id','id');
     }
 
-
+    public function courseTime()
+    {
+        return $this->hasMany(CourseTime::class, 'time_id','id');
+    }
 }
