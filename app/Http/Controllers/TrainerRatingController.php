@@ -222,7 +222,7 @@ class TrainerRatingController extends Controller
             }else {
                 return $this->traitResponse(null, 'No subscribe found', 200);
             }
-       
+
     }
 
 
@@ -242,7 +242,7 @@ class TrainerRatingController extends Controller
                     ->orderBy('month')
                     ->get();
             }elseif (isset($startDate) && isset($endDate) && isset($subject)){
-               
+
 
                 $topTrainers =  DB::table('trainer_ratings')
                     ->join('trainer_profiles', 'trainer_ratings.trainer_id', '=', 'trainer_profiles.id')
@@ -280,11 +280,11 @@ class TrainerRatingController extends Controller
         }
     }
 
-    
+
     public function trainerRatingsLine(Request $request){
         if (auth()->check()){
             $branch = Auth::user()->branch_id;
-          
+
                $topTrainers =  DB::table('trainer_ratings')
                     ->join('trainer_profiles', 'trainer_ratings.trainer_id', '=', 'trainer_profiles.id')
                     ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
@@ -306,4 +306,5 @@ class TrainerRatingController extends Controller
             return $this->traitResponse(null, 'User not authenticated', 401);
         }
     }
+
 }

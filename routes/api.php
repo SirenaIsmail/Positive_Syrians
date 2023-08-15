@@ -6,6 +6,7 @@ use App\Http\Controllers\CardController;
 use App\Http\Controllers\ClassRoomController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\CourseTimeController;
 use App\Http\Controllers\DateController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\HistoryController;
@@ -147,6 +148,12 @@ Route::group(['prefix' => '/scientific_affairs' , 'middleware' => ['auth','scien
     Route::controller(TrainerProfileController::class)->group(function () {
         Route::get('/trainer/update_flag/{id}', 'update');
     });
+
+    Route::prefix('/time')->group(function () {
+        Route::controller(CourseTimeController::class)->group(function () {
+            Route::get('/store', 'store');
+        });
+    });
 });
 //End Scientific Affairs Role
 
@@ -232,8 +239,6 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
         Route::get('/monthly_topCourses/{month}', 'getMonthlyTopCoursesReport');
         Route::get('/yearly_topCourses/{year}', 'getYearlyTopCoursesReport');
         Route::get('/branch_yearly_topCourses/{month}/{branch}', 'getMonth_Branch_TopCourse');
-
-        Route::get('/getBranch_TopCourse', 'getBranch_TopCourse');
     });
 
     Route::controller(ExportController::class)->group(function () {
@@ -252,29 +257,15 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
         Route::get('/polls_counting_byDate', 'pollsCountingByDate');
         Route::get('/polls_counting_byBranch&Date', 'pollsCountingByBranchAndDate');
     });
-    
+
     Route::controller(TrainerRatingController::class)->group(function () {
         Route::get('/trainer_ratings/{startDate?}/{endDate?}/{subject?}', 'trainerRatings');
-        Route::get('/trainer_ratings_line', 'trainerRatingsLine');
     });
 
     Route::controller(TrainerProfileController::class)->group(function () {
         Route::get('/trainerProfile/search/{filter?}','search');
         Route::get('/trainerProfile/view','view');
     });
-
-    //SUBJECT_TRAINER ROUTES
-
-Route::prefix('/strainer')->group(function (){
-    Route::controller(SubjectTrainerController::class)->group(function () {
-        Route::Post('/store','store');
-        Route::get('/index','index');
-        Route::get('/subjectTrainer/show/{id}','show');
-        Route::get('/subjectTrainer/view/{id}','view');
-        Route::Post('/update/{id}','update');
-        Route::Post('/destroy/{id}','destroy');
-    });
-});
 
 });
 //End Branch Admin Role
