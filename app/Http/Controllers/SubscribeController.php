@@ -407,6 +407,24 @@ class SubscribeController extends Controller
 
     }
 
+    public function getCountsubscribeBranch(Request $request )
+    {
+        
+        $branchId = Auth::user()->branch_id;
+        $importByBranch = DB::table('subscribes')
+         ->select( DB::raw('COUNT(*) as import'))
+            ->where('subscribes.branch_id', '=', $branchId)
+            ->where(function ($query) use ($request) {
+                $query->where('subscribes.date', '>=', $request->start_date)
+                    ->where('subscribes.date', '<=', $request->end_date);
+                
+            }) 
+            ->groupBy('branch_id')
+            ->get();
+    
+        return $importByBranch;
+    }
+
 
 }
 

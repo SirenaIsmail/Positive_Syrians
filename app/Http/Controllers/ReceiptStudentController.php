@@ -470,11 +470,9 @@ class ReceiptStudentController extends Controller
             ->select('branches.name', DB::raw('SUM(Debit - Credit) as import'))
             ->where('branches.id', '=', $branchId)
             ->where(function ($query) use ($request) {
-                $query->where('courses.start', '>=', $request->start_date)
-                    ->where('courses.start', '<=', $request->end_date);
-                if (isset($request->approved)) {
-                    $query->where('courses.approved', '=', $request->approved);
-                }
+                $query->where('fund_accounts.date', '>=', $request->start_date)
+                    ->where('fund_accounts.date', '<=', $request->end_date);
+                
             }) 
             ->groupBy('branch_id')
             ->get();

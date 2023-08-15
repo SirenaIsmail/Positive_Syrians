@@ -654,6 +654,25 @@ public function GetCoursesByTrainerId()
     }
 }
 
+public function getCountCoursesBranch(Request $request )
+{
+    
+    $branchId = Auth::user()->branch_id;
+    $importByBranch = DB::table('courses')
+     ->select( DB::raw('COUNT(*) as import'))
+        ->where('courses.branch_id', '=', $branchId)
+        ->where('courses.approved', '=', 1)
+        ->where(function ($query) use ($request) {
+            $query->where('courses.start', '>=', $request->start_date)
+                ->where('courses.start', '<=', $request->end_date);
+            
+        }) 
+        ->groupBy('branch_id')
+        ->get();
+
+    return $importByBranch;
+}
+
 
 
 }

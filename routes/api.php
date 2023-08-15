@@ -216,6 +216,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
             Route::get('/show/{id}',  'show');
             Route::get('/search','search');
             Route::get('/searchBybranch','searchBybranch');
+            Route::get('/getCountCoursesBranch','getCountCoursesBranch');
             Route::Post('/update/{id}', 'update');
             Route::Post('/destroy/{id}', 'destroy');
             Route::Post('/approve/{id}', 'approve');
@@ -227,6 +228,7 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
         Route::get('/search/{filter}/{barcode}','search');
         Route::get('/student_subscribes/{id}','studentSubscribes');
         Route::get('/search_without_paginate/{filter}','searchWithoutPaginate');
+        Route::get('/User/getCountUserBranch','getCountUserBranch');
     });
 
 //    Route::controller(ExportController::class)->group(function () {
@@ -260,12 +262,35 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
 
     Route::controller(TrainerRatingController::class)->group(function () {
         Route::get('/trainer_ratings/{startDate?}/{endDate?}/{subject?}', 'trainerRatings');
+        Route::get('/trainerRatingsLine', 'trainerRatingsLine');
     });
 
     Route::controller(TrainerProfileController::class)->group(function () {
         Route::get('/trainerProfile/search/{filter?}','search');
         Route::get('/trainerProfile/view','view');
     });
+    Route::prefix('/receipt')->group(function () {
+        Route::controller(ReceiptStudentController::class)->group(function () {
+            Route::Post('/store', 'store');
+            Route::get('/index','index');
+            Route::get('/search/{barcode?}','search');
+            Route::get('/indexing/{id}','indexing');
+            Route::Post('/update/{id}', 'update');
+            Route::Post('/destroy/{id}','destroy');
+            Route::get('/getImportByBranch','getImportByBranch');
+            Route::get('/getImportDaily','getImportDaily');
+
+        });
+
+    });
+
+    Route::controller(SubscribeController::class)->group(function () {
+        //الاعتماد أو سيحضر
+        Route::get('/subscribes/getCountsubscribeBranch', 'getCountsubscribeBranch');
+        //لن يحضر
+
+    });
+    
 
 });
 //End Branch Admin Role

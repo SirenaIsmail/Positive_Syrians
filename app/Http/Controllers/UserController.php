@@ -267,5 +267,23 @@ class UserController extends Controller
         }
     }
 
+    public function getCountUserBranch(Request $request )
+    {
+        
+        $branchId = Auth::user()->branch_id;
+        $importByBranch = DB::table('users')
+         ->select( DB::raw('COUNT(*) as import'))
+            ->where('users.branch_id', '=', $branchId)
+            ->where('users.roll_number', '=', 5)
+            ->where(function ($query) use ($request) {
+                $query->where('users.created_at', '>=', $request->start_date)
+                    ->where('users.created_at', '<=', $request->end_date);
+                
+            }) 
+            ->groupBy('branch_id')
+            ->get();
+    
+        return $importByBranch;
+    }
 
 }
