@@ -435,7 +435,7 @@ class ReceiptStudentController extends Controller
                 if (!$found) {
                     $response[] = [
                         'payment_id' => $account->id,
-                        'users.id'=>$account->userId,
+                        'userId'=>$account->userId,
                         'subscribes.id'=>$account->subscribeId,
                         'students' => [
                             [
@@ -461,11 +461,21 @@ class ReceiptStudentController extends Controller
 
 
 
-    public function getImportByBranch()
+    public function getImportByBranch(Request $request )
     {
+        
+        $branchId = Auth::user()->branch_id;
         $importByBranch = DB::table('fund_accounts')
         ->join('branches', 'branches.id', '=', 'fund_accounts.branch_id')
             ->select('branches.name', DB::raw('SUM(Debit - Credit) as import'))
+            ->where('branches.id', '=', $branchId)
+            ->where(function ($query) use ($request) {
+                $query->where('courses.start', '>=', $request->start_date)
+                    ->where('courses.start', '<=', $request->end_date);
+                if (isset($request->approved)) {
+                    $query->where('courses.approved', '=', $request->approved);
+                }
+            }) 
             ->groupBy('branch_id')
             ->get();
     
