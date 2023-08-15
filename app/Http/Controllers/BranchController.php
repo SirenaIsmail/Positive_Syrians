@@ -19,7 +19,7 @@ class BranchController extends Controller
 
     public function index()
     {
-      
+
         $databranch = Branch::paginate(5);
 
         if ($databranch) {
@@ -36,7 +36,7 @@ class BranchController extends Controller
 
     public function view()
     {
-      
+
         $databranch = Branch::get();
 
         if ($databranch) {
@@ -193,7 +193,7 @@ if($filterResult)
 }
 
 else{
-    
+
     $databranch = Branch::paginate(10);
 
     if ($databranch) {
@@ -204,7 +204,11 @@ else{
 
     return $this->traitResponse(null, 'Sorry Failed Not Found', 404);
 }
-    
+
+    }
+
+    public function topBranches(){
+
     }
 
 }

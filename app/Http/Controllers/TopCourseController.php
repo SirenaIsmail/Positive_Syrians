@@ -202,14 +202,14 @@ class TopCourseController extends Controller
 
 
     public function getBranchTopCoursesReport($branch){
-        $top_courses = DB::table('top_courses')
-            ->join('subscribes', 'top_courses.subscribe_id', '=', 'subscribes.id')
+        $top_courses = DB::table('subscribes')
+//            ->join('subscribes', 'top_courses.subscribe_id', '=', 'subscribes.id')
             ->join('courses', 'subscribes.course_id', '=', 'courses.id')
-            ->join('branches', 'top_courses.branch_id', '=', 'branches.id')
-            ->join('dates', 'top_courses.date_id', '=', 'dates.id')
+            ->join('branches', 'subscribes.branch_id', '=', 'branches.id')
+            ->join('dates', 'subscribes.date_id', '=', 'dates.id')
             ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
             ->select('branches.name as branch', 'subjects.subjectName as course',
-                'dates.date', DB::raw('count(top_courses.id) as enrollments_count'))
+                'dates.date', DB::raw('count(subscribes.id) as enrollments_count'))
             ->where('branches.id', '=', $branch) // اختيار الدورات التي تنتمي للفرع المحدد
             ->groupBy('branches.name', 'subjects.subjectName', 'dates.date')
             ->orderBy('enrollments_count', 'desc')
@@ -289,7 +289,7 @@ class TopCourseController extends Controller
         return $this->traitResponse(null, 'Failed', 404);
     }
 
-    
+
     public function getBranch_TopCourse(Request $request){
         if (auth()->check()){
             $branch = Auth::user()->branch_id;
@@ -311,7 +311,7 @@ class TopCourseController extends Controller
             return $this->traitResponse($top_courses, 'Successful', 200);
         }
         return $this->traitResponse(null, 'Failed', 404);
-    
+
         }
         else{
             return $this->traitResponse(null, 'User not authenticated', 401);
