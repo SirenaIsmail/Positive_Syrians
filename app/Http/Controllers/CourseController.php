@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+use Carbon\Carbon;
 
 class CourseController extends Controller
 {
@@ -672,6 +672,72 @@ public function getCountCoursesBranch(Request $request )
 
     return $importByBranch;
 }
+
+public function getCoursesBranchForSchedule(Request $request )
+{
+    
+    $branchId = Auth::user()->branch_id;
+    $importByBranch = DB::table('courses')
+    ->join('subjects', 'courses.subject_id', '=', 'subjects.id')
+    ->join('trainer_profiles', 'courses.trainer_id', '=', 'trainer_profiles.id')
+    ->join('users', 'trainer_profiles.user_id', '=', 'users.id')
+    
+     ->select('courses.id','subjects.subjectName','users.first_name','users.last_name')
+        ->where('courses.branch_id', '=', $branchId)
+        ->where('courses.approved', '=', 1)
+        ->where(function ($query) use ($request) {
+            $query->where('courses.start', '<=', $request->formattedStartDate)
+                ->where('courses.end', '>=', $request->formattedEndtDate);
+            
+        }) 
+        ->get();
+        $response = [];
+        
+// تحويل التاريخ إلى كائن Carbon
+$date = Carbon::createFromFormat('Y-m-d', $request->formattedStartDate);
+
+// استخراج السنة
+$year = $date->year;
+$month = $date->month;
+$date1 = Carbon::create($request->formattedStartDate); // تاريخ البداية
+$date2 = Carbon::create($request->formattedEndtDate); // تاريخ النهاية
+
+$currentDate = $date1->copy(); // إنشاء نسخة من تاريخ البداية
+
+
+        foreach ($importByBranch as $couse ){
+
+            
+            $couseTime = DB::table('course_times')
+            ->join('courses', 'course_times.course_id', '=', 'courses.id')
+            ->join('times', 'course_times.time_id', '=', 'times.id')
+            ->select('times.day','times.time')
+                ->where('course_times.course_id', '=', $couse->id)
+                ->get();
+                foreach($couseTime as $cousetime){
+                    while ($currentDate <= $date2) {
+                        if($currentDate->dayOfWeek == $cousetime->day){
+                            $matchedDay = $currentDate->day;
+                            break;
+                        }
+                        $currentDate->addDay();
+                    }
+                    $response[]=[
+                        'title'=> $couse->subjectName. ' / ' .$couse->first_name. '  ' .$couse->last_name,
+                        'year' => $year,
+                        'month' => $month,
+                        'day' => $matchedDay,
+                        'time' => $cousetime->time,
+                    ];
+
+                }
+                    
+
+        }
+
+        return $response;
+}
+
 
 
 

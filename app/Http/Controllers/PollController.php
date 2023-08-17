@@ -351,13 +351,14 @@ class PollController extends Controller
 
     }
     public function pollsCountingByBranchAndDate(Request $request){
+        $branch = Auth::user()->branch_id;
         $count = DB::table('polls')
             ->join('subjects', 'polls.first', '=', 'subjects.id')
             ->join('branches', 'polls.branch_id', '=', 'branches.id')
             ->select('subjects.subjectName', 'branches.name', DB::raw('DATE_FORMAT(poll_date, "%Y-%m") as month'), DB::raw('COUNT(*) as count'))
-            ->where('polls.branch_id', '=', $request->branch)
-            ->where(DB::raw('DATE_FORMAT(poll_date, "%Y-%m")'), '=', $request->date)
-            ->groupBy('subjects.subjectName', 'branches.name', 'month')
+            ->where('polls.branch_id', '=', $branch)
+            ->whereBetween('poll_date', [$request->startDate, $request->endDate])
+           ->groupBy('subjects.subjectName', 'branches.name', 'month')
             ->get();
 
         if ($count->count() > 0) {

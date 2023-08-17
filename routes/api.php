@@ -152,6 +152,8 @@ Route::group(['prefix' => '/scientific_affairs' , 'middleware' => ['auth','scien
     Route::prefix('/time')->group(function () {
         Route::controller(CourseTimeController::class)->group(function () {
             Route::get('/store', 'store');
+            Route::get('/index', 'index');
+            Route::get('/show/{id}', 'show');
         });
     });
 });
@@ -217,9 +219,12 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
             Route::get('/search','search');
             Route::get('/searchBybranch','searchBybranch');
             Route::get('/getCountCoursesBranch','getCountCoursesBranch');
+            Route::get('/getCoursesBranchForSchedule','getCoursesBranchForSchedule');
             Route::Post('/update/{id}', 'update');
             Route::Post('/destroy/{id}', 'destroy');
             Route::Post('/approve/{id}', 'approve');
+
+            
         });
     });
     //COURSE END
@@ -252,7 +257,14 @@ Route::group(['prefix' => '/branch_admin' , 'middleware' => ['auth','branch_admi
     //Route::controller(WeeklyScheduleController::class)->group(function () {
     //    Route::get('/generate_schedule', 'generateWeeklySchedule');
     //});
-
+    Route::prefix('/time')->group(function () {
+        Route::controller(CourseTimeController::class)->group(function () {
+            Route::get('/store', 'store');
+            
+            Route::get('/index', 'index');
+            Route::get('/show/{id}', 'show');
+        });
+    });
     Route::controller(PollController::class)->group(function () {
         Route::get('/polls_counting', 'pollsCounting');
         Route::get('/polls_counting_byBranch', 'pollsCountingByBranch');

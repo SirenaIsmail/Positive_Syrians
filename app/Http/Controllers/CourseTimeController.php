@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\CourseTime;
 use App\Models\SubjectTrainer;
+use App\Models\Time;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CourseTimeController extends Controller
 {
@@ -20,7 +23,8 @@ class CourseTimeController extends Controller
 
     public function index()
     {
-        //
+        $time = Time::all()->get();
+        return $time;
     }
 
     /**
@@ -74,8 +78,14 @@ class CourseTimeController extends Controller
      * @param  \App\Models\CourseTime  $courseTime
      * @return \Illuminate\Http\Response
      */
-    public function show(CourseTime $courseTime)
+    public function show($id)
     {
+        $couseTime = DB::table('course_times')
+        ->join('courses', 'course_times.course_id', '=', 'courses.id')
+        ->join('times', 'course_times.time_id', '=', 'times.id')
+        ->select('times.day','times.time')
+            ->where('course_times.course_id', '=', $id)
+            ->get();
 
     }
 
